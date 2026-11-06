@@ -1,6 +1,6 @@
 # UI Screens
 
-Exported 6 November 2026 from the active Sports Hub / MVP Figma page.
+Exported from the active Sports Hub / MVP Figma page.
 
 - **123 verified PNGs**: 61 desktop and 62 mobile.
 - Full-length PNG exports. Figma caps the longest edge at 4096 px, so taller mobile screens are proportionally reduced; other screens retain their frame size. The manifest records source and output dimensions.
