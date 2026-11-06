@@ -1,0 +1,7 @@
+# Uploads and temporary files
+assets/uploads/*
+!assets/uploads/.gitkeep
+*.log
+Thumbs.db
+.DS_Store
+!assets/uploads/.htaccess
