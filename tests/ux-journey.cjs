@@ -36,6 +36,9 @@ let png;
  };
  const post=async(page,url,data={},file)=>{
   const token=await page.locator('[name=csrf_token]').first().inputValue();
+  if (url.startsWith('/manager/record-refund.php') && await page.locator('[name=submission_key]').count()) {
+      data = {submission_key:await page.locator('[name=submission_key]').inputValue(),...data};
+  }
   if(url.startsWith('/manager/review-receipt.php') && await page.locator('[name=receipt_id]').count()) {
    data={receipt_id:await page.locator('[name=receipt_id]').inputValue(),...data};
   }
@@ -116,6 +119,7 @@ let png;
   await go(manager,`/manager/record-refund.php?id=${rid}`);
   await capture(manager,'record-refund');
   const refund=async(amount)=>{await post(manager,`/manager/record-refund.php?id=${rid}`,{amount,reason:'Synthetic external transfer recorded'});};
+  await refund('5.00');
   await refund('5.00');
   check('Partial refund keeps hold',read().status==='cancellation_pending'&&Number(read().refunded)===5);
   await go(student,`/payment.php?id=${rid}`); check('Student sees remaining refund',await student.locator('main').innerText().then(t=>t.includes('RM 10.00')));

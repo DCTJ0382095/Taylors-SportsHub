@@ -29,6 +29,9 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
         const student = await login('student'), manager = await login('manager'), outsider = await login('outsider');
         const post = async (page, url, data, receipt) => {
             const csrf_token = await page.locator('[name=csrf_token]').first().inputValue();
+            if (url.startsWith('/manager/record-refund.php') && await page.locator('[name=submission_key]').count()) {
+                data = {submission_key:await page.locator('[name=submission_key]').inputValue(),...data};
+            }
             if (url.startsWith('/manager/review-receipt.php') && await page.locator('[name=receipt_id]').count()) {
                 data = {receipt_id:await page.locator('[name=receipt_id]').inputValue(),...data};
             }
@@ -303,7 +306,7 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
                 unchanged();
             }
             const csrf_token=await manager.locator('[name=csrf_token]').first().inputValue();
-            await manager.request.post(base+`/manager/record-refund.php?id=${reg.id}`,{multipart:{csrf_token,amount:'15',reason:'Synthetic',proof:{name:'forged.png',mimeType:'image/png',buffer:Buffer.from('not a PNG')}}});
+            await manager.request.post(base+`/manager/record-refund.php?id=${reg.id}`,{multipart:{csrf_token,submission_key:await manager.locator('[name=submission_key]').inputValue(),amount:'15',reason:'Synthetic',proof:{name:'forged.png',mimeType:'image/png',buffer:Buffer.from('not a PNG')}}});
             unchanged();
             assert.equal((await post(outsider,`/manager/record-refund.php?id=${reg.id}`,{amount:'15',reason:'Forbidden'})).status(),403);
             unchanged();
