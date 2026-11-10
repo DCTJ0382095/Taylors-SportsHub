@@ -23,7 +23,7 @@ function initialize_database(PDO $db, string $database): void {
         if (!in_array('app_setup', $tables, true)) {
             $required = ['users', 'clubs', 'club_managers', 'sessions', 'registrations', 'refund_records'];
             if (!array_diff($required, $tables)) {
-                initialize_receipt_history($db);
+                initialize_workflow_schema($db);
                 return;
             }
             if ($tables) {
@@ -33,7 +33,7 @@ function initialize_database(PDO $db, string $database): void {
         }
         $db->exec('INSERT IGNORE INTO app_setup (id, completed) VALUES (1, 0)');
         if ((int)$db->query('SELECT completed FROM app_setup WHERE id = 1')->fetchColumn() === 1) {
-            initialize_receipt_history($db);
+            initialize_workflow_schema($db);
             return;
         }
 
@@ -53,11 +53,20 @@ function initialize_database(PDO $db, string $database): void {
             if ($db->inTransaction()) $db->rollBack();
             throw $e;
         }
-        initialize_receipt_history($db);
+        initialize_workflow_schema($db);
     } finally {
         $release = $db->prepare('SELECT RELEASE_LOCK(:name)');
         $release->execute([':name' => $lock_name]);
     }
+}
+
+function initialize_workflow_schema(PDO $db): void {
+    // The setup advisory lock serializes this additive upgrade for older databases.
+    if (!$db->query("SHOW COLUMNS FROM refund_records LIKE 'submission_key'")->fetch()) {
+        $db->exec('ALTER TABLE refund_records ADD COLUMN submission_key CHAR(32) NULL,
+            ADD UNIQUE KEY unique_refund_submission (registration_id, submission_key)');
+    }
+    initialize_receipt_history($db);
 }
 
 function initialize_receipt_history(PDO $db): void {

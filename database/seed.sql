@@ -1,15 +1,13 @@
 -- Taylor's University SportsHub Seed Data
 USE `tu_sportshub`;
 
--- Clean existing data
-SET FOREIGN_KEY_CHECKS = 0;
-TRUNCATE TABLE `refund_records`;
-TRUNCATE TABLE `registrations`;
-TRUNCATE TABLE `sessions`;
-TRUNCATE TABLE `club_managers`;
-TRUNCATE TABLE `clubs`;
-TRUNCATE TABLE `users`;
-SET FOREIGN_KEY_CHECKS = 1;
+-- Clear demo tables in dependency order using transactional statements.
+DELETE FROM `refund_records`;
+DELETE FROM `registrations`;
+DELETE FROM `sessions`;
+DELETE FROM `club_managers`;
+DELETE FROM `clubs`;
+DELETE FROM `users`;
 
 -- Seed Users (Password for all: Password123!)
 -- Hash: $2y$10$OCr7hFX/AMZBn.PsFEehs.86WDY0A8U85s1hlaSZlLLiFUIKY42VO

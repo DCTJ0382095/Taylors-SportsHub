@@ -104,6 +104,8 @@ CREATE TABLE IF NOT EXISTS `refund_records` (
   `proof_path` VARCHAR(255) NULL,
   `recorded_by` INT NOT NULL,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `submission_key` CHAR(32) NULL,
+  UNIQUE KEY `unique_refund_submission` (`registration_id`, `submission_key`),
   CONSTRAINT `fk_refund_reg` FOREIGN KEY (`registration_id`) REFERENCES `registrations` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_refund_recorder` FOREIGN KEY (`recorded_by`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
