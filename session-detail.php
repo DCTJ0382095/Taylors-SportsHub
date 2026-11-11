@@ -185,17 +185,25 @@ require_once __DIR__ . '/includes/header.php';
                     <?php endif; ?>
                 </div>
 
-                <!-- Manager Controls Quick Panel -->
-                <?php if ($is_mgr): ?>
+                <!-- Manager Controls Quick Panel: only the buttons this person is allowed to use -->
+                <?php
+                    $can_signups  = $is_mgr && can_manage_club((int) $session['club_id'], $current_user['id'], 'signups');
+                    $can_sessions = $is_mgr && can_manage_club((int) $session['club_id'], $current_user['id'], 'sessions');
+                ?>
+                <?php if ($can_signups || $can_sessions): ?>
                     <div class="manager-quick-box">
                         <span class="manager-quick-title">Manager Actions</span>
                         <div class="manager-quick-links">
-                            <a href="<?= app_url('/manager/participants.php?session_id=' . $session['id']) ?>" class="manager-pill-btn primary">
-                                Participants (<?= $seat_info['occupied'] ?>)
-                            </a>
-                            <a href="<?= app_url('/manager/session-edit.php?id=' . $session['id']) ?>" class="manager-pill-btn">
-                                Edit Settings
-                            </a>
+                            <?php if ($can_signups): ?>
+                                <a href="<?= app_url('/manager/participants.php?session_id=' . $session['id']) ?>" class="manager-pill-btn primary">
+                                    Participants (<?= $seat_info['occupied'] ?>)
+                                </a>
+                            <?php endif; ?>
+                            <?php if ($can_sessions): ?>
+                                <a href="<?= app_url('/manager/session-edit.php?id=' . $session['id']) ?>" class="manager-pill-btn">
+                                    Edit Settings
+                                </a>
+                            <?php endif; ?>
                         </div>
                     </div>
                 <?php endif; ?>
