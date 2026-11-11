@@ -21,9 +21,9 @@ INSERT INTO `users` (`id`, `name`, `email`, `password_hash`, `role`, `status`, `
 
 -- Seed Clubs
 INSERT INTO `clubs` (`id`, `name`, `slug`, `description`, `sport_type`, `logo_path`, `banner_path`, `bank_name`, `account_holder`, `account_number`, `duitnow_qr_path`, `status`) VALUES
-(1, "Taylor's Badminton Club", 'taylors-badminton-club', "The official Taylor's University Badminton Club organizing weekly sparring sessions, footwork clinics, and campus tournaments.", 'Badminton', 'assets/images/logo/logo.webp', 'assets/images/sports/badminton-banner.webp', 'Maybank', "Taylor's Badminton Club", '514012345678', 'assets/images/payment/duitnow-qr.webp', 'active'),
-(2, "Taylor's Basketball Club", 'taylors-basketball-club', "Taylor's University Basketball Club connecting campus hoopers for regular open runs, league matches, and skill development.", 'Basketball', 'assets/images/logo/logo.webp', 'assets/images/sports/basketball-banner.webp', 'CIMB Bank', "Taylor's Basketball Club", '800987654321', 'assets/images/payment/duitnow-qr.webp', 'active'),
-(3, "Taylor's Pickleball Club", 'taylors-pickleball-club', "Taylor's premier racket community for pickleball enthusiasts. Weekly social rallies, coaching clinics, and doubles ladder shootouts on multi-courts.", 'Pickleball', 'assets/images/logo/logo.webp', 'assets/images/sports/pickleball-banner.webp', 'Maybank', "Taylor's Pickleball Club", '514088239912', 'assets/images/payment/duitnow-qr.webp', 'active');
+(1, "Taylor's Badminton Club", 'taylors-badminton-club', "The official Taylor's University Badminton Club organizing weekly sparring sessions and footwork clinics.", 'Badminton', 'assets/images/logo/logo.webp', 'assets/images/sports/badminton-banner.webp', 'Maybank', "Taylor's Badminton Club", '514012345678', 'assets/images/payment/duitnow-qr.webp', 'active'),
+(2, "Taylor's Basketball Club", 'taylors-basketball-club', "Taylor's University Basketball Club connecting campus hoopers for regular open runs and skill development.", 'Basketball', 'assets/images/logo/logo.webp', 'assets/images/sports/basketball-banner.webp', 'CIMB Bank', "Taylor's Basketball Club", '800987654321', 'assets/images/payment/duitnow-qr.webp', 'active'),
+(3, "Taylor's Pickleball Club", 'taylors-pickleball-club', "Taylor's premier racket community for pickleball enthusiasts. Weekly social rallies, coaching clinics, and evening doubles on multi-courts.", 'Pickleball', 'assets/images/logo/logo.webp', 'assets/images/sports/pickleball-banner.webp', 'Maybank', "Taylor's Pickleball Club", '514088239912', 'assets/images/payment/duitnow-qr.webp', 'active');
 
 -- Appoint Club Manager (Alex Wong manages Badminton Club)
 INSERT INTO `club_managers` (`id`, `club_id`, `user_id`, `appointed_by`, `role`, `can_manage_sessions`, `can_manage_signups`, `can_edit_club`) VALUES
@@ -35,12 +35,12 @@ INSERT INTO `club_managers` (`id`, `club_id`, `user_id`, `appointed_by`, `role`,
 -- Seed Sessions
 INSERT INTO `sessions` (`id`, `club_id`, `title`, `description`, `sport_type`, `venue`, `image_path`, `session_date`, `start_time`, `end_time`, `price`, `capacity`, `status`, `created_by`) VALUES
 (1, 1, 'Sunday Open Play & Social Smash', 'Casual doubles and singles open play across 3 indoor courts. Shuttles provided. All skill levels welcome.', 'Badminton', "Taylor's Sports Complex Court 1-3", 'assets/images/sports/badminton-open-play.webp', '2026-11-15', '14:00:00', '16:00:00', 0.00, 16, 'published', 2),
-(2, 1, 'Weekly Badminton Intensive & Footwork Clinic', 'Structured 2-hour coaching session focusing on shadow footwork drills, net play, and match strategy with tournament seniors.', 'Badminton', 'Multi-Purpose Hall Court A', 'assets/images/sports/badminton-footwork.webp', '2026-11-20', '18:00:00', '20:00:00', 15.00, 12, 'published', 2),
-(3, 1, 'Doubles Mini-Tournament (Semester Cup)', 'Internal club tournament with group stages and knockout playoffs. Trophies and grip bundles for top 3 pairs.', 'Badminton', "Taylor's Sports Complex Court 1-4", 'assets/images/sports/rally-poster.webp', '2026-12-05', '09:00:00', '13:00:00', 25.00, 24, 'draft', 2),
+(2, 1, 'Weekly Badminton Intensive & Footwork Clinic', 'Structured 2-hour coaching session focusing on shadow footwork drills, net play, and match strategy with senior players.', 'Badminton', 'Multi-Purpose Hall Court A', 'assets/images/sports/badminton-footwork.webp', '2026-11-20', '18:00:00', '20:00:00', 15.00, 12, 'published', 2),
+(3, 1, 'Saturday Doubles Match Play', 'Rotating doubles games across four courts, grouped by level so every game is close. Shuttles provided.', 'Badminton', "Taylor's Sports Complex Court 1-4", 'assets/images/sports/sports-complex-banner.webp', '2026-12-05', '09:00:00', '13:00:00', 25.00, 24, 'draft', 2),
 (4, 2, "Friday Night 3v3 Half-Court Run", 'Weekly 3v3 basketball runs with king-of-the-court rotation. Bring both light and dark jerseys.', 'Basketball', 'Outdoor Basketball Court 2', 'assets/images/sports/basketball-run.webp', '2026-11-22', '19:00:00', '21:00:00', 10.00, 18, 'published', 1),
 (5, 3, 'Weekly Pickleball Social Rally', 'Casual round-robin social games. Paddles and balls provided. All skill levels welcome.', 'Pickleball', "Taylor's Sports Complex Multi-court 2", 'assets/images/sports/pickleball-rally.webp', '2026-11-18', '19:00:00', '21:00:00', 10.00, 16, 'published', 1),
 (6, 3, 'Pickleball Beginners Coaching Clinic', 'Fundamentals covering dinking, third-shot drops, court positioning, and non-volley zone rules with certified student instructors.', 'Pickleball', "Taylor's Sports Complex Multi-court 2", 'assets/images/sports/pickleball-clinic.webp', '2026-11-25', '18:00:00', '20:00:00', 15.00, 12, 'published', 1),
-(7, 3, 'Pickleball Doubles Ladder Shootout', 'Competitive doubles ladder tournament with dynamic court rotations. Top pairs advance to the semester playoffs.', 'Pickleball', "Taylor's Sports Complex Multi-court 1 & 2", 'assets/images/sports/pickleball-ladder.webp', '2026-12-02', '18:30:00', '21:30:00', 20.00, 16, 'published', 1);
+(7, 3, 'Pickleball Evening Doubles', 'Social doubles under the lights. Partners rotate every 15 minutes, so you play with everyone. All levels welcome.', 'Pickleball', "Taylor's Sports Complex Multi-court 1 & 2", 'assets/images/sports/pickleball-ladder.webp', '2026-12-02', '18:30:00', '21:30:00', 20.00, 16, 'published', 1);
 
 -- Seed Registrations
 -- Liam registered for free session -> confirmed
@@ -62,11 +62,11 @@ UPDATE `clubs` SET `contact_email` = 'pickleball.club@taylors.edu.my', `instagra
 
 -- Membership settings for each club (the committee changes these in Club settings)
 UPDATE `clubs` SET `membership_open` = 1, `membership_price` = 30.00, `membership_months` = 6,
-  `membership_benefits` = "Members-only sparring nights and team ladders\nPriority sign-up for the Semester Cup\nClub jersey at a member price" WHERE `id` = 1;
+  `membership_benefits` = "Member price on every club session\nMembers-only footwork drills\nClub jersey at a member price" WHERE `id` = 1;
 UPDATE `clubs` SET `membership_open` = 1, `membership_price` = 25.00, `membership_months` = 6,
-  `membership_benefits` = "Weekly members-only scrimmages\nInter-varsity team trials" WHERE `id` = 2;
+  `membership_benefits` = "Member price on every club session\nWeekly members-only open runs" WHERE `id` = 2;
 UPDATE `clubs` SET `membership_open` = 1, `membership_price` = 35.00, `membership_months` = 12,
-  `membership_benefits` = "Free paddle loan at every session\nDoubles ladder ranking" WHERE `id` = 3;
+  `membership_benefits` = "Member price on every club session\nFree paddle loan at every session" WHERE `id` = 3;
 
 -- Demo memberships
 -- Liam: active member of Basketball (approved by Chloe a month ago, 5 months left)
@@ -76,3 +76,14 @@ INSERT INTO `club_memberships` (`club_id`, `user_id`, `status`, `price_snapshot`
 (2, 3, 'active', 25.00, 6, "Bank: CIMB Bank\nAccount Name: Taylor's Basketball Club\nAccount Number: 800987654321", 4, DATE_SUB(NOW(), INTERVAL 1 MONTH), DATE_SUB(NOW(), INTERVAL 1 MONTH), DATE_ADD(NOW(), INTERVAL 5 MONTH)),
 (1, 5, 'active', 30.00, 6, "Bank: Maybank\nAccount Name: Taylor's Badminton Club\nAccount Number: 514012345678", 2, DATE_SUB(NOW(), INTERVAL 7 MONTH), DATE_SUB(NOW(), INTERVAL 7 MONTH), DATE_SUB(NOW(), INTERVAL 1 MONTH)),
 (3, 4, 'awaiting_payment', 35.00, 12, "Bank: Maybank\nAccount Name: Taylor's Pickleball Club\nAccount Number: 514088239912", NULL, NULL, NULL, NULL);
+
+-- Member prices: club members (committee, or an active paid membership) pay less for these sessions.
+-- Sessions without a member price cost the same for everyone.
+UPDATE `sessions` SET `member_price` = 10.00 WHERE `id` = 2;   -- Footwork Clinic: RM 15, members RM 10
+UPDATE `sessions` SET `member_price` = 20.00 WHERE `id` = 3;   -- Doubles Match Play (draft): RM 25, members RM 20
+UPDATE `sessions` SET `member_price` = 6.00  WHERE `id` = 4;   -- Basketball 3v3: RM 10, members RM 6
+UPDATE `sessions` SET `member_price` = 0.00  WHERE `id` = 5;   -- Pickleball Social Rally: RM 10, free for members
+UPDATE `sessions` SET `member_price` = 10.00 WHERE `id` = 6;   -- Pickleball Clinic: RM 15, members RM 10
+
+-- Payment notes: shown next to each club's DuitNow QR when students pay (the president edits these in Club settings).
+UPDATE `clubs` SET `payment_note` = "Scan the DuitNow QR with any banking or e-wallet app. Put your full name as the payment reference, then upload a screenshot of the receipt." WHERE `id` IN (1, 2, 3);
