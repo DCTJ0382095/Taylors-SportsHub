@@ -23,6 +23,44 @@ $is_president = is_club_president($club_id, $user['id']);
 $error = null;
 $saved = $_GET['saved'] ?? '';
 
+// Checks an uploaded image and saves it in assets/images/clubs/.
+// Returns [the saved path, null] on success, or [null, an error message].
+function save_club_image(array $file, int $club_id, string $kind, int $max_mb): array {
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        return [null, "The $kind could not be uploaded. Try again."];
+    }
+    if ($file['size'] > $max_mb * 1024 * 1024) {
+        return [null, "The $kind must be $max_mb MB or smaller."];
+    }
+    // Check what the file really is from its contents, not from its name.
+    $mime = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
+    $extensions = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
+    if (!isset($extensions[$mime])) {
+        return [null, "The $kind must be a JPG, PNG or WebP image."];
+    }
+    $folder = __DIR__ . '/../assets/images/clubs';
+    if (!is_dir($folder)) {
+        mkdir($folder, 0755, true);
+    }
+    // We choose the file name ourselves (random, with an image extension),
+    // so an uploaded file can never overwrite another or run as code.
+    $filename = 'club' . $club_id . '_' . $kind . '_' . bin2hex(random_bytes(8)) . '.' . $extensions[$mime];
+    if (!move_uploaded_file($file['tmp_name'], $folder . '/' . $filename)) {
+        return [null, "The $kind could not be saved. Try again."];
+    }
+    return ['assets/images/clubs/' . $filename, null];
+}
+
+// Deletes an old club image, but only if it was uploaded through this page.
+function delete_uploaded_club_image(?string $path): void {
+    if (is_string($path) && str_starts_with($path, 'assets/images/clubs/')) {
+        $full_path = __DIR__ . '/../' . $path;
+        if (is_file($full_path)) {
+            unlink($full_path);
+        }
+    }
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $form = $_POST['form'] ?? '';
 
@@ -58,6 +96,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':id'          => $club_id,
             ]);
             header('Location: ' . app_url('/manager/club-settings.php?club_id=' . $club_id . '&saved=profile'), true, 303);
+            exit;
+        }
+
+    } elseif ($form === 'images') {
+        $logo  = $_FILES['logo']  ?? null;
+        $cover = $_FILES['cover'] ?? null;
+        // An empty "choose file" box is reported as UPLOAD_ERR_NO_FILE.
+        $has_logo  = is_array($logo)  && $logo['error']  !== UPLOAD_ERR_NO_FILE;
+        $has_cover = is_array($cover) && $cover['error'] !== UPLOAD_ERR_NO_FILE;
+
+        if (!$has_logo && !$has_cover) {
+            $error = 'Choose a logo or a cover image to upload.';
+        }
+        if (!$error && $has_logo) {
+            [$path, $error] = save_club_image($logo, $club_id, 'logo', 2);
+            if ($path) {
+                delete_uploaded_club_image($club['logo_path']);
+                $stmt = $db->prepare("UPDATE clubs SET logo_path = :path WHERE id = :id");
+                $stmt->execute([':path' => $path, ':id' => $club_id]);
+            }
+        }
+        if (!$error && $has_cover) {
+            [$path, $error] = save_club_image($cover, $club_id, 'cover', 5);
+            if ($path) {
+                delete_uploaded_club_image($club['banner_path']);
+                $stmt = $db->prepare("UPDATE clubs SET banner_path = :path WHERE id = :id");
+                $stmt->execute([':path' => $path, ':id' => $club_id]);
+            }
+        }
+        if (!$error) {
+            header('Location: ' . app_url('/manager/club-settings.php?club_id=' . $club_id . '&saved=images'), true, 303);
             exit;
         }
 
@@ -103,6 +172,8 @@ $val = fn(string $key) => is_string($_POST[$key] ?? null) ? $_POST[$key] : (stri
         <div class="settings-alert-success">Club profile saved.</div>
     <?php elseif ($saved === 'payment'): ?>
         <div class="settings-alert-success">Payment details saved.</div>
+    <?php elseif ($saved === 'images'): ?>
+        <div class="settings-alert-success">Club images updated.</div>
     <?php endif; ?>
 
     <!-- Club profile: anyone with the "edit club profile" permission -->
@@ -138,6 +209,35 @@ $val = fn(string $key) => is_string($_POST[$key] ?? null) ? $_POST[$key] : (stri
             <input type="text" id="instagram" name="instagram" maxlength="100" placeholder="@yourclub" value="<?= e($val('instagram')) ?>">
         </div>
         <button type="submit" class="manager-btn manager-btn-primary">Save club profile</button>
+    </form>
+
+    <!-- Club images: logo and cover image -->
+    <form method="POST" enctype="multipart/form-data" class="settings-card">
+        <?= csrf_field() ?>
+        <input type="hidden" name="form" value="images">
+        <h2>Club images</h2>
+        <p class="settings-hint">The logo appears on the club page and the Manager Workbench. The cover image is the banner on the club page and the picture on the Sports clubs list.</p>
+
+        <div class="settings-images">
+            <div class="settings-image-field">
+                <span class="settings-image-label">Logo</span>
+                <?php $logo_url = get_club_logo_url($club); ?>
+                <?php if ($logo_url): ?>
+                    <img src="<?= e($logo_url) ?>" alt="Current logo" class="settings-logo-preview">
+                <?php else: ?>
+                    <div class="settings-logo-preview club-logo-fallback"><?= e(get_club_initials($club['name'])) ?></div>
+                <?php endif; ?>
+                <input type="file" name="logo" accept="image/jpeg,image/png,image/webp">
+                <small>Square image · JPG, PNG or WebP · up to 2 MB</small>
+            </div>
+            <div class="settings-image-field">
+                <span class="settings-image-label">Cover image</span>
+                <img src="<?= e(get_club_banner_url($club)) ?>" alt="Current cover image" class="settings-cover-preview">
+                <input type="file" name="cover" accept="image/jpeg,image/png,image/webp">
+                <small>Wide image (about 3:1) · JPG, PNG or WebP · up to 5 MB</small>
+            </div>
+        </div>
+        <button type="submit" class="manager-btn manager-btn-primary">Upload images</button>
     </form>
 
     <!-- Payment details: president only -->

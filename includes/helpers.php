@@ -251,5 +251,29 @@ function get_club_banner_url(array $club): string {
     }
     $full_path = __DIR__ . '/..' . $p;
     $v = file_exists($full_path) ? filemtime($full_path) : '1';
-    return app_url($p) . '?v=' . $v;
+        return app_url($p) . '?v=' . $v;
+}
+
+// URL of a club's uploaded logo, or null if the club hasn't uploaded one.
+// Only files uploaded through Club settings (assets/images/clubs/) count as a club logo.
+function get_club_logo_url(array $club): ?string {
+    $path = $club['logo_path'] ?? '';
+    if (!is_string($path) || !str_starts_with($path, 'assets/images/clubs/')) {
+        return null;
+    }
+    $full_path = __DIR__ . '/../' . $path;
+    if (!file_exists($full_path)) {
+        return null;
+    }
+    return app_url('/' . $path) . '?v=' . filemtime($full_path);
+}
+
+// Two-letter initials for a club without a logo, e.g. "Taylor's Badminton Club" → "BC".
+function get_club_initials(string $name): string {
+    $name = preg_replace("/^Taylor['’]?s\s+/iu", '', trim($name));
+    $initials = '';
+    foreach (array_slice(preg_split('/\s+/', $name), 0, 2) as $word) {
+        $initials .= mb_strtoupper(mb_substr($word, 0, 1));
+    }
+    return $initials;
 }

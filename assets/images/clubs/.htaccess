@@ -1,0 +1,4 @@
+# Club images are uploaded by users. Never run anything in this folder as PHP.
+<FilesMatch "\.(?i:php|phtml|phar)$">
+    Require all denied
+</FilesMatch>

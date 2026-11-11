@@ -79,17 +79,44 @@ require_once __DIR__ . '/../includes/header.php';
         <?php endif; ?>
         </div>
 
-    <?php if (!empty($managed_clubs)): ?>
-        <div class="manager-club-links">
-            <?php foreach ($managed_clubs as $mc): ?>
-                <a href="<?= app_url('/manager/committee.php?club_id=' . $mc['id']) ?>" class="manager-btn manager-btn-secondary">
-                    <?= e($mc['name']) ?> committee
-                </a>                
-                <?php if (can_manage_club((int) $mc['id'], $user['id'], 'club')): ?>
-                    <a href="<?= app_url('/manager/club-settings.php?club_id=' . $mc['id']) ?>" class="manager-btn manager-btn-secondary">
-                        <?= e($mc['name']) ?> settings
-                    </a>
-                <?php endif; ?>
+    <?php
+    // The admin sees every club; everyone else sees the clubs they're on the committee of.
+    $card_clubs = $is_admin
+        ? $db->query("SELECT * FROM clubs WHERE status = 'active' ORDER BY name ASC")->fetchAll()
+        : $managed_clubs;
+    ?>
+    <?php if (!empty($card_clubs)): ?>
+        <h2 class="manager-section-title">Your clubs</h2>
+        <div class="manager-club-grid">
+            <?php foreach ($card_clubs as $mc): ?>
+                <?php
+                    $mc_id    = (int) $mc['id'];
+                    $logo_url = get_club_logo_url($mc);
+                    if ($is_admin) {
+                        $role_label = 'Admin';
+                    } elseif (is_club_president($mc_id, $user['id'])) {
+                        $role_label = 'President';
+                    } else {
+                        $role_label = 'Committee member';
+                    }
+                ?>
+                <div class="manager-club-card">
+                    <div class="manager-club-logo">
+                        <?php if ($logo_url): ?>
+                            <img src="<?= e($logo_url) ?>" alt="<?= e($mc['name']) ?> logo">
+                        <?php else: ?>
+                            <span><?= e(get_club_initials($mc['name'])) ?></span>
+                        <?php endif; ?>
+                    </div>
+                    <div class="manager-club-name"><?= e($mc['name']) ?></div>
+                    <div class="manager-club-role"><?= $role_label ?></div>
+                    <div class="manager-club-actions">
+                        <?php if (can_manage_club($mc_id, $user['id'], 'club')): ?>
+                            <a href="<?= app_url('/manager/club-settings.php?club_id=' . $mc_id) ?>" class="manager-club-btn">Settings</a>
+                        <?php endif; ?>
+                        <a href="<?= app_url('/manager/committee.php?club_id=' . $mc_id) ?>" class="manager-club-btn">Committee</a>
+                    </div>
+                </div>
             <?php endforeach; ?>
         </div>
     <?php endif; ?>

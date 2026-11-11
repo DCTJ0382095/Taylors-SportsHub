@@ -5,3 +5,8 @@ assets/uploads/*
 Thumbs.db
 .DS_Store
 !assets/uploads/.htaccess
+
+# Logos and cover images uploaded by clubs
+assets/images/clubs/*
+!assets/images/clubs/.gitkeep
+!assets/images/clubs/.htaccess

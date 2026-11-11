@@ -80,9 +80,16 @@ require_once __DIR__ . '/includes/header.php';
     <!-- Identity Bar / Club Header Card (Matching Figma) -->
     <div class="club-identity-card">
         <div class="club-identity-left">
-            <div class="club-squircle-badge" style="background: <?= $meta['badge_bg'] ?>;">
-                <span><?= e($meta['initials']) ?></span>
-            </div>
+            <?php $logo_url = get_club_logo_url($club); ?>
+            <?php if ($logo_url): ?>
+                <div class="club-squircle-badge club-squircle-badge--image">
+                    <img src="<?= e($logo_url) ?>" alt="<?= e($club['name']) ?> logo">
+                </div>
+            <?php else: ?>
+                <div class="club-squircle-badge" style="background: <?= $meta['badge_bg'] ?>;">
+                    <span><?= e($meta['initials']) ?></span>
+                </div>
+            <?php endif; ?>
             <div class="club-identity-details">
                 <h1 class="club-profile-title"><?= e($club['name']) ?></h1>
                 <div class="club-profile-meta-row">
