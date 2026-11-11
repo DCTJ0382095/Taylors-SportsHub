@@ -17,6 +17,7 @@ $css_map = [
     'club.php' => 'club.css',
     'my-activities.php' => 'my-activities.css',
     'payment.php' => 'payment.css',
+    'membership-payment.php' => 'payment.css',
     'cancel-registration.php' => 'payment.css',
     'profile.php' => 'profile.css',
     'inbox.php' => 'inbox.css',
