@@ -56,19 +56,10 @@ require_once __DIR__ . '/includes/header.php';
             </div>
 
             <div class="session-info-card">
+                <!-- Exactly what the committee wrote in the session editor (line breaks kept) -->
                 <div class="session-info-section">
-                    <h2>Your session, explained</h2>
+                    <h2>About this session</h2>
                     <p><?= nl2br(e($session['description'])) ?></p>
-                </div>
-
-                <div class="session-info-section">
-                    <h2>Before you join</h2>
-                    <p>Taylor's student accounts only. No membership needed. Registration confirms a place, not attendance.</p>
-                </div>
-
-                <div class="session-info-section">
-                    <h2>Cancellation terms</h2>
-                    <p>Request cancellation before the session starts for a full refund. Refunds are transferred externally and recorded by the organiser.</p>
                 </div>
 
                 <?php if ($session['status'] === 'cancelled'): ?>
