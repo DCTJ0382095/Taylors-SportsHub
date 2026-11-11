@@ -51,7 +51,24 @@ $end_val = $session['end_time'] ?? ($_POST['end_time'] ?? '20:00');
 $price_val = isset($session['price']) ? (float)$session['price'] : (float)($_POST['price'] ?? 0.00);
 $capacity_val = $session['capacity'] ?? (int)($_POST['capacity'] ?? 16);
 $desc_val = $session['description'] ?? ($_POST['description'] ?? '');
-$image_path_val = $session['image_path'] ?? ($_POST['image_path'] ?? 'assets/images/sports/badminton-open-play.webp');
+
+// Built-in cover pictures a committee can pick instead of uploading their own.
+$cover_presets = [
+    ['path' => 'assets/images/sports/badminton-open-play.webp',   'title' => 'Badminton Open Play',        'badge' => 'Badminton'],
+    ['path' => 'assets/images/sports/badminton-footwork.webp',    'title' => 'Footwork & Training Drills', 'badge' => 'Training'],
+    ['path' => 'assets/images/sports/basketball-run.webp',        'title' => 'Basketball Open Run',        'badge' => 'Basketball'],
+    ['path' => 'assets/images/sports/pickleball-rally.webp',      'title' => 'Pickleball Social Rally',    'badge' => 'Pickleball'],
+    ['path' => 'assets/images/sports/pickleball-clinic.webp',     'title' => 'Pickleball Coaching Clinic', 'badge' => 'Coaching'],
+    ['path' => 'assets/images/sports/pickleball-ladder.webp',     'title' => 'Pickleball Evening Doubles', 'badge' => 'Pickleball'],
+    ['path' => 'assets/images/sports/sports-complex-banner.webp', 'title' => "Taylor's Sports Complex",    'badge' => 'Venue'],
+    ['path' => 'assets/images/sports/student-athletes-banner.webp', 'title' => 'Campus Sports',            'badge' => 'General'],
+];
+$image_path_val = $session['image_path'] ?? $cover_presets[0]['path'];
+// The pictures this session may use: any built-in one, or the one it already has (for example an upload).
+$allowed_covers = array_column($cover_presets, 'path');
+if ($session && $session['image_path']) {
+    $allowed_covers[] = $session['image_path'];
+}
 
 // Every non-draft keeps its published terms, including closed/cancelled sessions.
 $is_published = ($session && $session['status'] !== 'draft');
@@ -83,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $price_val = max(0.00, (float)($_POST['price'] ?? 0.00));
             $capacity_val = max(1, (int)($_POST['capacity'] ?? 1));
             $desc_val = trim($_POST['description'] ?? '');
-            $image_path_val = trim($_POST['image_path'] ?? 'assets/images/sports/badminton-open-play.webp');
+            $cover_choice = trim($_POST['image_path'] ?? '');
             $action = $_POST['action'] ?? 'draft';
 
             // Locked terms come from the DB, never disabled inputs or forged POST fields.
@@ -104,7 +121,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 render_error_page(403);
             }
 
-            if (empty($title_val) || empty($venue_val) || empty($date_val) || empty($start_val) || empty($end_val) || empty($desc_val)) {
+            // Cover picture: a built-in one, the one the session already has, or a new upload.
+            $cover_error = null;
+            $cover_uploaded = false;
+            if ($cover_choice === 'upload') {
+                $file = $_FILES['cover_upload'] ?? null;
+                if (!is_array($file) || $file['error'] === UPLOAD_ERR_NO_FILE) {
+                    $cover_error = 'Choose a picture to upload, or pick one of the built-in pictures.';
+                } else {
+                    [$image_path_val, $cover_error] = save_club_image($file, (int) $club_id_val, 'cover', 5);
+                    $cover_uploaded = $image_path_val !== null;
+                }
+            } elseif (in_array($cover_choice, $allowed_covers, true)) {
+                $image_path_val = $cover_choice;
+            } else {
+                $cover_error = 'Choose a cover picture.';   // a path we don't offer: never trust it
+            }
+
+            if ($cover_error) {
+                $error = $cover_error;
+            } elseif (empty($title_val) || empty($venue_val) || empty($date_val) || empty($start_val) || empty($end_val) || empty($desc_val)) {
                 $error = "Please fill in all required fields.";
             } elseif (!$is_published && strtotime($date_val . ' ' . $start_val) <= time()) {
                 $error = "Session start time must be in the future.";
@@ -160,10 +196,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 $db->commit();
+                // The old picture isn't used any more, so remove it if it was an upload.
+                if ($session && $session['image_path'] !== $image_path_val) {
+                    delete_uploaded_club_image($session['image_path']);
+                }
                 header("Location: " . app_url('/manager/sessions.php'));
                 exit;
             }
             if ($db->inTransaction()) $db->rollBack();
+            // Something else on the form was wrong, so throw away a picture uploaded with it.
+            if ($cover_uploaded) {
+                delete_uploaded_club_image($image_path_val);
+            }
+            // Browsers never refill a file box after a reload, so show the picture the session had.
+            if (!in_array($image_path_val, $allowed_covers, true)) {
+                $image_path_val = $session['image_path'] ?? $cover_presets[0]['path'];
+            }
         } catch (Throwable $e) {
             if ($db->inTransaction()) $db->rollBack();
             throw $e;
@@ -195,7 +243,7 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     <?php endif; ?>
 
-    <form method="POST" action="<?= $_SERVER['REQUEST_URI'] ?>" class="session-editor-form">
+    <form method="POST" action="<?= e($_SERVER['REQUEST_URI']) ?>" class="session-editor-form" enctype="multipart/form-data">
         <?= csrf_field() ?>
 
         <div style="margin-bottom: 1.5rem;">
@@ -223,74 +271,50 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
         </div>
 
-        <!-- Session Cover Visual Image Picker -->
+                <!-- Session cover picture: keep the current one, pick a built-in one, or upload your own -->
         <div style="margin-bottom: 1.75rem;">
             <div class="editor-cover-header">
-                <label style="font-size: 0.88rem; font-weight: 600; color: #1d1d1f;">Session Cover Image</label>
-                <span style="font-size: 0.8rem; color: #86868b;">Select high-resolution WebP hero visual</span>
+                <label style="font-size: 0.88rem; font-weight: 600; color: #1d1d1f;">Session Cover Picture</label>
+                <span style="font-size: 0.8rem; color: #86868b;">Pick a picture, or upload your own</span>
             </div>
 
-            <?php
-            $image_presets = [
-                [
-                    'path' => 'assets/images/sports/badminton-open-play.webp',
-                    'title' => 'Badminton Open Play & Social',
-                    'badge' => 'Badminton'
-                ],
-                [
-                    'path' => 'assets/images/sports/badminton-footwork.webp',
-                    'title' => 'Footwork & Training Drills',
-                    'badge' => 'Clinic'
-                ],
-                [
-                    'path' => 'assets/images/sports/rally-poster.webp',
-                    'title' => 'Badminton Tournament Smash',
-                    'badge' => 'Tournament'
-                ],
-                [
-                    'path' => 'assets/images/sports/basketball-run.webp',
-                    'title' => 'Basketball 3v3 Twilight Run',
-                    'badge' => 'Basketball'
-                ],
-                [
-                    'path' => 'assets/images/sports/pickleball-rally.webp',
-                    'title' => 'Pickleball Social Rally',
-                    'badge' => 'Pickleball'
-                ],
-                [
-                    'path' => 'assets/images/sports/pickleball-clinic.webp',
-                    'title' => 'Pickleball Coaching Clinic',
-                    'badge' => 'Coaching'
-                ],
-                [
-                    'path' => 'assets/images/sports/pickleball-ladder.webp',
-                    'title' => 'Pickleball Ladder Shootout',
-                    'badge' => 'Tournament'
-                ],
-                [
-                    'path' => 'assets/images/sports/sports-complex-banner.webp',
-                    'title' => 'Taylor\'s Sports Complex Arena',
-                    'badge' => 'Arena'
-                ],
-            ];
-            ?>
-
             <div class="image-picker-grid">
-                <?php foreach ($image_presets as $idx => $preset):
-                    $isSelected = ($image_path_val === $preset['path']);
+                <?php $current_cover = $session['image_path'] ?? null; ?>
+                <?php if ($current_cover && !in_array($current_cover, array_column($cover_presets, 'path'), true)): ?>
+                    <!-- The session already has its own picture (an upload): offer to keep it -->
+                    <label class="image-picker-option">
+                        <input type="radio" name="image_path" value="<?= e($current_cover) ?>" <?= $image_path_val === $current_cover ? 'checked' : '' ?>>
+                        <img src="<?= e(get_session_cover_url($session)) ?>" alt="Current cover picture" class="image-picker-thumb">
+                        <div class="image-picker-label">
+                            <span class="image-picker-badge">Current</span>
+                            This session's picture
+                        </div>
+                    </label>
+                <?php endif; ?>
+
+                <?php foreach ($cover_presets as $preset):
                     $preset_v = file_exists(__DIR__ . '/../' . $preset['path']) ? filemtime(__DIR__ . '/../' . $preset['path']) : '1';
                 ?>
                     <label class="image-picker-option">
-                        <input type="radio" name="image_path" value="<?= e($preset['path']) ?>" <?= $isSelected ? 'checked' : '' ?>>
+                        <input type="radio" name="image_path" value="<?= e($preset['path']) ?>" <?= $image_path_val === $preset['path'] ? 'checked' : '' ?>>
                         <img src="<?= app_url('/' . $preset['path']) ?>?v=<?= $preset_v ?>" alt="<?= e($preset['title']) ?>" class="image-picker-thumb" loading="lazy">
                         <div class="image-picker-label">
-                            <span style="font-size: 0.72rem; text-transform: uppercase; font-weight: 700; color: #c8102e; display: block; margin-bottom: 2px;">
-                                <?= e($preset['badge']) ?>
-                            </span>
+                            <span class="image-picker-badge"><?= e($preset['badge']) ?></span>
                             <?= e($preset['title']) ?>
                         </div>
                     </label>
                 <?php endforeach; ?>
+
+                <!-- Upload your own: choosing a file also ticks this option -->
+                <label class="image-picker-option image-picker-upload">
+                    <input type="radio" name="image_path" value="upload">
+                    <span class="image-picker-upload-box">
+                        <strong>+ Upload your own</strong>
+                        <small>JPG, PNG or WebP · up to 5 MB · a wide picture works best</small>
+                    </span>
+                    <input type="file" name="cover_upload" accept="image/jpeg,image/png,image/webp"
+                           onchange="this.closest('label').querySelector('input[type=radio]').checked = true;">
+                </label>
             </div>
         </div>
 

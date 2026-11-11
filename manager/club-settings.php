@@ -27,44 +27,6 @@ $is_president = is_club_president($club_id, $user['id']);
 $error = null;
 $saved = $_GET['saved'] ?? '';
 
-// Checks an uploaded image and saves it in assets/images/clubs/.
-// Returns [the saved path, null] on success, or [null, an error message].
-function save_club_image(array $file, int $club_id, string $kind, int $max_mb): array {
-    if ($file['error'] !== UPLOAD_ERR_OK) {
-        return [null, "The $kind could not be uploaded. Try again."];
-    }
-    if ($file['size'] > $max_mb * 1024 * 1024) {
-        return [null, "The $kind must be $max_mb MB or smaller."];
-    }
-    // Check what the file really is from its contents, not from its name.
-    $mime = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
-    $extensions = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
-    if (!isset($extensions[$mime])) {
-        return [null, "The $kind must be a JPG, PNG or WebP image."];
-    }
-    $folder = __DIR__ . '/../assets/images/clubs';
-    if (!is_dir($folder)) {
-        mkdir($folder, 0755, true);
-    }
-    // We choose the file name ourselves (random, with an image extension),
-    // so an uploaded file can never overwrite another or run as code.
-    $filename = 'club' . $club_id . '_' . $kind . '_' . bin2hex(random_bytes(8)) . '.' . $extensions[$mime];
-    if (!move_uploaded_file($file['tmp_name'], $folder . '/' . $filename)) {
-        return [null, "The $kind could not be saved. Try again."];
-    }
-    return ['assets/images/clubs/' . $filename, null];
-}
-
-// Deletes an old club image, but only if it was uploaded through this page.
-function delete_uploaded_club_image(?string $path): void {
-    if (is_string($path) && str_starts_with($path, 'assets/images/clubs/')) {
-        $full_path = __DIR__ . '/../' . $path;
-        if (is_file($full_path)) {
-            unlink($full_path);
-        }
-    }
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $form = $_POST['form'] ?? '';
 
