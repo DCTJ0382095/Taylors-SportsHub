@@ -161,7 +161,7 @@ A new club starts with no payment details. Before it can run sessions or paid me
 
 A president cannot remove themselves; they must hand the presidency to another committee member first.
 
-**Demo committees:** Alex Wong is president of Badminton, with Liam Tan on its committee (sign-ups and payments only). Chloe Lee and Danial Hakim are presidents of Basketball and Pickleball.
+**Demo committees:** Alex Wong is president of Badminton, with Liam Tan (sign-ups and payments only) and Sara Lim (sessions only) on its committee. Chloe Lee is president of both Basketball and Pickleball; Pickleball has no payment details yet, so it can't run sessions. The comments in `database/seed.sql` explain every demo account, including a brand-new student and a suspended account.
 
 ## Club memberships
 
@@ -179,7 +179,7 @@ Students can pay a club to become a member for a set time. Committee members alw
 
 **Where committees see it.** The **Members** button on each workbench club card lists the committee, paid members and expired memberships. Every receipt and decision is kept in a history on the payment and review pages.
 
-**Demo memberships:** Liam Tan is an active Basketball member; Danial Hakim's Badminton membership has expired (try Renew); Chloe Lee has applied to Pickleball but hasn't paid.
+**Demo memberships:** Danial Hakim is an active Badminton member and has applied to Basketball without paying. Mei Ling's Badminton membership has expired (try Renew) and her Basketball receipt was rejected. Ravi Kumar's Badminton receipt is waiting for review.
 
 **Existing databases** upgrade automatically the first time you open the site. To get the demo memberships, drop the `tu_sportshub` database in phpMyAdmin and reload the site.
 
@@ -194,7 +194,7 @@ Prices, date, time, venue and capacity are locked once a session is published; t
 
 **Payment details (president).** In **Settings → Payment details**, the president uploads the club's DuitNow QR, enters its bank details, and can add a payment note (for example, what to use as the payment reference). Students see all three when they pay. Until the QR and bank details are complete, the club can't create or publish sessions or open paid memberships, and the workbench and Club settings show a warning.
 
-**Demo prices:** the Footwork Clinic costs RM 15, or RM 10 for Badminton members; the Pickleball Social Rally is free for Pickleball members; Pickleball Evening Doubles has no member price.
+**Demo sessions:** the Footwork Clinic costs RM 15, or RM 10 for Badminton members. There's also a draft, a session with sign-up closed, a cancelled session with refunds in progress, one that has already happened, and a full one.
 
 **Existing databases** upgrade automatically: existing clubs keep their payment details, and existing sessions start without a member price. To get the new demo data, drop the `tu_sportshub` database in phpMyAdmin and reload the site.
 

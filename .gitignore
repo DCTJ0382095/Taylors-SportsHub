@@ -10,3 +10,11 @@ Thumbs.db
 assets/images/clubs/*
 !assets/images/clubs/.gitkeep
 !assets/images/clubs/.htaccess
+
+# Demo receipt pictures used by database/seed.sql (made-up, not real payments)
+!assets/uploads/receipts/
+assets/uploads/receipts/*
+!assets/uploads/receipts/demo-receipt.png
+!assets/uploads/membership-receipts/
+assets/uploads/membership-receipts/*
+!assets/uploads/membership-receipts/demo-receipt.png

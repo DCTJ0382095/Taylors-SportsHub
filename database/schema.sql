@@ -123,6 +123,22 @@ CREATE TABLE IF NOT EXISTS `refund_records` (
   CONSTRAINT `fk_refund_recorder` FOREIGN KEY (`recorded_by`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Every receipt a student has sent for a session booking, and what the committee decided.
+-- Keep this the same as database/receipt-history.sql, which adds it to older databases.
+CREATE TABLE IF NOT EXISTS `payment_receipts` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `registration_id` INT NOT NULL,
+  `receipt_path` VARCHAR(255) NOT NULL,
+  `submitted_at` DATETIME NULL,
+  `decision` ENUM('awaiting_review', 'approved', 'rejected', 'legacy') NOT NULL DEFAULT 'awaiting_review',
+  `rejection_reason` VARCHAR(255) NULL,
+  `reviewed_by` INT NULL,
+  `reviewed_at` DATETIME NULL,
+  UNIQUE KEY `unique_registration_receipt` (`registration_id`, `receipt_path`),
+  CONSTRAINT `fk_receipt_registration` FOREIGN KEY (`registration_id`) REFERENCES `registrations` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_receipt_reviewer` FOREIGN KEY (`reviewed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Club memberships: one row per student per club.
 -- When a student renews, the same row is reused, so nobody can hold two memberships of one club.
 -- "Expired" is not stored: a membership is expired when status is 'active' and expires_at is in the past.
