@@ -66,6 +66,24 @@ function initialize_workflow_schema(PDO $db): void {
         $db->exec('ALTER TABLE refund_records ADD COLUMN submission_key CHAR(32) NULL,
             ADD UNIQUE KEY unique_refund_submission (registration_id, submission_key)');
     }
+    // Committee hierarchy: add role and permission columns to databases created before this feature.
+    if (!$db->query("SHOW COLUMNS FROM club_managers LIKE 'role'")->fetch()) {
+        $db->exec("ALTER TABLE club_managers
+            ADD COLUMN role ENUM('president', 'committee') NOT NULL DEFAULT 'committee' AFTER appointed_by,
+            ADD COLUMN can_manage_sessions TINYINT(1) NOT NULL DEFAULT 0 AFTER role,
+            ADD COLUMN can_manage_signups TINYINT(1) NOT NULL DEFAULT 0 AFTER can_manage_sessions,
+            ADD COLUMN can_edit_club TINYINT(1) NOT NULL DEFAULT 0 AFTER can_manage_signups");
+        // Older databases had one manager per club with full control, so they become president.
+        $db->exec("UPDATE club_managers
+            SET role = 'president', can_manage_sessions = 1, can_manage_signups = 1, can_edit_club = 1");
+    }
+    // Club profile details that used to be hard-coded in club.php.
+    if (!$db->query("SHOW COLUMNS FROM clubs LIKE 'contact_email'")->fetch()) {
+        $db->exec("ALTER TABLE clubs
+            ADD COLUMN contact_email VARCHAR(150) NULL AFTER sport_type,
+            ADD COLUMN instagram VARCHAR(100) NULL AFTER contact_email,
+            ADD COLUMN training_schedule VARCHAR(150) NULL AFTER instagram");
+    }
     initialize_receipt_history($db);
 }
 

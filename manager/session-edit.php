@@ -21,7 +21,7 @@ if ($session_id > 0) {
     if (!$session) {
         render_error_page(404);
     }
-    if (!is_club_manager($session['club_id'], $user['id'])) {
+    if (!can_manage_club($session['club_id'], $user['id'], 'sessions')) {
         render_error_page(403);
     }
 }
@@ -30,7 +30,14 @@ if ($session_id > 0) {
 if ($is_admin) {
     $clubs = $db->query("SELECT * FROM clubs WHERE status = 'active' ORDER BY name ASC")->fetchAll();
 } else {
-    $clubs = $managed_clubs;
+    // Only the clubs where this committee member is allowed to manage sessions.
+    $clubs = array_values(array_filter(
+        $managed_clubs,
+        fn($club) => can_manage_club((int) $club['id'], $user['id'], 'sessions')
+    ));
+}
+if (empty($clubs)) {
+    render_error_page(403);   // on a committee, but not allowed to manage sessions anywhere
 }
 
 $error = null;
@@ -60,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $db->prepare('SELECT * FROM sessions WHERE id=? FOR UPDATE');
                 $stmt->execute([$session_id]);
                 $session = $stmt->fetch();
-                if (!$session || !is_club_manager($session['club_id'], $user['id'])) {
+                if (!$session || !can_manage_club($session['club_id'], $user['id'], 'sessions')) {
                     $db->rollBack();
                     render_error_page(403);
                 }
@@ -92,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $capacity_val = $session['capacity'];
             }
 
-            if (!is_club_manager($club_id_val, $user['id'])) {
+            if (!can_manage_club($club_id_val, $user['id'], 'sessions')) {
                 $db->rollBack();
                 render_error_page(403);
             }

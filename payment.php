@@ -13,7 +13,7 @@ $reg = $stmt->fetch();
 if (!$reg) {
     render_error_page(404);
 }
-if ($reg["user_id"] !== $user["id"] && !is_club_manager($reg["club_id"], $user["id"])) {
+if ($reg["user_id"] !== $user["id"] && !can_manage_club($reg["club_id"], $user["id"], 'signups')) {
     render_error_page(403);
 }
 $is_owner = $reg["user_id"] === $user["id"];

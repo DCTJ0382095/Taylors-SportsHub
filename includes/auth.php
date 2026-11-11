@@ -87,3 +87,63 @@ function is_club_manager(int $club_id, int $user_id): bool {
     $stmt->execute([':club_id' => $club_id, ':user_id' => $user_id]);
     return (bool) $stmt->fetchColumn();
 }
+
+// ---------------------------------------------------------------------------
+// Committee hierarchy: president, committee members and their permissions.
+// ---------------------------------------------------------------------------
+
+// Is this user the site administrator? The admin has full control of every club.
+function is_admin(int $user_id): bool {
+    $db = get_db_connection();
+    $stmt = $db->prepare("SELECT role FROM users WHERE id = :id LIMIT 1");
+    $stmt->execute([':id' => $user_id]);
+    return $stmt->fetchColumn() === 'admin';
+}
+
+// Returns this user's committee row for a club (role + permissions),
+// or null if they are not on that club's committee.
+function get_club_membership(int $club_id, int $user_id): ?array {
+    $db = get_db_connection();
+    $stmt = $db->prepare("SELECT role, can_manage_sessions, can_manage_signups, can_edit_club
+                          FROM club_managers
+                          WHERE club_id = :club_id AND user_id = :user_id
+                          LIMIT 1");
+    $stmt->execute([':club_id' => $club_id, ':user_id' => $user_id]);
+    $row = $stmt->fetch();
+    return $row ?: null;
+}
+
+// Is this user the president of this club? (The admin counts as president everywhere.)
+function is_club_president(int $club_id, int $user_id): bool {
+    if (is_admin($user_id)) {
+        return true;
+    }
+    $row = get_club_membership($club_id, $user_id);
+    return $row !== null && $row['role'] === 'president';
+}
+
+// Can this user do a particular job in this club?
+// $permission is one of: 'sessions', 'signups', 'club'.
+function can_manage_club(int $club_id, int $user_id, string $permission): bool {
+    // Each permission name maps to exactly one column in club_managers.
+    $columns = [
+        'sessions' => 'can_manage_sessions',
+        'signups'  => 'can_manage_signups',
+        'club'     => 'can_edit_club',
+    ];
+    if (!isset($columns[$permission])) {
+        throw new InvalidArgumentException("Unknown club permission: $permission");
+    }
+
+    if (is_admin($user_id)) {
+        return true;                                   // admin: full control
+    }
+    $row = get_club_membership($club_id, $user_id);
+    if ($row === null) {
+        return false;                                  // not on this club's committee
+    }
+    if ($row['role'] === 'president') {
+        return true;                                   // president: always everything
+    }
+    return (int) $row[$columns[$permission]] === 1;    // committee: only what was ticked
+}

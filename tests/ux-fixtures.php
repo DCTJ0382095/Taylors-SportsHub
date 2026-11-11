@@ -32,10 +32,10 @@ if ($action === "create") {
         $club = (int) $db->lastInsertId();
         $q->execute(["UX Other Club " . $suffix, "ux-other-club-" . $suffix]);
         $other_club = (int) $db->lastInsertId();
-        $db->prepare("INSERT INTO club_managers (club_id,user_id,appointed_by) VALUES (?,?,?)")->execute([
+        $db->prepare("INSERT INTO club_managers (club_id,user_id,appointed_by,role) VALUES (?,?,?,'president')")->execute([
             $other_club, $users['outsider']['id'], $users['manager']['id'],
         ]);
-        $db->prepare("INSERT INTO club_managers (club_id,user_id,appointed_by) VALUES (?,?,?)")->execute([
+        $db->prepare("INSERT INTO club_managers (club_id,user_id,appointed_by,role) VALUES (?,?,?,'president')")->execute([
             $club,
             $users["manager"]["id"],
             $users["manager"]["id"],

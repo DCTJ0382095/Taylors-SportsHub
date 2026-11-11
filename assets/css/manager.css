@@ -456,3 +456,49 @@
   .editor-actions button { width: 100%; }
   .manager-cancellation-form .manager-confirm-actions > * { width: 100%; }
 }
+
+/* ---------- Club settings page ---------- */
+.settings-back { color: #6e6e73; text-decoration: none; font-size: 0.88rem; }
+.settings-title { font-size: 2rem; font-weight: 800; color: #1d1d1f; margin: 0.5rem 0 1.5rem; letter-spacing: -0.02em; }
+.settings-card { background: #fff; border: 1px solid #e5e5ea; border-radius: 20px; padding: 1.75rem; margin-bottom: 1.5rem; }
+.settings-card h2 { font-size: 1.15rem; margin: 0 0 0.25rem; }
+.settings-hint { color: #6e6e73; font-size: 0.88rem; margin: 0 0 1.25rem; }
+.settings-field { margin-bottom: 1.1rem; }
+.settings-field label { display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f; }
+.settings-field input, .settings-field textarea { width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box; font-family: inherit; }
+.settings-field input[readonly] { background: #f5f5f7; color: #6e6e73; }
+.settings-field small { display: block; color: #6e6e73; font-size: 0.8rem; margin-top: 0.3rem; }
+.settings-alert-success { background: #ecf8ef; border: 1px solid #bbf7d0; color: #1f7a35; padding: 0.85rem 1rem; border-radius: 12px; margin-bottom: 1.5rem; }
+
+/* ---------- "Your clubs" cards on the Manager Workbench ---------- */
+.manager-section-title { font-size: 1.15rem; font-weight: 700; color: #1d1d1f; margin: 0 0 0.85rem; }
+.manager-club-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+.manager-club-card { background: #ffffff; border: 1px solid #e5e5ea; border-radius: 20px; padding: 1.25rem; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); }
+.manager-club-logo { width: 96px; height: 96px; border-radius: 26px; overflow: hidden; background: linear-gradient(135deg, #374151 0%, #111827 100%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.85rem; }
+.manager-club-logo img { width: 100%; height: 100%; object-fit: cover; }
+.manager-club-logo span { color: #ffffff; font-size: 1.9rem; font-weight: 800; letter-spacing: -0.02em; }
+.manager-club-name { font-weight: 700; color: #1d1d1f; line-height: 1.3; }
+.manager-club-role { font-size: 0.8rem; color: #6e6e73; margin: 0.25rem 0 1rem; }
+.manager-club-actions { display: flex; gap: 0.5rem; width: 100%; margin-top: auto; }
+.manager-club-btn { flex: 1; padding: 0.5rem 0.6rem; border-radius: 10px; border: 1px solid #d2d2d7; background: #ffffff; color: #1d1d1f; font-size: 0.85rem; font-weight: 600; text-decoration: none; transition: background-color 0.15s, border-color 0.15s; }
+.manager-club-btn:hover { background: #f5f5f7; border-color: #c7c7cc; }
+
+/* ---------- Club images on the settings page ---------- */
+.settings-images { display: grid; grid-template-columns: 1fr 2fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+.settings-image-field { display: flex; flex-direction: column; gap: 0.5rem; }
+.settings-image-label { font-size: 0.88rem; font-weight: 600; color: #1d1d1f; }
+.settings-image-field small { color: #6e6e73; font-size: 0.8rem; }
+.settings-logo-preview { width: 96px; height: 96px; border-radius: 26px; object-fit: cover; }
+.club-logo-fallback { background: linear-gradient(135deg, #374151 0%, #111827 100%); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.9rem; font-weight: 800; }
+.settings-cover-preview { width: 100%; aspect-ratio: 3 / 1; object-fit: cover; border-radius: 14px; }
+@media (max-width: 640px) { .settings-images { grid-template-columns: 1fr; } }
+
+/* ---------- Committee page ---------- */
+.committee-row { border-top: 1px solid #e5e5ea; padding: 1rem 0; }
+.committee-row:first-of-type { border-top: none; padding-top: 0; }
+.committee-row-person { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 0.75rem; margin-bottom: 0.6rem; }
+.committee-row-person span { color: #6e6e73; font-size: 0.88rem; }
+.committee-row-role { background: #f5f5f7; border-radius: 999px; padding: 0.15rem 0.6rem; font-size: 0.78rem !important; font-weight: 600; color: #424245 !important; }
+.committee-check { display: flex; align-items: center; gap: 0.5rem; font-size: 0.92rem; margin-bottom: 0.4rem; cursor: pointer; }
+.committee-row-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+.committee-perms { list-style: none; padding: 0; margin: 0; font-size: 0.92rem; color: #424245; }

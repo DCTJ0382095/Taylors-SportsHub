@@ -12,7 +12,7 @@ $reg = $q->fetch();
 if (!$reg) {
     render_error_page(404);
 }
-if (!is_club_manager($reg["club_id"], $user["id"])) {
+if (!can_manage_club($reg["club_id"], $user["id"], 'signups')) {
     render_error_page(403);
 }
 $is_self = $reg["user_id"] === $user["id"];

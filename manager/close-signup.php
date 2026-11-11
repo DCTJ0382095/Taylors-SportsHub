@@ -14,7 +14,7 @@ if (!$session) {
     render_error_page(404);
 }
 
-if (!is_club_manager($session['club_id'], $user['id'])) {
+if (!can_manage_club($session['club_id'], $user['id'], 'sessions')) {
     render_error_page(403);
 }
 
