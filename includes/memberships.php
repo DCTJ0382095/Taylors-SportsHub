@@ -114,3 +114,37 @@ function membership_next_step(array $membership): string {
         default             => 'This membership ended on ' . format_membership_date($membership['expires_at']) . '. You can renew it from My memberships or the club page.',
     };
 }
+
+// Shows every receipt sent for a membership (oldest first) and what the committee decided.
+// Only call this after checking that the person may see this membership.
+function render_membership_receipt_history(int $membership_id): void {
+    $db = get_db_connection();
+    $stmt = $db->prepare("SELECT r.*, u.name AS reviewer_name
+                          FROM membership_receipts r
+                          LEFT JOIN users u ON u.id = r.reviewed_by
+                          WHERE r.membership_id = :id
+                          ORDER BY r.id ASC");
+    $stmt->execute([':id' => $membership_id]);
+    $receipts = $stmt->fetchAll();
+    if (!$receipts) {
+        return;   // nothing sent yet, so show nothing
+    }
+    ?>
+    <section class="journey-card">
+      <h2>Receipt history</h2>
+      <?php foreach ($receipts as $receipt): ?>
+        <div class="journey-callout">
+          <strong><?= match ($receipt['decision']) { 'approved' => 'Approved', 'rejected' => 'Rejected', default => 'Waiting for review' } ?></strong>
+          <p>Sent <?= e(format_deadline($receipt['submitted_at'])) ?></p>
+          <?php if ($receipt['reviewed_at']): ?>
+            <p>Reviewed by <?= e($receipt['reviewer_name'] ?? 'a former committee member') ?> · <?= e(format_deadline($receipt['reviewed_at'])) ?></p>
+          <?php endif; ?>
+          <?php if ($receipt['rejection_reason']): ?>
+            <p>Reason: <?= e($receipt['rejection_reason']) ?></p>
+          <?php endif; ?>
+          <a href="<?= e(app_url('/membership-receipt.php?id=' . $membership_id . '&receipt_id=' . $receipt['id'])) ?>" target="_blank" rel="noopener">Open this receipt ↗</a>
+        </div>
+      <?php endforeach; ?>
+    </section>
+    <?php
+}

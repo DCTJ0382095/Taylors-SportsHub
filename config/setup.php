@@ -118,6 +118,34 @@ function initialize_workflow_schema(PDO $db): void {
             CONSTRAINT fk_member_reviewer FOREIGN KEY (reviewed_by) REFERENCES users (id) ON DELETE SET NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
     }
+    // Membership receipt history: every receipt ever sent, not just the latest one.
+    // Keep this the same as the membership_receipts table in database/schema.sql.
+    if (!$db->query("SHOW TABLES LIKE 'membership_receipts'")->fetch()) {
+        $db->exec("CREATE TABLE membership_receipts (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            membership_id INT NOT NULL,
+            receipt_path VARCHAR(255) NOT NULL,
+            submitted_at DATETIME NOT NULL,
+            decision ENUM('awaiting_review', 'approved', 'rejected') NOT NULL DEFAULT 'awaiting_review',
+            rejection_reason VARCHAR(255) NULL,
+            reviewed_by INT NULL,
+            reviewed_at DATETIME NULL,
+            CONSTRAINT fk_mreceipt_membership FOREIGN KEY (membership_id) REFERENCES club_memberships (id) ON DELETE CASCADE,
+            CONSTRAINT fk_mreceipt_reviewer FOREIGN KEY (reviewed_by) REFERENCES users (id) ON DELETE SET NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+        // Copy in the receipts that already exist, so the history starts complete.
+        $db->exec("INSERT INTO membership_receipts
+                       (membership_id, receipt_path, submitted_at, decision, rejection_reason, reviewed_by, reviewed_at)
+                   SELECT id, receipt_path, COALESCE(receipt_uploaded_at, NOW()),
+                          CASE status WHEN 'awaiting_approval' THEN 'awaiting_review'
+                                      WHEN 'payment_rejected'  THEN 'rejected'
+                                      ELSE 'approved' END,
+                          IF(status = 'payment_rejected', rejection_reason, NULL),
+                          IF(status = 'awaiting_approval', NULL, reviewed_by),
+                          IF(status = 'awaiting_approval', NULL, reviewed_at)
+                   FROM club_memberships
+                   WHERE receipt_path IS NOT NULL");
+    }
     initialize_receipt_history($db);
 }
 

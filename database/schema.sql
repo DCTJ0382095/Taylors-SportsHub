@@ -146,3 +146,18 @@ CREATE TABLE IF NOT EXISTS `club_memberships` (
   CONSTRAINT `fk_member_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_member_reviewer` FOREIGN KEY (`reviewed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Every receipt a student has sent for a membership, and what the committee decided about it.
+-- club_memberships only remembers the latest receipt; this table keeps all of them, across renewals too.
+CREATE TABLE IF NOT EXISTS `membership_receipts` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `membership_id` INT NOT NULL,
+  `receipt_path` VARCHAR(255) NOT NULL,
+  `submitted_at` DATETIME NOT NULL,
+  `decision` ENUM('awaiting_review', 'approved', 'rejected') NOT NULL DEFAULT 'awaiting_review',
+  `rejection_reason` VARCHAR(255) NULL,
+  `reviewed_by` INT NULL,
+  `reviewed_at` DATETIME NULL,
+  CONSTRAINT `fk_mreceipt_membership` FOREIGN KEY (`membership_id`) REFERENCES `club_memberships` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_mreceipt_reviewer` FOREIGN KEY (`reviewed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

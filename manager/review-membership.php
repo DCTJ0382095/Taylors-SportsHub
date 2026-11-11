@@ -32,17 +32,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Your form expired. Reload the page and try again.';
     } elseif ($is_self) {
         $error = 'Someone else on the committee must review your own payment.';
-    } elseif ($decision === 'approve') {
-        // The membership starts today and lasts the length the student was quoted when they applied.
-        $stmt = $db->prepare("UPDATE club_memberships
-                              SET status = 'active', starts_at = NOW(),
-                                  expires_at = DATE_ADD(NOW(), INTERVAL months_snapshot MONTH),
-                                  rejection_reason = NULL, reviewed_by = :reviewer, reviewed_at = NOW()
-                              WHERE id = :id AND status = 'awaiting_approval'");
-        $stmt->execute([':reviewer' => $user['id'], ':id' => $membership_id]);
-    } elseif ($decision === 'reject') {
-        if ($reason === '' || mb_strlen($reason) > 255) {
-            $error = 'Write a reason (up to 255 characters) so the student knows what to fix.';
+    } elseif (!in_array($decision, ['approve', 'reject'], true)) {
+        $error = 'Choose Approve or Reject.';
+    } elseif ($decision === 'reject' && ($reason === '' || mb_strlen($reason) > 255)) {
+        $error = 'Write a reason (up to 255 characters) so the student knows what to fix.';
+    } else {
+        // A transaction: the membership and its receipt history change together, or not at all.
+        $db->beginTransaction();
+        if ($decision === 'approve') {
+            // The membership starts today and lasts the length the student was quoted when they applied.
+            $stmt = $db->prepare("UPDATE club_memberships
+                                  SET status = 'active', starts_at = NOW(),
+                                      expires_at = DATE_ADD(NOW(), INTERVAL months_snapshot MONTH),
+                                      rejection_reason = NULL, reviewed_by = :reviewer, reviewed_at = NOW()
+                                  WHERE id = :id AND status = 'awaiting_approval'");
+            $stmt->execute([':reviewer' => $user['id'], ':id' => $membership_id]);
         } else {
             $stmt = $db->prepare("UPDATE club_memberships
                                   SET status = 'payment_rejected', rejection_reason = :reason,
@@ -50,17 +54,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                   WHERE id = :id AND status = 'awaiting_approval'");
             $stmt->execute([':reason' => $reason, ':reviewer' => $user['id'], ':id' => $membership_id]);
         }
-    } else {
-        $error = 'Choose Approve or Reject.';
-    }
 
-    if (!$error) {
         // rowCount() is 0 if someone else already decided while this page was open.
         if ($stmt->rowCount() === 1) {
+            // Write the same decision into the receipt history.
+            $stmt = $db->prepare("UPDATE membership_receipts
+                                  SET decision = :decision, rejection_reason = :reason,
+                                      reviewed_by = :reviewer, reviewed_at = NOW()
+                                  WHERE membership_id = :id AND receipt_path = :path AND decision = 'awaiting_review'");
+            $stmt->execute([
+                ':decision' => $decision === 'approve' ? 'approved' : 'rejected',
+                ':reason'   => $decision === 'reject' ? $reason : null,
+                ':reviewer' => $user['id'],
+                ':id'       => $membership_id,
+                ':path'     => $membership['receipt_path'],
+            ]);
+            $db->commit();
             $done = $decision === 'approve' ? 'approved' : 'rejected';
             header('Location: ' . app_url('/manager/sessions.php?status=memberships&done=' . $done), true, 303);
             exit;
         }
+        $db->rollBack();
         $error = 'This receipt has already been reviewed. Its current status is shown below.';
         // Reload so the page shows the decision that was made.
         $stmt = $db->prepare("SELECT status FROM club_memberships WHERE id = :id");
@@ -143,5 +157,7 @@ require_once __DIR__ . '/../includes/header.php';
       </div>
     </section>
   </div>
+
+  <?php render_membership_receipt_history($membership_id); ?>
 </div>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

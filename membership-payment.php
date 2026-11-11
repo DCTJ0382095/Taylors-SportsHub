@@ -62,6 +62,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         [$path, $error] = save_membership_receipt($_FILES['receipt'] ?? null, $membership_id);
         if ($path) {
+            // A transaction: both changes below are saved together, or neither is.
+            $db->beginTransaction();
             // "AND status IN (...)" only lets this work while it's still waiting for a receipt,
             // so uploading twice from two tabs can't skip a step.
             $stmt = $db->prepare("UPDATE club_memberships
@@ -70,9 +72,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                   WHERE id = :id AND status IN ('awaiting_payment', 'payment_rejected')");
             $stmt->execute([':path' => $path, ':id' => $membership_id]);
             if ($stmt->rowCount() === 1) {
+                // Keep every receipt in the history, not just the latest one.
+                $stmt = $db->prepare("INSERT INTO membership_receipts (membership_id, receipt_path, submitted_at)
+                                      VALUES (:id, :path, NOW())");
+                $stmt->execute([':id' => $membership_id, ':path' => $path]);
+                $db->commit();
                 header('Location: ' . app_url('/membership-payment.php?id=' . $membership_id . '&msg=uploaded'), true, 303);
                 exit;
             }
+            $db->rollBack();
             unlink(__DIR__ . '/' . $path);   // nothing was updated, so don't keep the file
             $error = 'This membership is not waiting for a receipt.';
         }
@@ -170,6 +178,8 @@ require_once __DIR__ . '/includes/header.php';
           <p><?= e($next_step) ?></p>
         </section>
       <?php endif; ?>
+
+      <?php render_membership_receipt_history($membership_id); ?>
     </div>
 
     <section class="journey-card">
