@@ -332,7 +332,7 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
             assert.equal(sql('SELECT status FROM registrations WHERE id=?',[reg.id])[0].status,'awaiting_approval');
             assert.deepEqual(sql('SELECT * FROM payment_receipts WHERE id=?',[receipt.id])[0],receipt);
             // Temporary peer appointment exercises valid approval/refund through HTTP too.
-            sql('INSERT INTO club_managers (club_id,user_id,appointed_by) VALUES (?,?,?)',[f.club,f.users.student.id,f.users.manager.id]);
+            sql("INSERT INTO club_managers (club_id,user_id,appointed_by,role) VALUES (?,?,?,'president')",[f.club,f.users.student.id,f.users.manager.id]);
             try {
                 await student.goto(base+`/manager/review-receipt.php?id=${reg.id}`);
                 await post(student,`/manager/review-receipt.php?id=${reg.id}`,{decision:'approve'});

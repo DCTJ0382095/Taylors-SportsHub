@@ -133,6 +133,30 @@ Published session terms remain fixed, including title, club, sport, venue, date,
 
 Managers cannot approve their own payment or record their own refund; another authorised manager or administrator must act.
 
+## Clubs and committees
+
+SportsHub is for Taylor's University students only (`@sd.taylors.edu.my` accounts).
+
+**Creating a club (administrator).** Clubs are created by the SportsHub administrator directly in the database, together with the club's first president:
+
+    INSERT INTO clubs (name, slug, description, sport_type)
+    VALUES ('Taylor''s Tennis Club', 'taylors-tennis-club', 'Weekly social and competitive tennis.', 'Tennis');
+
+    INSERT INTO club_managers (club_id, user_id, appointed_by, role, can_manage_sessions, can_manage_signups, can_edit_club)
+    VALUES (LAST_INSERT_ID(), (SELECT id FROM users WHERE email = 'student@sd.taylors.edu.my'), 1, 'president', 1, 1, 1);
+
+**Running a club (committee).** After that, the club is run entirely by its committee:
+
+| Role | Can do |
+| --- | --- |
+| President (one per club) | Everything below, plus: add/remove committee members, set their permissions, change payment details, hand over the presidency |
+| Committee member | Only what the president ticks: **Manage sessions**, **Manage sign-ups and payments**, **Edit club profile** |
+| Administrator | Full control of every club |
+
+A president cannot remove themselves; they must hand the presidency to another committee member first.
+
+**Demo committees:** Alex Wong is president of Badminton, with Liam Tan on its committee (sign-ups and payments only). Chloe Lee and Danial Hakim are presidents of Basketball and Pickleball.
+
 ## Project layout
 
 | Path | Purpose |
