@@ -29,7 +29,7 @@ $css_map = [
 if ($is_manager_route) {
     $page_css = match ($current_page) {
         'participants.php' => 'participants.css',
-        'review-receipt.php', 'record-refund.php' => 'journey.css',
+        'review-receipt.php', 'record-refund.php', 'review-membership.php' => 'journey.css',
         default => 'manager.css',
     };
 } else {

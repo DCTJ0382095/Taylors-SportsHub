@@ -506,3 +506,11 @@
 /* ---------- Membership settings ---------- */
 .settings-toggle { display: flex; align-items: center; gap: 0.6rem; font-size: 0.92rem; font-weight: 600; color: #1d1d1f; margin-bottom: 1.1rem; cursor: pointer; }
 .settings-toggle input { width: 18px; height: 18px; margin: 0; }
+
+/* ---------- Status badges on the workbench (same colours as the payment pages) ---------- */
+.manager-card .status-badge { display: inline-block; padding: 0.3rem 0.6rem; border-radius: 8px; font-size: 0.75rem; font-weight: 600; line-height: 1.3; }
+.manager-card .badge-confirmed { color: #176633; background: #eaf6ee; }
+.manager-card .badge-warning { color: #805000; background: #fff5da; }
+.manager-card .badge-info { color: #064f92; background: #eaf3ff; }
+.manager-card .badge-danger { color: #b20820; background: #fff0f2; }
+.manager-card .badge-muted { color: #555560; background: #eeeef2; }

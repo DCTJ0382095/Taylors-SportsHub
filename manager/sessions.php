@@ -28,7 +28,30 @@ if ($is_admin) {
 
 $in_clause = implode(',', array_map('intval', $club_ids));
 
+// Membership sign-ups: only clubs where this person may manage sign-ups and payments.
+$signup_club_ids = $is_admin ? $club_ids : array_column(array_filter(
+    $managed_clubs,
+    fn($club) => can_manage_club((int) $club['id'], $user['id'], 'signups')
+), 'id');
+$can_review_memberships = !empty($signup_club_ids);
+$membership_signups = [];
+if ($can_review_memberships) {
+    $signup_in_clause = implode(',', array_map('intval', $signup_club_ids));
+    // Receipts waiting for a decision first, then applications that haven't been paid yet.
+    $membership_signups = $db->query("SELECT m.*, u.name AS member_name, u.email AS member_email, c.name AS club_name
+                                      FROM club_memberships m
+                                      INNER JOIN users u ON u.id = m.user_id
+                                      INNER JOIN clubs c ON c.id = m.club_id
+                                      WHERE m.club_id IN ($signup_in_clause)
+                                        AND m.status IN ('awaiting_approval', 'awaiting_payment', 'payment_rejected')
+                                      ORDER BY m.status = 'awaiting_approval' DESC, m.updated_at DESC")->fetchAll();
+}
+$membership_receipts_waiting = count(array_filter($membership_signups, fn($m) => $m['status'] === 'awaiting_approval'));
+
 $filter_status = trim($_GET['status'] ?? '');
+if ($filter_status === 'memberships' && !$can_review_memberships) {
+    render_error_page(403);
+}
 $sql = "SELECT s.*, c.name AS club_name, 
         (SELECT COUNT(*) FROM registrations r WHERE r.session_id = s.id AND r.status = 'confirmed') AS confirmed_count,
         (SELECT COUNT(*) FROM registrations r WHERE r.session_id = s.id AND r.status = 'awaiting_approval') AS pending_review_count,
@@ -144,8 +167,13 @@ require_once __DIR__ . '/../includes/header.php';
     <!-- Status Filter Tabs -->
     <div class="manager-filter-tabs">
         <a href="<?= app_url('/manager/sessions.php') ?>" class="manager-tab <?= $filter_status === '' ? 'active' : '' ?>">
-            All Sessions (<?= $metric_total ?>)
+            All (<?= $metric_total ?>)
         </a>
+        <?php if ($can_review_memberships): ?>
+            <a href="<?= app_url('/manager/sessions.php?status=memberships') ?>" class="manager-tab <?= $filter_status === 'memberships' ? 'active' : '' ?>">
+                Membership Sign-ups<?= $membership_receipts_waiting > 0 ? ' (' . $membership_receipts_waiting . ')' : '' ?>
+            </a>
+        <?php endif; ?>
         <a href="<?= app_url('/manager/sessions.php?status=published') ?>" class="manager-tab <?= $filter_status === 'published' ? 'active' : '' ?>">
             Published
         </a>
@@ -160,8 +188,64 @@ require_once __DIR__ . '/../includes/header.php';
         </a>
     </div>
 
+    <!-- Membership Sign-ups tab -->
+    <?php if ($filter_status === 'memberships'): ?>
+        <?php
+            // Message after approving or rejecting (only these two can ever show).
+            $done_messages = [
+                'approved' => 'Payment approved. The membership is now active.',
+                'rejected' => 'Receipt rejected. The student can read your reason and upload a new one.',
+            ];
+            $done = $_GET['done'] ?? '';
+        ?>
+        <?php if (isset($done_messages[$done])): ?>
+            <div class="settings-alert-success"><?= e($done_messages[$done]) ?></div>
+        <?php endif; ?>
+
+        <?php if (empty($membership_signups)): ?>
+            <div class="manager-empty-state">
+                <h3 class="manager-empty-title">No membership sign-ups right now</h3>
+                <p class="manager-empty-desc">When a student applies to join one of your clubs, their application shows up here.</p>
+            </div>
+        <?php else: ?>
+            <div class="manager-card-list">
+                <?php foreach ($membership_signups as $m): ?>
+                    <div class="manager-card">
+                        <div class="manager-card-main">
+                            <div class="manager-card-badge-row">
+                                <?= get_status_badge($m['status']) ?>
+                                <!-- An old expiry date means they were a member before, so this is a renewal -->
+                                <span class="manager-card-club-tag"><?= e($m['club_name']) ?> · <?= $m['expires_at'] ? 'Renewal' : 'New member' ?></span>
+                            </div>
+                            <h3 class="manager-card-title"><?= e($m['member_name']) ?></h3>
+                            <div class="manager-meta-row">
+                                <span class="manager-meta-item"><?= e($m['member_email']) ?></span>
+                                <span class="manager-meta-item"><?= format_price($m['price_snapshot']) ?> · <?= e(format_membership_length((int) $m['months_snapshot'])) ?></span>
+                                <span class="manager-meta-item">
+                                    <?= match ($m['status']) {
+                                        'awaiting_approval' => 'Receipt sent ' . e(format_deadline($m['receipt_uploaded_at'])),
+                                        'payment_rejected'  => 'Receipt rejected, waiting for a new one',
+                                        default             => 'Waiting for the student to pay',
+                                    } ?>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="manager-card-aside">
+                            <div class="manager-btn-group">
+                                <?php if ($m['status'] === 'awaiting_approval'): ?>
+                                    <a href="<?= app_url('/manager/review-membership.php?id=' . $m['id']) ?>" class="manager-btn manager-btn-primary">Review receipt</a>
+                                <?php else: ?>
+                                    <a href="<?= app_url('/membership-payment.php?id=' . $m['id']) ?>" class="manager-btn manager-btn-secondary">View</a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+
     <!-- Sessions List / Cards -->
-    <?php if (empty($sessions)): ?>
+    <?php elseif (empty($sessions)): ?>
         <div class="manager-empty-state">
             <svg class="manager-empty-icon" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/></svg>
             <h3 class="manager-empty-title">
