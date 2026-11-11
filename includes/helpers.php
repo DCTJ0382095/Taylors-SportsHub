@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/branding.php';
+require_once __DIR__ . '/memberships.php';
 
 // Safe HTML escaping
 function e(?string $string): string {
@@ -185,6 +186,7 @@ function get_user_session_registration(int $session_id, int $user_id): ?array {
 function get_status_badge(string $status): string {
     $labels = [
         'confirmed'            => ['Confirmed', 'badge-confirmed'],
+        'active'               => ['Active', 'badge-confirmed'],
         'awaiting_payment'     => ['Awaiting Payment', 'badge-warning'],
         'awaiting_approval'    => ['Awaiting Approval', 'badge-info'],
         'payment_rejected'     => ['Payment Rejected', 'badge-danger'],

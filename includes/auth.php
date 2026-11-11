@@ -102,7 +102,7 @@ function is_admin(int $user_id): bool {
 
 // Returns this user's committee row for a club (role + permissions),
 // or null if they are not on that club's committee.
-function get_club_membership(int $club_id, int $user_id): ?array {
+function get_committee_role(int $club_id, int $user_id): ?array {
     $db = get_db_connection();
     $stmt = $db->prepare("SELECT role, can_manage_sessions, can_manage_signups, can_edit_club
                           FROM club_managers
@@ -118,7 +118,7 @@ function is_club_president(int $club_id, int $user_id): bool {
     if (is_admin($user_id)) {
         return true;
     }
-    $row = get_club_membership($club_id, $user_id);
+    $row = get_committee_role($club_id, $user_id);
     return $row !== null && $row['role'] === 'president';
 }
 
@@ -138,7 +138,7 @@ function can_manage_club(int $club_id, int $user_id, string $permission): bool {
     if (is_admin($user_id)) {
         return true;                                   // admin: full control
     }
-    $row = get_club_membership($club_id, $user_id);
+    $row = get_committee_role($club_id, $user_id);
     if ($row === null) {
         return false;                                  // not on this club's committee
     }

@@ -307,3 +307,11 @@
     height: 150px;
   }
 }
+
+/* ---------- Club membership cards (same tabs as sessions, different look) ---------- */
+.activity-card--membership { border-left: 4px solid #c8102e; }
+.activity-thumb--club { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #374151 0%, #111827 100%); }
+.activity-club-logo { width: 96px; height: 96px; border-radius: 26px; overflow: hidden; background: rgba(255, 255, 255, 0.08); display: flex; align-items: center; justify-content: center; color: #ffffff; font-size: 32px; font-weight: 800; }
+.activity-kind { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #c8102e; margin-bottom: 4px; }
+.activity-card form { margin: 0; }
+button.btn-activity { font-family: inherit; cursor: pointer; }

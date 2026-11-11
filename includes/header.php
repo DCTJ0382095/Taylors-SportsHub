@@ -17,9 +17,10 @@ $css_map = [
     'club.php' => 'club.css',
     'my-activities.php' => 'my-activities.css',
     'payment.php' => 'payment.css',
+    'membership-payment.php' => 'payment.css',
     'cancel-registration.php' => 'payment.css',
     'profile.php' => 'profile.css',
-    'inbox.php' => 'inbox.css',
+    'memberships.php' => 'memberships.css',
     'login.php' => 'auth.css',
     'register.php' => 'auth.css',
     'privacy.php' => 'legal.css',
@@ -28,7 +29,7 @@ $css_map = [
 if ($is_manager_route) {
     $page_css = match ($current_page) {
         'participants.php' => 'participants.css',
-        'review-receipt.php', 'record-refund.php' => 'journey.css',
+        'review-receipt.php', 'record-refund.php', 'review-membership.php' => 'journey.css',
         default => 'manager.css',
     };
 } else {
@@ -82,8 +83,8 @@ if ($is_manager_route) {
                     </a>
                 <?php endif; ?>
 
-                <a href="<?= APP_BASE_PATH ?>/inbox.php" class="nav-inbox-btn" title="Inbox sample preview" aria-label="Inbox sample preview">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+                <a href="<?= APP_BASE_PATH ?>/memberships.php" class="nav-inbox-btn" title="My memberships" aria-label="My memberships">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M14 10h4M14 14h4"/></svg>
                 </a>
 
                 <div class="user-account">
@@ -100,7 +101,7 @@ if ($is_manager_route) {
                         </div>
                         <a href="<?= APP_BASE_PATH ?>/profile.php" class="dropdown-item">My Profile</a>
                         <a href="<?= APP_BASE_PATH ?>/my-activities.php" class="dropdown-item">My Activities</a>
-                        <a href="<?= APP_BASE_PATH ?>/inbox.php" class="dropdown-item">Inbox (Preview)</a>
+                        <a href="<?= APP_BASE_PATH ?>/memberships.php" class="dropdown-item">My memberships</a>
 
                         <div class="dropdown-divider"></div>
                         <form method="POST" action="<?= APP_BASE_PATH ?>/logout.php" style="margin: 0;">
@@ -147,7 +148,7 @@ if ($is_manager_route) {
         <?php if ($current_user): ?>
             <a href="<?= APP_BASE_PATH ?>/profile.php" class="mobile-nav-link <?= $current_page === 'profile.php' ? 'active' : '' ?>">My Profile</a>
             <a href="<?= APP_BASE_PATH ?>/my-activities.php" class="mobile-nav-link <?= in_array($current_page, ['my-activities.php', 'payment.php', 'cancel-registration.php']) ? 'active' : '' ?>">My Activities</a>
-            <a href="<?= APP_BASE_PATH ?>/inbox.php" class="mobile-nav-link <?= $current_page === 'inbox.php' ? 'active' : '' ?>">Inbox (Preview)</a>
+            <a href="<?= APP_BASE_PATH ?>/memberships.php" class="mobile-nav-link <?= $current_page === 'memberships.php' ? 'active' : '' ?>">My memberships</a>
             <?php if ($is_any_manager): ?>
                 <a href="<?= APP_BASE_PATH ?>/manager/sessions.php" class="mobile-nav-link manager-nav-link">Manager Workspace</a>
             <?php endif; ?>

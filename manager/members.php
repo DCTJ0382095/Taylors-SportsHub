@@ -1,6 +1,7 @@
 <?php
-// Club committee: every committee member can see who is on it and what they may do.
-// Only the president can add or remove members, change permissions or hand over the presidency.
+// Club members page: everyone who counts as a member of the club, and the committee.
+// Every committee member can open it. Only the president can change the committee
+// (add or remove people, set permissions, hand over the presidency).
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/helpers.php';
 
@@ -49,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $action    = $_POST['action'] ?? '';
     $member_id = (int) ($_POST['member_id'] ?? 0);
-    $back      = app_url('/manager/committee.php?club_id=' . $club_id);
+    $back      = app_url('/manager/members.php?club_id=' . $club_id);
 
     if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
         $error = 'Your form expired. Reload the page and try again.';
@@ -65,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (!$new_user || $new_user['status'] !== 'active') {
                 $error = 'No active SportsHub account uses that email. Ask them to register first.';
-            } elseif (get_club_membership($club_id, (int) $new_user['id'])) {
+            } elseif (get_committee_role($club_id, (int) $new_user['id'])) {
                 $error = 'That student is already on the committee.';
             } else {
                 $stmt = $db->prepare("INSERT INTO club_managers
@@ -140,6 +141,27 @@ $stmt = $db->prepare("SELECT cm.id, cm.role, cm.can_manage_sessions, cm.can_mana
 $stmt->execute([':club_id' => $club_id]);
 $members = $stmt->fetchAll();
 
+// Students with a paid membership who aren't on the committee.
+// (Committee members already count as members, so they're listed once, from $members above.)
+$stmt = $db->prepare("SELECT m.id, m.status, m.expires_at, u.name, u.email
+                      FROM club_memberships m
+                      INNER JOIN users u ON u.id = m.user_id
+                      WHERE m.club_id = :club_id AND m.status = 'active'
+                        AND m.user_id NOT IN (SELECT user_id FROM club_managers WHERE club_id = :club_id_again)
+                      ORDER BY u.name ASC");
+$stmt->execute([':club_id' => $club_id, ':club_id_again' => $club_id]);
+$paid_members = [];     // membership still running
+$expired_members = [];  // membership has run out
+foreach ($stmt->fetchAll() as $row) {
+    if (membership_state($row) === 'active') {
+        $paid_members[] = $row;
+    } else {
+        $expired_members[] = $row;
+    }
+}
+// Only sign-up managers may open someone's payment page.
+$can_view_payments = can_manage_club($club_id, $user['id'], 'signups');
+
 $messages = [
     'added'       => 'Committee member added.',
     'updated'     => 'Permissions saved.',
@@ -152,13 +174,13 @@ $permission_labels = [
     'can_edit_club'       => 'Edit club profile',
 ];
 
-$page_title = 'Committee · ' . $club['name'];
+$page_title = 'Members · ' . $club['name'];
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="session-editor">
     <a href="<?= app_url('/manager/sessions.php') ?>" class="settings-back">← Back to Manager Workbench</a>
-    <h1 class="settings-title"><?= e($club['name']) ?> committee</h1>
+    <h1 class="settings-title"><?= e($club['name']) ?> members</h1>
 
     <?php if ($error): ?>
         <div class="manager-alert-error"><?= e($error) ?></div>
@@ -166,8 +188,31 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="settings-alert-success"><?= e($messages[$saved]) ?></div>
     <?php endif; ?>
 
+    <!-- Everyone who counts as a member: the committee first, then students with a paid membership -->
     <div class="settings-card">
-        <h2>Members</h2>
+        <h2>Members (<?= count($members) + count($paid_members) ?>)</h2>
+        <p class="settings-hint">Committee members always count as members. Students become members when the committee approves their payment.</p>
+        <ul class="member-list">
+            <?php foreach ($members as $m): ?>
+                <li class="member-list-row">
+                    <div class="member-list-person"><strong><?= e($m['name']) ?></strong><span><?= e($m['email']) ?></span></div>
+                    <span class="member-tag member-tag--committee"><?= $m['role'] === 'president' ? 'President' : 'Committee' ?></span>
+                </li>
+            <?php endforeach; ?>
+            <?php foreach ($paid_members as $p): ?>
+                <li class="member-list-row">
+                    <div class="member-list-person"><strong><?= e($p['name']) ?></strong><span><?= e($p['email']) ?></span></div>
+                    <span class="member-tag">Until <?= e(format_membership_date($p['expires_at'])) ?></span>
+                    <?php if ($can_view_payments): ?>
+                        <a href="<?= app_url('/membership-payment.php?id=' . $p['id']) ?>" class="member-list-link">View</a>
+                    <?php endif; ?>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+
+    <div class="settings-card">
+        <h2>Committee</h2>
         <p class="settings-hint">
             <?= $is_president ? 'Tick what each member may do, then save their row.' : 'Only the president can change the committee.' ?>
         </p>
@@ -230,6 +275,25 @@ require_once __DIR__ . '/../includes/header.php';
             <?php endforeach; ?>
             <button type="submit" class="manager-btn manager-btn-primary">Add to committee</button>
         </form>
+    <?php endif; ?>
+
+    <!-- Students whose paid membership has run out -->
+    <?php if (!empty($expired_members)): ?>
+        <div class="settings-card">
+            <h2>Expired memberships (<?= count($expired_members) ?>)</h2>
+            <p class="settings-hint">These students were members. They can renew from the club page.</p>
+            <ul class="member-list">
+                <?php foreach ($expired_members as $p): ?>
+                    <li class="member-list-row">
+                        <div class="member-list-person"><strong><?= e($p['name']) ?></strong><span><?= e($p['email']) ?></span></div>
+                        <span class="member-tag member-tag--expired">Ended <?= e(format_membership_date($p['expires_at'])) ?></span>
+                        <?php if ($can_view_payments): ?>
+                            <a href="<?= app_url('/membership-payment.php?id=' . $p['id']) ?>" class="member-list-link">View</a>
+                        <?php endif; ?>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
     <?php endif; ?>
 </div>
 

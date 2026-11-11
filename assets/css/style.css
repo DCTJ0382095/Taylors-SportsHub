@@ -1434,3 +1434,11 @@ textarea:focus-visible,
 @media (max-width: 820px) {
   .user-account { display: none; }
 }
+/* Membership status pill: grey, green, amber, blue or red.
+   Used on the club page, My memberships and My Activities, so it lives here in the shared stylesheet. */
+.member-status-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; padding: 3px 10px; border-radius: 980px; border: 1px solid #e5e5ea; color: #6e6e73; background: #f5f5f7; }
+.member-status-pill .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.member-status-pill.tone-green { color: #176633; background: #eaf6ee; border-color: #bfe3cb; }
+.member-status-pill.tone-amber { color: #805000; background: #fff5da; border-color: #f3dca0; }
+.member-status-pill.tone-blue  { color: #064f92; background: #eaf3ff; border-color: #bcd6f5; }
+.member-status-pill.tone-red   { color: #b20820; background: #fff0f2; border-color: #f3bec7; }

@@ -157,6 +157,26 @@ A president cannot remove themselves; they must hand the presidency to another c
 
 **Demo committees:** Alex Wong is president of Badminton, with Liam Tan on its committee (sign-ups and payments only). Chloe Lee and Danial Hakim are presidents of Basketball and Pickleball.
 
+## Club memberships
+
+Students can pay a club to become a member for a set time. Committee members always count as members of their own club, without paying.
+
+**Setting it up (committee members with "Manage sign-ups and payments").** In **Manager Workbench → Settings → Membership**, open or close memberships and set the price (RM 0 makes it free), the length (1, 3, 6 or 12 months) and the benefits shown on the club page. The club page's membership card has an **Edit** link to the same place.
+
+**Joining (students).**
+
+1. On the club page, choose **Apply for membership**. The price, length and bank details are saved at that moment.
+2. Pay the club, then upload the receipt on the membership payment page.
+3. A committee member with "Manage sign-ups and payments" reviews it in **Manager Workbench → Membership Sign-ups**. Approving starts the membership that day; rejecting needs a reason, and the student uploads a new receipt. Nobody can approve their own payment.
+
+**Where students see it.** **My memberships** (the card icon next to your name) shows one card per club with its status and expiry. **Renew** only becomes available once a membership has expired, and uses the club's current price and length. Membership sign-ups also appear in **My Activities**, in the same tabs as session registrations.
+
+**Where committees see it.** The **Members** button on each workbench club card lists the committee, paid members and expired memberships. Every receipt and decision is kept in a history on the payment and review pages.
+
+**Demo memberships:** Liam Tan is an active Basketball member; Danial Hakim's Badminton membership has expired (try Renew); Chloe Lee has applied to Pickleball but hasn't paid.
+
+**Existing databases** upgrade automatically the first time you open the site. To get the demo memberships, drop the `tu_sportshub` database in phpMyAdmin and reload the site.
+
 ## Project layout
 
 | Path | Purpose |
@@ -165,7 +185,8 @@ A president cannot remove themselves; they must hand the presidency to another c
 | `clubs.php`, `club.php` | Club directory and profiles. |
 | `register.php`, `login.php`, `profile.php` | Account registration, authentication, and profile settings. |
 | `reserve.php`, `payment.php`, `upload-receipt.php`, `cancel-registration.php` | Registration and payment-evidence journey. |
-| `my-activities.php` | The signed-in student's registration status and history. |
+| `my-activities.php` | The signed-in student's session registrations and club memberships, with status and history. |
+| `memberships.php`, `membership-join.php`, `membership-payment.php`, `membership-receipt.php` | Club memberships: the student's memberships, applying and renewing, paying, and private receipt viewing. |
 | `manager/` | Club-scoped session, participant, review, and refund operations. |
 | `includes/` | Shared authentication, branding, navigation, error handling, and helpers. |
 | `config/` | Application paths, database connection, setup, and migrations. |
@@ -173,6 +194,8 @@ A president cannot remove themselves; they must hand the presidency to another c
 | `assets/css/`, `assets/js/`, `assets/images/` | Frontend styles, interactions, and imagery. |
 | `assets/uploads/` | Private financial uploads, excluded from version control. |
 | `tests/` | PHP checks, browser regressions, and disposable test fixtures. |
+
+**Note:** `assets/css/style.css` is stored with unusual line endings. Saving it in VS Code adds a blank line after every line, so run `git diff --stat` before committing any change to it.
 
 ## Testing
 
@@ -233,8 +256,8 @@ Finite automated checks do not establish complete security, accessibility, usabi
 
 ## Current limitations
 
-- Inbox is a static sample preview, without live messages or notifications.
-- Membership applications, guest participation, member discounts, and some club statistics are presentation-only content.
+- Member prices on sessions are not built yet. Guest participation and some club statistics (such as the founding year) are presentation-only content.
+- The automated test suites do not cover club memberships yet; the membership pages were checked by hand.
 - Forgot password is a placeholder; Remember me does not implement persistent login tokens.
 - Reservation expiry is request-driven; no scheduled cleanup worker is included.
 - Date filters include fixed demonstration months. Discovery can display already-started published sessions, although reservation handlers enforce the start boundary.

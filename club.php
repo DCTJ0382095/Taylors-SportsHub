@@ -27,37 +27,38 @@ $stmt = $db->prepare("SELECT u.name, cm.role
 $stmt->execute([':id' => $club_id]);
 $committee = $stmt->fetchAll();
 
+// Membership: the club's settings, and where the person looking at the page stands.
+$viewer = current_user();                                  // null if nobody is logged in
+$member_status = $viewer ? get_member_status($club_id, $viewer['id']) : null;
+$my_membership = $viewer ? get_user_club_membership($club_id, $viewer['id']) : null;
+$can_edit_membership = $viewer && can_manage_club($club_id, $viewer['id'], 'signups');
+$member_count = count_club_members($club_id);
+// One benefit per line. trim() removes spaces (and Windows' hidden "\r"), array_filter() drops empty lines.
+$benefits = array_filter(array_map('trim', explode("\n", $club['membership_benefits'] ?? '')));
+
 // Club metadata dictionary for Figma exact match
 $club_metadata = [
     1 => [
         'initials' => 'BC',
         'badge_bg' => 'linear-gradient(135deg, #1b4931 0%, #0d281a 100%)',
-        'members_count' => '186 members',
         'est_year' => 'Est. 2009',
-        'membership_price' => 30,
     ],
     2 => [
         'initials' => 'BB',
         'badge_bg' => 'linear-gradient(135deg, #7c2d12 0%, #431407 100%)',
-        'members_count' => '142 members',
         'est_year' => 'Est. 2014',
-        'membership_price' => 25,
     ],
     3 => [
         'initials' => 'PB',
         'badge_bg' => 'linear-gradient(135deg, #0369a1 0%, #0c4a6e 100%)',
-        'members_count' => '94 members',
         'est_year' => 'Est. 2024',
-        'membership_price' => 35,
     ]
 ];
 
 $meta = $club_metadata[$club_id] ?? [
     'initials' => strtoupper(substr($club['name'], 0, 2)),
     'badge_bg' => 'linear-gradient(135deg, #374151 0%, #111827 100%)',
-    'members_count' => '75 members',
     'est_year' => 'Est. 2020',
-    'membership_price' => 30,
 ];
 
 $page_title = $club['name'];
@@ -98,16 +99,16 @@ require_once __DIR__ . '/includes/header.php';
                         <span>Registered sports club</span>
                     </span>
                     <span class="club-meta-separator">·</span>
-                    <span class="club-meta-text"><?= e($club['sport_type']) ?> · <?= e($meta['members_count']) ?> · <?= e($meta['est_year']) ?></span>
+                    <span class="club-meta-text"><?= e($club['sport_type']) ?> · <?= $member_count ?> <?= $member_count === 1 ? 'member' : 'members' ?> · <?= e($meta['est_year']) ?></span>
                 </div>
             </div>
         </div>
 
         <div class="club-identity-actions">
-            <button type="button" class="btn-club-apply" onclick="showClubApplyModal()">
-                <span>Apply for membership</span>
+            <a href="#membership" class="btn-club-apply">
+                <span><?= in_array($member_status, ['committee', 'active'], true) ? 'View membership' : 'Apply for membership' ?></span>
                 <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </button>
+            </a>
             <button type="button" class="btn-club-share" onclick="shareClubLink()">
                 <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                 <span>Share</span>
@@ -209,43 +210,71 @@ require_once __DIR__ . '/includes/header.php';
         <!-- Right Sidebar Column -->
         <aside class="club-grid-sidebar">
             <!-- Membership Card -->
-            <div class="club-sidebar-card membership-card">
-                <div class="sidebar-card-label">MEMBERSHIP</div>
-                <div class="membership-price-row">
-                    <span class="membership-currency-amount">RM <?= number_format($meta['membership_price'], 0) ?></span>
-                    <span class="membership-period">/ 6 months</span>
+            <div class="club-sidebar-card membership-card" id="membership">
+                <div class="membership-card-top">
+                    <div class="sidebar-card-label">MEMBERSHIP</div>
+                    <?php if ($can_edit_membership): ?>
+                        <a href="<?= app_url('/manager/club-settings.php?club_id=' . $club_id . '#membership') ?>" class="membership-edit-link">Edit</a>
+                    <?php endif; ?>
                 </div>
 
-                <ul class="membership-perks-list">
-                    <li>
-                        <svg class="perk-check-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
-                        <span>Member price on sessions: <?= format_price(max(0, $meta['membership_price'] > 30 ? 8 : 5)) ?> instead of <?= format_price(max(0, $meta['membership_price'] > 30 ? 12 : 8)) ?></span>
-                    </li>
-                    <li>
-                        <svg class="perk-check-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
-                        <span>Join members-only sparring nights & team ladders</span>
-                    </li>
-                    <li>
-                        <svg class="perk-check-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
-                        <span>Membership is valid for 6 months from approval</span>
-                    </li>
-                </ul>
+                <?php membership_feedback(); ?>
+
+                <?php if ($club['membership_open']): ?>
+                    <div class="membership-price-row">
+                        <span class="membership-currency-amount"><?= e(format_price($club['membership_price'])) ?></span>
+                        <span class="membership-period">/ <?= e(format_membership_length((int) $club['membership_months'])) ?></span>
+                    </div>
+                <?php else: ?>
+                    <p class="membership-note">This club isn't taking new members right now.</p>
+                <?php endif; ?>
+
+                <?php if ($benefits): ?>
+                    <ul class="membership-perks-list">
+                        <?php foreach ($benefits as $benefit): ?>
+                            <li>
+                                <svg class="perk-check-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+                                <span><?= e($benefit) ?></span>
+                            </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
 
                 <div class="membership-notice-box">
                     <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
                     <p>Guests can still join sessions that allow guests without a club membership.</p>
                 </div>
 
+                <?php [$status_text, $status_tone] = membership_status_label($member_status); ?>
+                
                 <div class="membership-status-row">
                     <span class="status-label">Your status</span>
-                    <span class="status-badge-not-member">
-                        <span class="status-dot"></span> Not a member
-                    </span>
+                    <span class="member-status-pill tone-<?= $status_tone ?>"><span class="status-dot"></span> <?= $status_text ?></span>
                 </div>
 
-                <button type="button" class="btn-sidebar-apply" onclick="showClubApplyModal()">
-                    Apply for membership
-                </button>
+                <?php if (!$viewer): ?>
+                    <a href="<?= app_url('/login.php') . '?redirect=' . urlencode(app_url('/club.php?id=' . $club_id)) ?>" class="btn-sidebar-apply">Log in to apply</a>
+                <?php elseif ($member_status === 'committee'): ?>
+                    <p class="membership-note">You're on the committee, so you count as a member without paying.</p>
+                <?php elseif ($member_status === 'active'): ?>
+                    <button type="button" class="btn-sidebar-apply" disabled>Member until <?= e(format_membership_date($my_membership['expires_at'])) ?></button>
+                <?php elseif (in_array($member_status, ['awaiting_payment', 'payment_rejected', 'awaiting_approval'], true)): ?>
+                    <a href="<?= app_url('/membership-payment.php?id=' . $my_membership['id']) ?>" class="btn-sidebar-apply">
+                        <?= match ($member_status) {
+                            'awaiting_approval' => 'View your application',
+                            'payment_rejected'  => 'Resubmit your receipt',
+                            default             => 'Complete your payment',
+                        } ?>
+                    </a>
+                <?php elseif ($club['membership_open']): ?>
+                    <form method="POST" action="<?= app_url('/membership-join.php') ?>">
+                        <?= csrf_field() ?>
+                        <input type="hidden" name="club_id" value="<?= $club_id ?>">
+                        <button type="submit" class="btn-sidebar-apply"><?= $member_status === 'expired' ? 'Renew membership' : 'Apply for membership' ?></button>
+                    </form>
+                <?php else: ?>
+                    <button type="button" class="btn-sidebar-apply" disabled>Memberships closed</button>
+                <?php endif; ?>
             </div>
 
             <!-- Club Info Card -->
@@ -297,13 +326,6 @@ function shareClubLink() {
     }
 }
 
-function showClubApplyModal() {
-    if (window.showToast) {
-        showToast('Membership registration opens at the start of each semester via SportsHub.', 'info');
-    } else {
-        alert('Membership registration for <?= addslashes($club['name']) ?> opens at the start of each semester via SportsHub.');
-    }
-}
 </script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
