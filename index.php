@@ -96,7 +96,7 @@ $clubs = $stmt->fetchAll();
                             <div class="spotlight-label">Next on court</div>
                             <div class="spotlight-title"><?= e($spotlight['title']) ?></div>
                             <div class="spotlight-meta">
-                                <?= e(format_session_date($spotlight['session_date'])) ?> · <?= e(format_price($spotlight['price'])) ?> · <?= $spotlight_seats['seats_left'] ?> places left
+                                <?= e(format_session_date($spotlight['session_date'])) ?> · <?= e(format_session_price($spotlight)) ?> · <?= $spotlight_seats['seats_left'] ?> places left
                             </div>
                         </div>
                         <a href="<?= APP_BASE_PATH ?>/session-detail.php?id=<?= $spotlight['id'] ?>" class="hero-search-btn spotlight-cta-btn" aria-label="Explore session">
@@ -160,8 +160,15 @@ $clubs = $stmt->fetchAll();
                             <span style="background: rgba(0,0,0,0.65); backdrop-filter: blur(8px); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 980px; letter-spacing: 0.05em; text-transform: uppercase;">
                                 <?= e($session['sport_type']) ?>
                             </span>
-                            <span style="background: #ffffff; color: #1d1d1f; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 980px; box-shadow: 0 2px 6px rgba(0,0,0,0.12);">
-                                <?= format_price($session['price']) ?>
+                            <span style="display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end;">
+                                <span style="background: #ffffff; color: #1d1d1f; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 980px; box-shadow: 0 2px 6px rgba(0,0,0,0.12);">
+                                    <?= format_price($session['price']) ?>
+                                </span>
+                                <?php if (format_member_price($session)): ?>
+                                    <span style="background: #c8102e; color: #ffffff; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 980px; box-shadow: 0 2px 6px rgba(0,0,0,0.12);">
+                                        <?= e(format_member_price($session)) ?>
+                                    </span>
+                                <?php endif; ?>
                             </span>
                         </div>
                     </div>

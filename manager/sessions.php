@@ -133,6 +133,9 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                     <div class="manager-club-name"><?= e($mc['name']) ?></div>
                     <div class="manager-club-role"><?= $role_label ?></div>
+                    <?php if (!club_payment_ready($mc)): ?>
+                        <div class="manager-club-warning">Payment details missing: no sessions until the president adds them.</div>
+                    <?php endif; ?>
                     <div class="manager-club-actions">
                         <?php if (can_manage_club($mc_id, $user['id'], 'club') || can_manage_club($mc_id, $user['id'], 'signups')): ?>
                             <a href="<?= app_url('/manager/club-settings.php?club_id=' . $mc_id) ?>" class="manager-club-btn">Settings</a>
@@ -292,7 +295,7 @@ require_once __DIR__ . '/../includes/header.php';
                             </span>
                             <span class="manager-meta-item">
                                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                                <span><?= format_price($s['price']) ?></span>
+                                <span><?= e(format_session_price($s)) ?></span>
                             </span>
                             <span class="manager-meta-item">
                                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>

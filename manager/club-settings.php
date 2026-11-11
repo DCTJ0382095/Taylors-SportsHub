@@ -27,44 +27,6 @@ $is_president = is_club_president($club_id, $user['id']);
 $error = null;
 $saved = $_GET['saved'] ?? '';
 
-// Checks an uploaded image and saves it in assets/images/clubs/.
-// Returns [the saved path, null] on success, or [null, an error message].
-function save_club_image(array $file, int $club_id, string $kind, int $max_mb): array {
-    if ($file['error'] !== UPLOAD_ERR_OK) {
-        return [null, "The $kind could not be uploaded. Try again."];
-    }
-    if ($file['size'] > $max_mb * 1024 * 1024) {
-        return [null, "The $kind must be $max_mb MB or smaller."];
-    }
-    // Check what the file really is from its contents, not from its name.
-    $mime = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
-    $extensions = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
-    if (!isset($extensions[$mime])) {
-        return [null, "The $kind must be a JPG, PNG or WebP image."];
-    }
-    $folder = __DIR__ . '/../assets/images/clubs';
-    if (!is_dir($folder)) {
-        mkdir($folder, 0755, true);
-    }
-    // We choose the file name ourselves (random, with an image extension),
-    // so an uploaded file can never overwrite another or run as code.
-    $filename = 'club' . $club_id . '_' . $kind . '_' . bin2hex(random_bytes(8)) . '.' . $extensions[$mime];
-    if (!move_uploaded_file($file['tmp_name'], $folder . '/' . $filename)) {
-        return [null, "The $kind could not be saved. Try again."];
-    }
-    return ['assets/images/clubs/' . $filename, null];
-}
-
-// Deletes an old club image, but only if it was uploaded through this page.
-function delete_uploaded_club_image(?string $path): void {
-    if (is_string($path) && str_starts_with($path, 'assets/images/clubs/')) {
-        $full_path = __DIR__ . '/../' . $path;
-        if (is_file($full_path)) {
-            unlink($full_path);
-        }
-    }
-}
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $form = $_POST['form'] ?? '';
 
@@ -155,6 +117,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Choose a membership length from the list.';
         } elseif (mb_strlen($benefits) > 1000) {
             $error = 'The benefits list is too long (1,000 characters at most).';
+        } elseif ($open && (float) $price > 0 && !club_payment_ready($club)) {
+            $error = "Add the club's payment details (DuitNow QR and bank details) before opening paid memberships.";
         } else {
             $stmt = $db->prepare("UPDATE clubs
                                   SET membership_open = :open, membership_price = :price,
@@ -178,6 +142,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $bank    = trim($_POST['bank_name'] ?? '');
         $holder  = trim($_POST['account_holder'] ?? '');
         $account = trim($_POST['account_number'] ?? '');
+        $note    = trim($_POST['payment_note'] ?? '');
+        $qr      = $_FILES['duitnow_qr'] ?? null;
+        $has_new_qr = is_array($qr) && $qr['error'] !== UPLOAD_ERR_NO_FILE;
+        $has_old_qr = club_qr_url($club['duitnow_qr_path']) !== null;
 
         if ($bank === '' || $holder === '' || $account === '') {
             $error = 'Bank, account holder and account number are all required.';
@@ -185,13 +153,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'The account number can only contain digits, spaces and dashes.';
         } elseif (mb_strlen($bank) > 100 || mb_strlen($holder) > 150) {
             $error = 'The bank or account holder name is too long.';
+        } elseif (mb_strlen($note) > 500) {
+            $error = 'The payment note is too long (500 characters at most).';
+        } elseif (!$has_new_qr && !$has_old_qr) {
+            $error = "Upload the club's DuitNow QR. Students scan it to pay.";
         } else {
-            $stmt = $db->prepare("UPDATE clubs
-                                  SET bank_name = :bank, account_holder = :holder, account_number = :account
-                                  WHERE id = :id");
-            $stmt->execute([':bank' => $bank, ':holder' => $holder, ':account' => $account, ':id' => $club_id]);
-            header('Location: ' . app_url('/manager/club-settings.php?club_id=' . $club_id . '&saved=payment'), true, 303);
-            exit;
+            $qr_path = $club['duitnow_qr_path'];
+            if ($has_new_qr) {
+                // Saved only now, after every other check passed, so a rejected form never leaves a stray file.
+                [$qr_path, $error] = save_club_image($qr, $club_id, 'QR', 2);
+            }
+            if (!$error) {
+                $stmt = $db->prepare("UPDATE clubs
+                                      SET bank_name = :bank, account_holder = :holder, account_number = :account,
+                                          payment_note = :note, duitnow_qr_path = :qr
+                                      WHERE id = :id");
+                $stmt->execute([
+                    ':bank'    => $bank,
+                    ':holder'  => $holder,
+                    ':account' => $account,
+                    ':note'    => $note !== '' ? $note : null,
+                    ':qr'      => $qr_path,
+                    ':id'      => $club_id,
+                ]);
+                if ($has_new_qr) {
+                    delete_uploaded_club_image($club['duitnow_qr_path']);   // the old QR, if it was an upload
+                }
+                header('Location: ' . app_url('/manager/club-settings.php?club_id=' . $club_id . '&saved=payment'), true, 303);
+                exit;
+            }
         }
     }
 }
@@ -206,6 +196,13 @@ $val = fn(string $key) => is_string($_POST[$key] ?? null) ? $_POST[$key] : (stri
 <div class="session-editor">
     <a href="<?= app_url('/manager/sessions.php') ?>" class="settings-back">← Back to Manager Workbench</a>
     <h1 class="settings-title"><?= e($club['name']) ?> settings</h1>
+
+    <?php if (!club_payment_ready($club)): ?>
+        <div class="manager-alert-error">
+            This club can't run sessions or paid memberships yet: it needs a DuitNow QR and bank details.
+            <?= $is_president ? '<a href="#payment">Add them below.</a>' : 'Ask the club president to add them.' ?>
+        </div>
+    <?php endif; ?>
 
     <?php if ($error): ?>
         <div class="manager-alert-error"><?= e($error) ?></div>
@@ -328,13 +325,26 @@ $val = fn(string $key) => is_string($_POST[$key] ?? null) ? $_POST[$key] : (stri
     <?php endif; ?>
 
     <!-- Payment details: president only -->
-    <div class="settings-card">
+    <div class="settings-card" id="payment">
         <h2>Payment details</h2>
+        <?php $qr_url = club_qr_url($club['duitnow_qr_path']); ?>
         <?php if ($is_president): ?>
-            <p class="settings-hint">Where students send payment for this club's sessions. Only the president can change this.</p>
-            <form method="POST">
+            <p class="settings-hint">Students pay the club by scanning its DuitNow QR, or by bank transfer, so both are required. Only the president can change this.</p>
+            <form method="POST" enctype="multipart/form-data">
                 <?= csrf_field() ?>
                 <input type="hidden" name="form" value="payment">
+                <div class="settings-qr">
+                    <?php if ($qr_url): ?>
+                        <img src="<?= e($qr_url) ?>" alt="Current DuitNow QR" class="settings-qr-preview">
+                    <?php else: ?>
+                        <div class="settings-qr-preview settings-qr-missing">No QR yet</div>
+                    <?php endif; ?>
+                    <div class="settings-field">
+                        <label for="duitnow_qr">DuitNow QR<?= $qr_url ? ' (upload a new one to replace it)' : '' ?></label>
+                        <input type="file" id="duitnow_qr" name="duitnow_qr" accept="image/jpeg,image/png,image/webp" <?= $qr_url ? '' : 'required' ?>>
+                        <small>A screenshot or photo of the club's DuitNow QR · JPG, PNG or WebP · up to 2 MB</small>
+                    </div>
+                </div>
                 <div class="settings-field">
                     <label for="bank_name">Bank</label>
                     <input type="text" id="bank_name" name="bank_name" maxlength="100" required value="<?= e($val('bank_name')) ?>">
@@ -347,10 +357,18 @@ $val = fn(string $key) => is_string($_POST[$key] ?? null) ? $_POST[$key] : (stri
                     <label for="account_number">Account number</label>
                     <input type="text" id="account_number" name="account_number" maxlength="30" required value="<?= e($val('account_number')) ?>">
                 </div>
+                <div class="settings-field">
+                    <label for="payment_note">Payment note (optional)</label>
+                    <textarea id="payment_note" name="payment_note" rows="3" maxlength="500" placeholder="e.g. Put your full name as the payment reference."><?= e($val('payment_note')) ?></textarea>
+                    <small>Shown next to the QR when students pay.</small>
+                </div>
                 <button type="submit" class="manager-btn manager-btn-primary">Save payment details</button>
             </form>
         <?php else: ?>
             <p class="settings-hint">Only the club president can change the payment details.</p>
+            <?php if ($qr_url): ?>
+                <img src="<?= e($qr_url) ?>" alt="The club's DuitNow QR" class="settings-qr-preview">
+            <?php endif; ?>
             <p><?= e($club['bank_name']) ?> · <?= e($club['account_holder']) ?> · <?= e($club['account_number']) ?></p>
         <?php endif; ?>
     </div>

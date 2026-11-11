@@ -213,19 +213,13 @@ function get_session_cover_url(array $session): string {
         }
     }
     if ($p === '') {
-        $id = (int)($session['id'] ?? 0);
-        $sport = strtolower($session['sport_type'] ?? '');
-        if ($sport === 'basketball') {
-            $p = '/assets/images/sports/basketball-run.webp';
-        } elseif ($sport === 'pickleball') {
-            $p = '/assets/images/sports/pickleball-rally.webp';
-        } elseif ($id === 2 || str_contains(strtolower($session['title'] ?? ''), 'footwork')) {
-            $p = '/assets/images/sports/badminton-footwork.webp';
-        } elseif ($id === 3 || str_contains(strtolower($session['title'] ?? ''), 'cup') || str_contains(strtolower($session['title'] ?? ''), 'tournament')) {
-            $p = '/assets/images/sports/rally-poster.webp';
-        } else {
-            $p = '/assets/images/sports/badminton-open-play.webp';
-        }
+        // No picture chosen, or its file is missing: use a built-in one for the sport.
+        $p = match (strtolower($session['sport_type'] ?? '')) {
+            'basketball' => '/assets/images/sports/basketball-run.webp',
+            'pickleball' => '/assets/images/sports/pickleball-rally.webp',
+            'badminton'  => '/assets/images/sports/badminton-open-play.webp',
+            default      => '/assets/images/sports/student-athletes-banner.webp',
+        };
     }
     $full_path = __DIR__ . '/..' . $p;
     $v = file_exists($full_path) ? filemtime($full_path) : '1';
@@ -278,4 +272,76 @@ function get_club_initials(string $name): string {
         $initials .= mb_strtoupper(mb_substr($word, 0, 1));
     }
     return $initials;
+}
+
+// Checks an uploaded image and saves it in assets/images/clubs/ (club logos, covers, session pictures).
+// Returns [the saved path, null] on success, or [null, an error message].
+function save_club_image(array $file, int $club_id, string $kind, int $max_mb): array {
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        return [null, "The $kind could not be uploaded. Try again."];
+    }
+    if ($file['size'] > $max_mb * 1024 * 1024) {
+        return [null, "The $kind must be $max_mb MB or smaller."];
+    }
+    // Check what the file really is from its contents, not from its name.
+    $mime = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
+    $extensions = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
+    if (!isset($extensions[$mime])) {
+        return [null, "The $kind must be a JPG, PNG or WebP image."];
+    }
+    $folder = __DIR__ . '/../assets/images/clubs';
+    if (!is_dir($folder)) {
+        mkdir($folder, 0755, true);
+    }
+    // We choose the file name ourselves (random, with an image extension),
+    // so an uploaded file can never overwrite another or run as code.
+    $filename = 'club' . $club_id . '_' . $kind . '_' . bin2hex(random_bytes(8)) . '.' . $extensions[$mime];
+    if (!move_uploaded_file($file['tmp_name'], $folder . '/' . $filename)) {
+        return [null, "The $kind could not be saved. Try again."];
+    }
+    return ['assets/images/clubs/' . $filename, null];
+}
+
+// Deletes an old uploaded picture, but only one from assets/images/clubs/ (never a built-in picture).
+function delete_uploaded_club_image(?string $path): void {
+    if (is_string($path) && str_starts_with($path, 'assets/images/clubs/')) {
+        $full_path = __DIR__ . '/../' . $path;
+        if (is_file($full_path)) {
+            unlink($full_path);
+        }
+    }
+}
+
+// The web address of a club's DuitNow QR picture, or null if it has none (or the file is missing).
+function club_qr_url(?string $path): ?string {
+    if (!$path) {
+        return null;
+    }
+    $file = __DIR__ . '/../' . ltrim($path, '/');
+    if (!is_file($file)) {
+        return null;
+    }
+    return app_url('/' . ltrim($path, '/')) . '?v=' . filemtime($file);
+}
+
+// The payment instructions saved with a booking or a membership:
+// the club's bank details, then the president's payment note (if there is one).
+function club_payment_instructions(array $club): string {
+    $text = "Bank: {$club['bank_name']}\nAccount Name: {$club['account_holder']}\nAccount Number: {$club['account_number']}";
+    $note = trim((string) ($club['payment_note'] ?? ''));
+    if ($note !== '') {
+        $text .= "\n\n" . $note;
+    }
+    return $text;
+}
+
+// Can this club take payments? It needs a DuitNow QR picture and all three bank details.
+// Clubs that can't are not allowed to run sessions or paid memberships.
+function club_payment_ready(array $club): bool {
+    foreach (['bank_name', 'account_holder', 'account_number'] as $field) {
+        if (trim((string) ($club[$field] ?? '')) === '') {
+            return false;
+        }
+    }
+    return club_qr_url($club['duitnow_qr_path'] ?? null) !== null;
 }

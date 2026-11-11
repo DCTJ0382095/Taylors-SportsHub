@@ -40,18 +40,44 @@ if (empty($clubs)) {
     render_error_page(403);   // on a committee, but not allowed to manage sessions anywhere
 }
 
+// Which of these clubs can run sessions: each needs a DuitNow QR and bank details first.
+$club_ready = [];
+foreach ($clubs as $c) {
+    $club_ready[(int) $c['id']] = club_payment_ready($c);
+}
+$first_ready_club = array_search(true, $club_ready, true);   // the first ready club's id, or false
+
 $error = null;
 $title_val = $session['title'] ?? ($_POST['title'] ?? '');
-$club_id_val = $session['club_id'] ?? ($_POST['club_id'] ?? ($clubs[0]['id'] ?? 0));
+$club_id_val = $session['club_id'] ?? ($_POST['club_id'] ?? ($first_ready_club ?: ($clubs[0]['id'] ?? 0)));
 $sport_val = $session['sport_type'] ?? ($_POST['sport_type'] ?? ($clubs[0]['sport_type'] ?? 'Badminton'));
 $venue_val = $session['venue'] ?? ($_POST['venue'] ?? '');
 $date_val = $session['session_date'] ?? ($_POST['session_date'] ?? date('Y-m-d', strtotime('+3 days')));
 $start_val = $session['start_time'] ?? ($_POST['start_time'] ?? '18:00');
 $end_val = $session['end_time'] ?? ($_POST['end_time'] ?? '20:00');
 $price_val = isset($session['price']) ? (float)$session['price'] : (float)($_POST['price'] ?? 0.00);
+// Member price as text for the form: empty means members pay the same as everyone else.
+$member_price_val = (string) ($session['member_price'] ?? '');
 $capacity_val = $session['capacity'] ?? (int)($_POST['capacity'] ?? 16);
 $desc_val = $session['description'] ?? ($_POST['description'] ?? '');
-$image_path_val = $session['image_path'] ?? ($_POST['image_path'] ?? 'assets/images/sports/badminton-open-play.webp');
+
+// Built-in cover pictures a committee can pick instead of uploading their own.
+$cover_presets = [
+    ['path' => 'assets/images/sports/badminton-open-play.webp',   'title' => 'Badminton Open Play',        'badge' => 'Badminton'],
+    ['path' => 'assets/images/sports/badminton-footwork.webp',    'title' => 'Footwork & Training Drills', 'badge' => 'Training'],
+    ['path' => 'assets/images/sports/basketball-run.webp',        'title' => 'Basketball Open Run',        'badge' => 'Basketball'],
+    ['path' => 'assets/images/sports/pickleball-rally.webp',      'title' => 'Pickleball Social Rally',    'badge' => 'Pickleball'],
+    ['path' => 'assets/images/sports/pickleball-clinic.webp',     'title' => 'Pickleball Coaching Clinic', 'badge' => 'Coaching'],
+    ['path' => 'assets/images/sports/pickleball-ladder.webp',     'title' => 'Pickleball Evening Doubles', 'badge' => 'Pickleball'],
+    ['path' => 'assets/images/sports/sports-complex-banner.webp', 'title' => "Taylor's Sports Complex",    'badge' => 'Venue'],
+    ['path' => 'assets/images/sports/student-athletes-banner.webp', 'title' => 'Campus Sports',            'badge' => 'General'],
+];
+$image_path_val = $session['image_path'] ?? $cover_presets[0]['path'];
+// The pictures this session may use: any built-in one, or the one it already has (for example an upload).
+$allowed_covers = array_column($cover_presets, 'path');
+if ($session && $session['image_path']) {
+    $allowed_covers[] = $session['image_path'];
+}
 
 // Every non-draft keeps its published terms, including closed/cancelled sessions.
 $is_published = ($session && $session['status'] !== 'draft');
@@ -81,9 +107,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $start_val = trim($_POST['start_time'] ?? '');
             $end_val = trim($_POST['end_time'] ?? '');
             $price_val = max(0.00, (float)($_POST['price'] ?? 0.00));
+            $member_price_val = trim($_POST['member_price'] ?? '');
             $capacity_val = max(1, (int)($_POST['capacity'] ?? 1));
             $desc_val = trim($_POST['description'] ?? '');
-            $image_path_val = trim($_POST['image_path'] ?? 'assets/images/sports/badminton-open-play.webp');
+            $cover_choice = trim($_POST['image_path'] ?? '');
             $action = $_POST['action'] ?? 'draft';
 
             // Locked terms come from the DB, never disabled inputs or forged POST fields.
@@ -96,6 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $start_val = $session['start_time'];
                 $end_val = $session['end_time'];
                 $price_val = $session['price'];
+                $member_price_val = (string) ($session['member_price'] ?? '');
                 $capacity_val = $session['capacity'];
             }
 
@@ -104,14 +132,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 render_error_page(403);
             }
 
-            if (empty($title_val) || empty($venue_val) || empty($date_val) || empty($start_val) || empty($end_val) || empty($desc_val)) {
+            // Cover picture: a built-in one, the one the session already has, or a new upload.
+            $cover_error = null;
+            $cover_uploaded = false;
+            if ($cover_choice === 'upload') {
+                $file = $_FILES['cover_upload'] ?? null;
+                if (!is_array($file) || $file['error'] === UPLOAD_ERR_NO_FILE) {
+                    $cover_error = 'Choose a picture to upload, or pick one of the built-in pictures.';
+                } else {
+                    [$image_path_val, $cover_error] = save_club_image($file, (int) $club_id_val, 'cover', 5);
+                    $cover_uploaded = $image_path_val !== null;
+                }
+            } elseif (in_array($cover_choice, $allowed_covers, true)) {
+                $image_path_val = $cover_choice;
+            } else {
+                $cover_error = 'Choose a cover picture.';   // a path we don't offer: never trust it
+            }
+
+            if ($cover_error) {
+                $error = $cover_error;
+            } elseif (!$is_published && empty($club_ready[(int) $club_id_val])) {
+                $error = "This club can't run sessions until its president adds a DuitNow QR and bank details in Club settings.";
+            } elseif (empty($title_val) || empty($venue_val) || empty($date_val) || empty($start_val) || empty($end_val) || empty($desc_val)) {
                 $error = "Please fill in all required fields.";
             } elseif (!$is_published && strtotime($date_val . ' ' . $start_val) <= time()) {
                 $error = "Session start time must be in the future.";
             } elseif (strtotime($start_val) >= strtotime($end_val)) {
                 $error = "End time must be after start time.";
+            } elseif ($member_price_val !== '' && (!is_numeric($member_price_val) || (float) $member_price_val < 0)) {
+                $error = "The member price must be an amount in ringgit, or left empty.";
+            } elseif ($member_price_val !== '' && (float) $member_price_val > (float) $price_val) {
+                $error = "The member price can't be more than the normal price.";
             } else {
                 $status = ($action === 'publish') ? 'published' : 'draft';
+                // Empty, or a free session, means no separate member price (NULL in the database).
+                $member_price_db = ($member_price_val === '' || (float) $price_val <= 0) ? null : round((float) $member_price_val, 2);
 
                 if ($session_id > 0) {
                     if ($is_published) {
@@ -121,7 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     } else {
                         $stmt = $db->prepare("UPDATE sessions SET club_id = :club_id, title = :title, description = :desc, sport_type = :sport,
                                               venue = :venue, image_path = :image_path, session_date = :sdate, start_time = :stime, end_time = :etime,
-                                              price = :price, capacity = :cap, status = :st, updated_at = NOW()
+                                              price = :price, member_price = :member_price, capacity = :cap, status = :st, updated_at = NOW()
                                               WHERE id = :id");
                         $stmt->execute([
                             ':club_id' => $club_id_val,
@@ -134,15 +189,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             ':stime' => $start_val,
                             ':etime' => $end_val,
                             ':price' => $price_val,
+                            ':member_price' => $member_price_db,
                             ':cap' => $capacity_val,
                             ':st' => $status,
                             ':id' => $session_id,
                         ]);
                     }
                 } else {
-                    $stmt = $db->prepare("INSERT INTO sessions (club_id, title, description, sport_type, venue, image_path, session_date, start_time, end_time, price, capacity, status, created_by)
-                                          VALUES (:club_id, :title, :desc, :sport, :venue, :image_path, :sdate, :stime, :etime, :price, :cap, :st, :uid)");
-                    $stmt->execute([
+                    $stmt = $db->prepare("INSERT INTO sessions (club_id, title, description, sport_type, venue, image_path, session_date, start_time, end_time, price, member_price, capacity, status, created_by)
+                                          VALUES (:club_id, :title, :desc, :sport, :venue, :image_path, :sdate, :stime, :etime, :price, :member_price, :cap, :st, :uid)");                    
+                                          $stmt->execute([
                         ':club_id' => $club_id_val,
                         ':title' => $title_val,
                         ':desc' => $desc_val,
@@ -153,6 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ':stime' => $start_val,
                         ':etime' => $end_val,
                         ':price' => $price_val,
+                        ':member_price' => $member_price_db,
                         ':cap' => $capacity_val,
                         ':st' => $status,
                         ':uid' => $user['id'],
@@ -160,10 +217,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 $db->commit();
+                // The old picture isn't used any more, so remove it if it was an upload.
+                if ($session && $session['image_path'] !== $image_path_val) {
+                    delete_uploaded_club_image($session['image_path']);
+                }
                 header("Location: " . app_url('/manager/sessions.php'));
                 exit;
             }
             if ($db->inTransaction()) $db->rollBack();
+            // Something else on the form was wrong, so throw away a picture uploaded with it.
+            if ($cover_uploaded) {
+                delete_uploaded_club_image($image_path_val);
+            }
+            // Browsers never refill a file box after a reload, so show the picture the session had.
+            if (!in_array($image_path_val, $allowed_covers, true)) {
+                $image_path_val = $session['image_path'] ?? $cover_presets[0]['path'];
+            }
         } catch (Throwable $e) {
             if ($db->inTransaction()) $db->rollBack();
             throw $e;
@@ -189,20 +258,29 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     <?php endif; ?>
 
-    <?php if ($is_published): ?>
-        <div style="background: #fafafa; border: 1px solid #e5e5ea; border-radius: 14px; padding: 1.25rem; margin-bottom: 2rem; font-size: 0.9rem; color: #424245;">
-            <strong>Note on Published Sessions:</strong> Per sports hub governance, date, time, venue, price, and capacity cannot be altered once published to protect registered students. To change session schedule, cancel this session and publish a replacement.
+    <?php if (!$is_published && in_array(false, $club_ready, true)): ?>
+        <div style="background: #fff8eb; border: 1px solid #f3dca0; color: #805000; padding: 0.85rem 1rem; border-radius: 12px; margin-bottom: 1.5rem; font-size: 0.9rem;">
+            <?= $first_ready_club ? 'Some of your clubs' : 'None of your clubs' ?> can run sessions yet. A club needs a DuitNow QR and bank details first: its president adds them in Club settings → Payment details.
         </div>
     <?php endif; ?>
 
-    <form method="POST" action="<?= $_SERVER['REQUEST_URI'] ?>" class="session-editor-form">
+    <?php if ($is_published): ?>
+        <div style="background: #fafafa; border: 1px solid #e5e5ea; border-radius: 14px; padding: 1.25rem; margin-bottom: 2rem; font-size: 0.9rem; color: #424245;">
+            <strong>Note on Published Sessions:</strong> Per sports hub governance, date, time, venue, prices, and capacity cannot be altered once published to protect registered students. To change session schedule, cancel this session and publish a replacement.
+        </div>
+    <?php endif; ?>
+
+    <form method="POST" action="<?= e($_SERVER['REQUEST_URI']) ?>" class="session-editor-form" enctype="multipart/form-data">
         <?= csrf_field() ?>
 
         <div style="margin-bottom: 1.5rem;">
             <label for="club_id" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Organising Club</label>
             <select name="club_id" id="club_id" <?= $is_published ? 'disabled' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; background: #fff;">
                 <?php foreach ($clubs as $c): ?>
-                    <option value="<?= $c['id'] ?>" <?= (int)$club_id_val === (int)$c['id'] ? 'selected' : '' ?>><?= e($c['name']) ?> (<?= e($c['sport_type']) ?>)</option>
+                    <?php $ready = $club_ready[(int) $c['id']]; ?>
+                    <option value="<?= $c['id'] ?>" <?= (int)$club_id_val === (int)$c['id'] ? 'selected' : '' ?> <?= $ready || $is_published ? '' : 'disabled' ?>>
+                        <?= e($c['name']) ?> (<?= e($c['sport_type']) ?>)<?= $ready ? '' : ' (add payment details first)' ?>
+                    </option>
                 <?php endforeach; ?>
             </select>
         </div>
@@ -223,74 +301,50 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
         </div>
 
-        <!-- Session Cover Visual Image Picker -->
+                <!-- Session cover picture: keep the current one, pick a built-in one, or upload your own -->
         <div style="margin-bottom: 1.75rem;">
             <div class="editor-cover-header">
-                <label style="font-size: 0.88rem; font-weight: 600; color: #1d1d1f;">Session Cover Image</label>
-                <span style="font-size: 0.8rem; color: #86868b;">Select high-resolution WebP hero visual</span>
+                <label style="font-size: 0.88rem; font-weight: 600; color: #1d1d1f;">Session Cover Picture</label>
+                <span style="font-size: 0.8rem; color: #86868b;">Pick a picture, or upload your own</span>
             </div>
 
-            <?php
-            $image_presets = [
-                [
-                    'path' => 'assets/images/sports/badminton-open-play.webp',
-                    'title' => 'Badminton Open Play & Social',
-                    'badge' => 'Badminton'
-                ],
-                [
-                    'path' => 'assets/images/sports/badminton-footwork.webp',
-                    'title' => 'Footwork & Training Drills',
-                    'badge' => 'Clinic'
-                ],
-                [
-                    'path' => 'assets/images/sports/rally-poster.webp',
-                    'title' => 'Badminton Tournament Smash',
-                    'badge' => 'Tournament'
-                ],
-                [
-                    'path' => 'assets/images/sports/basketball-run.webp',
-                    'title' => 'Basketball 3v3 Twilight Run',
-                    'badge' => 'Basketball'
-                ],
-                [
-                    'path' => 'assets/images/sports/pickleball-rally.webp',
-                    'title' => 'Pickleball Social Rally',
-                    'badge' => 'Pickleball'
-                ],
-                [
-                    'path' => 'assets/images/sports/pickleball-clinic.webp',
-                    'title' => 'Pickleball Coaching Clinic',
-                    'badge' => 'Coaching'
-                ],
-                [
-                    'path' => 'assets/images/sports/pickleball-ladder.webp',
-                    'title' => 'Pickleball Ladder Shootout',
-                    'badge' => 'Tournament'
-                ],
-                [
-                    'path' => 'assets/images/sports/sports-complex-banner.webp',
-                    'title' => 'Taylor\'s Sports Complex Arena',
-                    'badge' => 'Arena'
-                ],
-            ];
-            ?>
-
             <div class="image-picker-grid">
-                <?php foreach ($image_presets as $idx => $preset):
-                    $isSelected = ($image_path_val === $preset['path']);
+                <?php $current_cover = $session['image_path'] ?? null; ?>
+                <?php if ($current_cover && !in_array($current_cover, array_column($cover_presets, 'path'), true)): ?>
+                    <!-- The session already has its own picture (an upload): offer to keep it -->
+                    <label class="image-picker-option">
+                        <input type="radio" name="image_path" value="<?= e($current_cover) ?>" <?= $image_path_val === $current_cover ? 'checked' : '' ?>>
+                        <img src="<?= e(get_session_cover_url($session)) ?>" alt="Current cover picture" class="image-picker-thumb">
+                        <div class="image-picker-label">
+                            <span class="image-picker-badge">Current</span>
+                            This session's picture
+                        </div>
+                    </label>
+                <?php endif; ?>
+
+                <?php foreach ($cover_presets as $preset):
                     $preset_v = file_exists(__DIR__ . '/../' . $preset['path']) ? filemtime(__DIR__ . '/../' . $preset['path']) : '1';
                 ?>
                     <label class="image-picker-option">
-                        <input type="radio" name="image_path" value="<?= e($preset['path']) ?>" <?= $isSelected ? 'checked' : '' ?>>
+                        <input type="radio" name="image_path" value="<?= e($preset['path']) ?>" <?= $image_path_val === $preset['path'] ? 'checked' : '' ?>>
                         <img src="<?= app_url('/' . $preset['path']) ?>?v=<?= $preset_v ?>" alt="<?= e($preset['title']) ?>" class="image-picker-thumb" loading="lazy">
                         <div class="image-picker-label">
-                            <span style="font-size: 0.72rem; text-transform: uppercase; font-weight: 700; color: #c8102e; display: block; margin-bottom: 2px;">
-                                <?= e($preset['badge']) ?>
-                            </span>
+                            <span class="image-picker-badge"><?= e($preset['badge']) ?></span>
                             <?= e($preset['title']) ?>
                         </div>
                     </label>
                 <?php endforeach; ?>
+
+                <!-- Upload your own: choosing a file also ticks this option -->
+                <label class="image-picker-option image-picker-upload">
+                    <input type="radio" name="image_path" value="upload">
+                    <span class="image-picker-upload-box">
+                        <strong>+ Upload your own</strong>
+                        <small>JPG, PNG or WebP · up to 5 MB · a wide picture works best</small>
+                    </span>
+                    <input type="file" name="cover_upload" accept="image/jpeg,image/png,image/webp"
+                           onchange="this.closest('label').querySelector('input[type=radio]').checked = true;">
+                </label>
             </div>
         </div>
 
@@ -311,14 +365,24 @@ require_once __DIR__ . '/../includes/header.php';
 
         <div class="editor-fields">
             <div>
-                <label for="price" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Price (MYR, 0 for Free)</label>
+                <label for="price" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Price (RM, 0 for free)</label>
                 <input type="number" step="0.50" min="0" id="price" name="price" value="<?= e((string)$price_val) ?>" required <?= $is_published ? 'readonly' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
+                <small style="display: block; margin-top: 0.3rem; color: #6e6e73; font-size: 0.8rem;">What non-members pay.</small>
             </div>
+            <div>
+                <label for="member_price" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Member price (RM, optional)</label>
+                <input type="number" step="0.50" min="0" id="member_price" name="member_price" value="<?= e($member_price_val) ?>" placeholder="Same as the price" <?= $is_published ? 'readonly' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
+                <small style="display: block; margin-top: 0.3rem; color: #6e6e73; font-size: 0.8rem;">What club members pay (committee, or an active membership). Leave empty if everyone pays the same; 0 makes it free for members.</small>
+            </div>
+        </div>
+
+        <div class="editor-fields">
             <div>
                 <label for="capacity" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Capacity (Max participants)</label>
                 <input type="number" min="1" id="capacity" name="capacity" value="<?= e((string)$capacity_val) ?>" required <?= $is_published ? 'readonly' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
             </div>
         </div>
+
 
         <div style="margin-bottom: 2rem;">
             <label for="description" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Session Description</label>

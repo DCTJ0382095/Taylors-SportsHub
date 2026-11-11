@@ -415,3 +415,7 @@
     flex-direction: column;
   }
 }
+
+/* Member price badge on session cards, next to the normal price */
+.price-badges { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.badge-member-price { background: #c8102e; color: #ffffff; }

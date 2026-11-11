@@ -23,6 +23,10 @@ $current_user = current_user();
 $existing_reg = $current_user ? get_user_session_registration($session_id, $current_user['id']) : null;
 $is_mgr = $current_user ? is_club_manager($session['club_id'], $current_user['id']) : false;
 if ($session['status'] === 'draft' && !$is_mgr) render_error_page(404);
+// What this visitor would pay, and whether that's the member price.
+$viewer_id = $current_user ? (int) $current_user['id'] : null;
+$your_price = session_price_for($session, $viewer_id);
+$gets_member_price = member_price_applies($session, $viewer_id);
 $signup_status = $session['status'];
 if ($signup_status === 'published' && $seat_info['is_started']) $signup_status = 'started';
 elseif ($signup_status === 'published' && $seat_info['is_full']) $signup_status = 'full';
@@ -56,19 +60,10 @@ require_once __DIR__ . '/includes/header.php';
             </div>
 
             <div class="session-info-card">
+                <!-- Exactly what the committee wrote in the session editor (line breaks kept) -->
                 <div class="session-info-section">
-                    <h2>Your session, explained</h2>
+                    <h2>About this session</h2>
                     <p><?= nl2br(e($session['description'])) ?></p>
-                </div>
-
-                <div class="session-info-section">
-                    <h2>Before you join</h2>
-                    <p>Taylor's student accounts only. No membership needed. Registration confirms a place, not attendance.</p>
-                </div>
-
-                <div class="session-info-section">
-                    <h2>Cancellation terms</h2>
-                    <p>Request cancellation before the session starts for a full refund. Refunds are transferred externally and recorded by the organiser.</p>
                 </div>
 
                 <?php if ($session['status'] === 'cancelled'): ?>
@@ -107,6 +102,12 @@ require_once __DIR__ . '/includes/header.php';
                         <span class="fact-label">Price</span>
                         <span class="fact-value price"><?= format_price($session['price']) ?></span>
                     </div>
+                    <?php if (format_member_price($session)): ?>
+                        <div class="fact-row">
+                            <span class="fact-label">Members</span>
+                            <span class="fact-value price"><?= e((float) $session['member_price'] <= 0 ? 'Free' : format_price($session['member_price'])) ?></span>
+                        </div>
+                    <?php endif; ?>
                     <div class="fact-row">
                         <span class="fact-label">Places</span>
                         <span class="fact-value"><?= $seat_info['occupied'] ?> / <?= $seat_info['capacity'] ?> occupied</span>
@@ -119,12 +120,17 @@ require_once __DIR__ . '/includes/header.php';
 
                 <!-- Callout Box -->
                 <div class="session-callout-box">
-                    <?php if ((float)$session['price'] > 0): ?>
+                    <?php if ($your_price > 0): ?>
                         <h4>Payment required</h4>
                         <p>Reserve a place, pay externally and upload your receipt within 24 hours or before start, whichever is earlier.</p>
                     <?php else: ?>
-                        <h4>Free session</h4>
+                        <h4><?= $gets_member_price ? 'Free for members' : 'Free session' ?></h4>
                         <p>Instant confirmation upon reservation. No payment or receipt required.</p>
+                    <?php endif; ?>
+                    <?php if ($gets_member_price): ?>
+                        <p class="member-price-note">You're a member of <?= e($session['club_name']) ?>, so you pay the member price.</p>
+                    <?php elseif (format_member_price($session)): ?>
+                        <p class="member-price-note">Members of <?= e($session['club_name']) ?> pay less. <a href="<?= app_url('/club.php?id=' . $session['club_id']) ?>">See membership</a></p>
                     <?php endif; ?>
                 </div>
 
@@ -179,8 +185,7 @@ require_once __DIR__ . '/includes/header.php';
                             <?= csrf_field() ?>
                             <input type="hidden" name="session_id" value="<?= $session['id'] ?>">
                             <button type="submit" class="btn-reserve">
-                                <?= (float)$session['price'] <= 0 ? 'Join free session' : 'Reserve place · ' . format_price($session['price']) ?>
-                            </button>
+                                <?= $your_price <= 0 ? 'Join free session' : 'Reserve place · ' . format_price($your_price) ?>                            </button>
                         </form>
                     <?php endif; ?>
                 </div>

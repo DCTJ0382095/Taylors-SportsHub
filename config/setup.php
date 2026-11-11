@@ -146,6 +146,23 @@ function initialize_workflow_schema(PDO $db): void {
                    FROM club_memberships
                    WHERE receipt_path IS NOT NULL");
     }
+    // Sessions: an optional cheaper price for club members (empty = everyone pays the same).
+    if (!$db->query("SHOW COLUMNS FROM sessions LIKE 'member_price'")->fetch()) {
+        $db->exec("ALTER TABLE sessions ADD COLUMN member_price DECIMAL(10, 2) NULL AFTER price");
+    }
+    // Clubs: a note the president writes, shown next to the DuitNow QR when students pay.
+    if (!$db->query("SHOW COLUMNS FROM clubs LIKE 'payment_note'")->fetch()) {
+        $db->exec("ALTER TABLE clubs ADD COLUMN payment_note TEXT NULL AFTER account_number");
+    }
+    // Clubs: new clubs used to get Badminton's bank account by default. Now they start empty,
+    // and the president must add the club's own details before it can run sessions.
+    $bank_column = $db->query("SHOW COLUMNS FROM clubs LIKE 'bank_name'")->fetch();
+    if ($bank_column && $bank_column['Null'] === 'NO') {
+        $db->exec("ALTER TABLE clubs
+            MODIFY bank_name VARCHAR(100) NULL DEFAULT NULL,
+            MODIFY account_holder VARCHAR(150) NULL DEFAULT NULL,
+            MODIFY account_number VARCHAR(50) NULL DEFAULT NULL");
+    }
     initialize_receipt_history($db);
 }
 
