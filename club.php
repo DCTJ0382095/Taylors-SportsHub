@@ -18,6 +18,15 @@ $stmt = $db->prepare("SELECT * FROM sessions WHERE club_id = :id AND status = 'p
 $stmt->execute([':id' => $club_id]);
 $sessions = $stmt->fetchAll();
 
+// The club's real committee: the president first, then members in the order they joined.
+$stmt = $db->prepare("SELECT u.name, cm.role
+                      FROM club_managers cm
+                      INNER JOIN users u ON u.id = cm.user_id
+                      WHERE cm.club_id = :id
+                      ORDER BY cm.role = 'president' DESC, cm.created_at ASC");
+$stmt->execute([':id' => $club_id]);
+$committee = $stmt->fetchAll();
+
 // Club metadata dictionary for Figma exact match
 $club_metadata = [
     1 => [
@@ -26,15 +35,6 @@ $club_metadata = [
         'members_count' => '186 members',
         'est_year' => 'Est. 2009',
         'membership_price' => 30,
-        'schedule' => 'Training every Tuesday, 8–10 PM',
-        'email' => 'badminton.club@taylors.edu.my',
-        'social' => '@taylorsbadminton',
-        'committee' => [
-            ['initials' => 'NH', 'name' => 'Nurul Huda', 'role' => 'President', 'color' => '#fecdd3', 'text' => '#9f1239'],
-            ['initials' => 'KO', 'name' => 'Kevin Ong', 'role' => 'Vice president', 'color' => '#dbeafe', 'text' => '#1e40af'],
-            ['initials' => 'TM', 'name' => 'Tan Mei Xin', 'role' => 'Treasurer', 'color' => '#f3e8ff', 'text' => '#6b21a8'],
-            ['initials' => 'FA', 'name' => 'Farhan Aziz', 'role' => 'Committee member', 'color' => '#ccfbf1', 'text' => '#115e59']
-        ]
     ],
     2 => [
         'initials' => 'BB',
@@ -42,15 +42,6 @@ $club_metadata = [
         'members_count' => '142 members',
         'est_year' => 'Est. 2014',
         'membership_price' => 25,
-        'schedule' => 'Training every Friday, 7–10 PM',
-        'email' => 'basketball.club@taylors.edu.my',
-        'social' => '@taylorsbasketball',
-        'committee' => [
-            ['initials' => 'JL', 'name' => 'Jason Lim', 'role' => 'President', 'color' => '#fecdd3', 'text' => '#9f1239'],
-            ['initials' => 'MS', 'name' => 'Marcus See', 'role' => 'Vice president', 'color' => '#dbeafe', 'text' => '#1e40af'],
-            ['initials' => 'WT', 'name' => 'Wong Ting', 'role' => 'Treasurer', 'color' => '#f3e8ff', 'text' => '#6b21a8'],
-            ['initials' => 'AL', 'name' => 'Aaron Lee', 'role' => 'Committee member', 'color' => '#ccfbf1', 'text' => '#115e59']
-        ]
     ],
     3 => [
         'initials' => 'PB',
@@ -58,15 +49,6 @@ $club_metadata = [
         'members_count' => '94 members',
         'est_year' => 'Est. 2024',
         'membership_price' => 35,
-        'schedule' => 'Training every Wednesday, 7–9 PM',
-        'email' => 'pickleball.club@taylors.edu.my',
-        'social' => '@taylorspickleball',
-        'committee' => [
-            ['initials' => 'RK', 'name' => 'Ryan Khoo', 'role' => 'President', 'color' => '#fecdd3', 'text' => '#9f1239'],
-            ['initials' => 'SL', 'name' => 'Sarah Lim', 'role' => 'Vice president', 'color' => '#dbeafe', 'text' => '#1e40af'],
-            ['initials' => 'DZ', 'name' => 'Daniel Zhang', 'role' => 'Treasurer', 'color' => '#f3e8ff', 'text' => '#6b21a8'],
-            ['initials' => 'CW', 'name' => 'Chloe Wong', 'role' => 'Committee member', 'color' => '#ccfbf1', 'text' => '#115e59']
-        ]
     ]
 ];
 
@@ -76,13 +58,6 @@ $meta = $club_metadata[$club_id] ?? [
     'members_count' => '75 members',
     'est_year' => 'Est. 2020',
     'membership_price' => 30,
-    'schedule' => 'Regular weekly training',
-    'email' => 'sports@taylors.edu.my',
-    'social' => '@taylorsports',
-    'committee' => [
-        ['initials' => 'TC', 'name' => 'Taylor Captain', 'role' => 'President', 'color' => '#dbeafe', 'text' => '#1e40af'],
-        ['initials' => 'SC', 'name' => 'Secretary Club', 'role' => 'Secretary', 'color' => '#f3e8ff', 'text' => '#6b21a8']
-    ]
 ];
 
 $page_title = $club['name'];
@@ -205,18 +180,22 @@ require_once __DIR__ . '/includes/header.php';
             <section class="club-content-card">
                 <h2 class="club-card-heading">Committee</h2>
                 <div class="club-committee-grid">
-                    <?php foreach ($meta['committee'] as $member): ?>
+                    <?php if (empty($committee)): ?>
+                        <p class="committee-role">No committee members yet.</p>
+                    <?php endif; ?>
+                    <?php foreach ($committee as $member): ?>
+                        <?php $is_pres = $member['role'] === 'president'; ?>
                         <div class="committee-member-item">
-                            <div class="committee-avatar" style="background: <?= $member['color'] ?>; color: <?= $member['text'] ?>;">
-                                <?= e($member['initials']) ?>
+                            <div class="committee-avatar" style="background: <?= $is_pres ? '#fecdd3' : '#dbeafe' ?>; color: <?= $is_pres ? '#9f1239' : '#1e40af' ?>;">
+                                <?= e(get_initials($member['name'])) ?>
                             </div>
                             <div class="committee-details">
                                 <div class="committee-name"><?= e($member['name']) ?></div>
-                                <div class="committee-role"><?= e($member['role']) ?></div>
+                                <div class="committee-role"><?= $is_pres ? 'President' : 'Committee member' ?></div>
                             </div>
                         </div>
                     <?php endforeach; ?>
-                </div>
+                    </div>
             </section>
         </div>
 
@@ -266,18 +245,24 @@ require_once __DIR__ . '/includes/header.php';
             <div class="club-sidebar-card club-info-card">
                 <div class="sidebar-card-label">CLUB INFO</div>
                 <div class="club-info-rows">
+                    <?php if (!empty($club['training_schedule'])): ?>
                     <div class="club-info-row">
                         <svg class="info-icon" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-                        <span class="info-text"><?= e($meta['schedule']) ?></span>
+                        <span class="info-text"><?= e($club['training_schedule']) ?></span>
                     </div>
+                    <?php endif; ?>
+                    <?php if (!empty($club['contact_email'])): ?>
                     <div class="club-info-row">
                         <svg class="info-icon" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                        <a href="mailto:<?= e($meta['email']) ?>" class="info-text info-link"><?= e($meta['email']) ?></a>
+                        <a href="mailto:<?= e($club['contact_email']) ?>" class="info-text info-link"><?= e($club['contact_email']) ?></a>
                     </div>
+                    <?php endif; ?>
+                    <?php if (!empty($club['instagram'])): ?>
                     <div class="club-info-row">
                         <svg class="info-icon" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                        <span class="info-text"><?= e($meta['social']) ?></span>
+                        <span class="info-text"><?= e($club['instagram']) ?></span>
                     </div>
+                    <?php endif; ?>
                     <?php if (!empty($club['bank_name'])): ?>
                         <div class="club-info-row">
                             <svg class="info-icon" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
