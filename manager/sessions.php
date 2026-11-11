@@ -10,6 +10,12 @@ if (empty($managed_clubs) && !$is_admin) {
     render_error_page(403);
 }
 
+// Can this person create sessions in at least one of their clubs?
+$can_create_sessions = $is_admin || !empty(array_filter(
+    $managed_clubs,
+    fn($club) => can_manage_club((int) $club['id'], $user['id'], 'sessions')
+));
+
 $db = get_db_connection();
 expire_overdue_reservations();
 
@@ -65,11 +71,13 @@ require_once __DIR__ . '/../includes/header.php';
             </p>
         </div>
 
+        <?php if ($can_create_sessions): ?>
         <a href="<?= app_url('/manager/session-edit.php') ?>" class="manager-btn-create">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             <span>Create New Session</span>
         </a>
-    </div>
+        <?php endif; ?>
+        </div>
 
     <?php if (!empty($managed_clubs)): ?>
         <div class="manager-club-links">
@@ -136,9 +144,11 @@ require_once __DIR__ . '/../includes/header.php';
                 <?= $filter_status !== '' ? 'Try selecting another status tab or view all club sessions.' : 'Get started by creating your club\'s first training session or social open play.' ?>
             </p>
             <div class="manager-empty-actions">
+                <?php if ($can_create_sessions): ?>
                 <a href="<?= app_url('/manager/session-edit.php') ?>" class="manager-btn-create">
                     + Create New Session
                 </a>
+                <?php endif; ?>
                 <?php if ($filter_status !== ''): ?>
                     <a href="<?= app_url('/manager/sessions.php') ?>" class="manager-empty-btn-all">
                         Show All Sessions
@@ -200,10 +210,12 @@ require_once __DIR__ . '/../includes/header.php';
 
                         <!-- Actions -->
                         <div class="manager-btn-group">
+                            <?php if (can_manage_club((int) $s['club_id'], $user['id'], 'signups')): ?>
                             <a href="<?= app_url('/manager/participants.php?session_id=' . $s['id']) ?>" class="manager-btn manager-btn-primary">
                                 Participants (<?= $s['confirmed_count'] + $s['pending_review_count'] + $s['awaiting_payment_count'] ?>)
                             </a>
-
+                            <?php endif; ?>
+                            <?php if (can_manage_club((int) $s['club_id'], $user['id'], 'sessions')): ?>
                             <?php if ($s['status'] === 'draft'): ?>
                                 <a href="<?= app_url('/manager/session-edit.php?id=' . $s['id']) ?>" class="manager-btn manager-btn-secondary">
                                     Edit Draft
@@ -215,6 +227,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <a href="<?= app_url('/manager/cancel-session.php?id=' . $s['id']) ?>" class="manager-btn manager-btn-danger">
                                     Cancel Session
                                 </a>
+                            <?php endif; ?>
                             <?php endif; ?>
                         </div>
                     </div>
