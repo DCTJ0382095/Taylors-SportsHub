@@ -68,21 +68,22 @@ require_once __DIR__ . "/includes/header.php";
             <div class="payment-qr-col">
               <div class="duitnow-qr-card">
                 <div class="duitnow-qr-image-wrapper">
-                  <?php 
-                    $qr_path = '/' . ltrim($reg['duitnow_qr_path'] ?: 'assets/images/payment/duitnow-qr.webp', '/');
-                    $qr_v = file_exists(__DIR__ . $qr_path) ? filemtime(__DIR__ . $qr_path) : '1';
-                  ?>
-                  <img src="<?= app_url($qr_path) ?>?v=<?= $qr_v ?>" alt="DuitNow QR Code" class="duitnow-qr-img" width="150" height="206">
+                  <?php $qr_url = club_qr_url($reg['duitnow_qr_path']); ?>
+                  <?php if ($qr_url): ?>
+                    <img src="<?= e($qr_url) ?>" alt="DuitNow QR code for <?= e($reg['club_name']) ?>" class="duitnow-qr-img" width="150" height="206">
+                  <?php else: ?>
+                    <p class="duitnow-qr-missing">This club hasn't added a DuitNow QR. Use the bank details instead.</p>
+                  <?php endif; ?>
                 </div>
                 <div class="duitnow-qr-caption">
-                  <strong>Scan with Bank or E-Wallet</strong>
-                  <p>Supports Maybank, TNG, CIMB & all DuitNow apps.</p>
+                  <strong>Scan to pay with DuitNow</strong>
+                  <p>Works with any Malaysian banking or e-wallet app.</p>
                 </div>
               </div>
             </div>
             <div class="payment-instructions-col">
               <div class="journey-callout payment-callout">
-                <strong>Bank transfer instructions</strong>
+                <strong>Payment details</strong>
                 <p style="white-space:pre-line; margin-top: 6px;"><?= e(
                     $reg["payment_instructions_snapshot"] ?:
                     "Instructions unavailable. Contact your club organiser before transferring.",

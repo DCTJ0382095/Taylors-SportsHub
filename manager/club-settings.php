@@ -140,6 +140,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $bank    = trim($_POST['bank_name'] ?? '');
         $holder  = trim($_POST['account_holder'] ?? '');
         $account = trim($_POST['account_number'] ?? '');
+        $note    = trim($_POST['payment_note'] ?? '');
+        $qr      = $_FILES['duitnow_qr'] ?? null;
+        $has_new_qr = is_array($qr) && $qr['error'] !== UPLOAD_ERR_NO_FILE;
+        $has_old_qr = club_qr_url($club['duitnow_qr_path']) !== null;
 
         if ($bank === '' || $holder === '' || $account === '') {
             $error = 'Bank, account holder and account number are all required.';
@@ -147,13 +151,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'The account number can only contain digits, spaces and dashes.';
         } elseif (mb_strlen($bank) > 100 || mb_strlen($holder) > 150) {
             $error = 'The bank or account holder name is too long.';
+        } elseif (mb_strlen($note) > 500) {
+            $error = 'The payment note is too long (500 characters at most).';
+        } elseif (!$has_new_qr && !$has_old_qr) {
+            $error = "Upload the club's DuitNow QR. Students scan it to pay.";
         } else {
-            $stmt = $db->prepare("UPDATE clubs
-                                  SET bank_name = :bank, account_holder = :holder, account_number = :account
-                                  WHERE id = :id");
-            $stmt->execute([':bank' => $bank, ':holder' => $holder, ':account' => $account, ':id' => $club_id]);
-            header('Location: ' . app_url('/manager/club-settings.php?club_id=' . $club_id . '&saved=payment'), true, 303);
-            exit;
+            $qr_path = $club['duitnow_qr_path'];
+            if ($has_new_qr) {
+                // Saved only now, after every other check passed, so a rejected form never leaves a stray file.
+                [$qr_path, $error] = save_club_image($qr, $club_id, 'QR', 2);
+            }
+            if (!$error) {
+                $stmt = $db->prepare("UPDATE clubs
+                                      SET bank_name = :bank, account_holder = :holder, account_number = :account,
+                                          payment_note = :note, duitnow_qr_path = :qr
+                                      WHERE id = :id");
+                $stmt->execute([
+                    ':bank'    => $bank,
+                    ':holder'  => $holder,
+                    ':account' => $account,
+                    ':note'    => $note !== '' ? $note : null,
+                    ':qr'      => $qr_path,
+                    ':id'      => $club_id,
+                ]);
+                if ($has_new_qr) {
+                    delete_uploaded_club_image($club['duitnow_qr_path']);   // the old QR, if it was an upload
+                }
+                header('Location: ' . app_url('/manager/club-settings.php?club_id=' . $club_id . '&saved=payment'), true, 303);
+                exit;
+            }
         }
     }
 }
@@ -290,13 +316,26 @@ $val = fn(string $key) => is_string($_POST[$key] ?? null) ? $_POST[$key] : (stri
     <?php endif; ?>
 
     <!-- Payment details: president only -->
-    <div class="settings-card">
+    <div class="settings-card" id="payment">
         <h2>Payment details</h2>
+        <?php $qr_url = club_qr_url($club['duitnow_qr_path']); ?>
         <?php if ($is_president): ?>
-            <p class="settings-hint">Where students send payment for this club's sessions. Only the president can change this.</p>
-            <form method="POST">
+            <p class="settings-hint">Students pay the club by scanning its DuitNow QR, or by bank transfer, so both are required. Only the president can change this.</p>
+            <form method="POST" enctype="multipart/form-data">
                 <?= csrf_field() ?>
                 <input type="hidden" name="form" value="payment">
+                <div class="settings-qr">
+                    <?php if ($qr_url): ?>
+                        <img src="<?= e($qr_url) ?>" alt="Current DuitNow QR" class="settings-qr-preview">
+                    <?php else: ?>
+                        <div class="settings-qr-preview settings-qr-missing">No QR yet</div>
+                    <?php endif; ?>
+                    <div class="settings-field">
+                        <label for="duitnow_qr">DuitNow QR<?= $qr_url ? ' (upload a new one to replace it)' : '' ?></label>
+                        <input type="file" id="duitnow_qr" name="duitnow_qr" accept="image/jpeg,image/png,image/webp" <?= $qr_url ? '' : 'required' ?>>
+                        <small>A screenshot or photo of the club's DuitNow QR · JPG, PNG or WebP · up to 2 MB</small>
+                    </div>
+                </div>
                 <div class="settings-field">
                     <label for="bank_name">Bank</label>
                     <input type="text" id="bank_name" name="bank_name" maxlength="100" required value="<?= e($val('bank_name')) ?>">
@@ -309,10 +348,18 @@ $val = fn(string $key) => is_string($_POST[$key] ?? null) ? $_POST[$key] : (stri
                     <label for="account_number">Account number</label>
                     <input type="text" id="account_number" name="account_number" maxlength="30" required value="<?= e($val('account_number')) ?>">
                 </div>
+                <div class="settings-field">
+                    <label for="payment_note">Payment note (optional)</label>
+                    <textarea id="payment_note" name="payment_note" rows="3" maxlength="500" placeholder="e.g. Put your full name as the payment reference."><?= e($val('payment_note')) ?></textarea>
+                    <small>Shown next to the QR when students pay.</small>
+                </div>
                 <button type="submit" class="manager-btn manager-btn-primary">Save payment details</button>
             </form>
         <?php else: ?>
             <p class="settings-hint">Only the club president can change the payment details.</p>
+            <?php if ($qr_url): ?>
+                <img src="<?= e($qr_url) ?>" alt="The club's DuitNow QR" class="settings-qr-preview">
+            <?php endif; ?>
             <p><?= e($club['bank_name']) ?> · <?= e($club['account_holder']) ?> · <?= e($club['account_number']) ?></p>
         <?php endif; ?>
     </div>

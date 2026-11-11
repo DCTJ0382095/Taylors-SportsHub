@@ -317,3 +317,26 @@ function delete_uploaded_club_image(?string $path): void {
         }
     }
 }
+
+// The web address of a club's DuitNow QR picture, or null if it has none (or the file is missing).
+function club_qr_url(?string $path): ?string {
+    if (!$path) {
+        return null;
+    }
+    $file = __DIR__ . '/../' . ltrim($path, '/');
+    if (!is_file($file)) {
+        return null;
+    }
+    return app_url('/' . ltrim($path, '/')) . '?v=' . filemtime($file);
+}
+
+// The payment instructions saved with a booking or a membership:
+// the club's bank details, then the president's payment note (if there is one).
+function club_payment_instructions(array $club): string {
+    $text = "Bank: {$club['bank_name']}\nAccount Name: {$club['account_holder']}\nAccount Number: {$club['account_number']}";
+    $note = trim((string) ($club['payment_note'] ?? ''));
+    if ($note !== '') {
+        $text .= "\n\n" . $note;
+    }
+    return $text;
+}

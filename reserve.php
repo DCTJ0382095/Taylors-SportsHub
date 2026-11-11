@@ -22,7 +22,7 @@ expire_overdue_reservations($session_id);
 $db->beginTransaction();
 try {
     // Lock session row for atomic capacity check
-    $stmt = $db->prepare("SELECT s.*, c.bank_name, c.account_holder, c.account_number
+    $stmt = $db->prepare("SELECT s.*, c.bank_name, c.account_holder, c.account_number, c.payment_note
                           FROM sessions s
                           INNER JOIN clubs c ON s.club_id = c.id
                           WHERE s.id = :id FOR UPDATE");
@@ -91,7 +91,7 @@ try {
 
     // Club members pay the member price (if the session has one); everyone else pays the normal price.
     $price = session_price_for($session, (int) $user['id']);
-    $payment_instructions = "Bank: " . $session['bank_name'] . "\nAccount Name: " . $session['account_holder'] . "\nAccount Number: " . $session['account_number'];
+    $payment_instructions = club_payment_instructions($session);
 
     if ($price <= 0.001) {
         // Free session -> immediately confirmed

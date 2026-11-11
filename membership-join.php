@@ -91,7 +91,7 @@ try {
         ':status'       => $new_status,
         ':price'        => $price,
         ':months'       => $months,
-        ':instructions' => "Bank: {$club['bank_name']}\nAccount Name: {$club['account_holder']}\nAccount Number: {$club['account_number']}",
+        ':instructions' => club_payment_instructions($club),
         ':starts'       => $starts,
         ':expires'      => $expires,
         ':id'           => $membership_id,

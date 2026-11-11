@@ -532,3 +532,10 @@
 .image-picker-upload-box { display: flex; flex-direction: column; justify-content: center; gap: 4px; height: 120px; box-sizing: border-box; padding: 0 14px 0 40px; border-bottom: 1px dashed #d2d2d7; background: #fff; color: #1d1d1f; font-size: 0.92rem; }
 .image-picker-upload-box small { color: #6e6e73; font-size: 0.78rem; font-weight: 400; }
 .image-picker-upload input[type="file"] { margin: 10px 12px 12px; max-width: calc(100% - 24px); font-size: 0.8rem; }
+
+/* ---------- Club settings: DuitNow QR ---------- */
+.settings-qr { display: flex; gap: 1.25rem; align-items: flex-start; margin-bottom: 1.1rem; }
+.settings-qr .settings-field { flex: 1; margin-bottom: 0; }
+.settings-qr-preview { width: 120px; height: 160px; object-fit: contain; border: 1px solid #e5e5ea; border-radius: 12px; background: #fff; flex-shrink: 0; }
+.settings-qr-missing { display: flex; align-items: center; justify-content: center; text-align: center; color: #b20820; font-size: 0.85rem; font-weight: 600; background: #fff0f2; border-color: #f3bec7; }
+@media (max-width: 640px) { .settings-qr { flex-direction: column; } }
