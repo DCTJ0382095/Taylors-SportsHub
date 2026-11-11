@@ -213,19 +213,13 @@ function get_session_cover_url(array $session): string {
         }
     }
     if ($p === '') {
-        $id = (int)($session['id'] ?? 0);
-        $sport = strtolower($session['sport_type'] ?? '');
-        if ($sport === 'basketball') {
-            $p = '/assets/images/sports/basketball-run.webp';
-        } elseif ($sport === 'pickleball') {
-            $p = '/assets/images/sports/pickleball-rally.webp';
-        } elseif ($id === 2 || str_contains(strtolower($session['title'] ?? ''), 'footwork')) {
-            $p = '/assets/images/sports/badminton-footwork.webp';
-        } elseif ($id === 3 || str_contains(strtolower($session['title'] ?? ''), 'cup') || str_contains(strtolower($session['title'] ?? ''), 'tournament')) {
-            $p = '/assets/images/sports/rally-poster.webp';
-        } else {
-            $p = '/assets/images/sports/badminton-open-play.webp';
-        }
+        // No picture chosen, or its file is missing: use a built-in one for the sport.
+        $p = match (strtolower($session['sport_type'] ?? '')) {
+            'basketball' => '/assets/images/sports/basketball-run.webp',
+            'pickleball' => '/assets/images/sports/pickleball-rally.webp',
+            'badminton'  => '/assets/images/sports/badminton-open-play.webp',
+            default      => '/assets/images/sports/student-athletes-banner.webp',
+        };
     }
     $full_path = __DIR__ . '/..' . $p;
     $v = file_exists($full_path) ? filemtime($full_path) : '1';

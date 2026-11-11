@@ -128,10 +128,10 @@ require_once __DIR__ . '/includes/header.php';
                 </p>
             </section>
 
-            <!-- Card 2: Upcoming sessions & tournaments -->
+            <!-- Card 2: Upcoming sessions -->
             <section class="club-content-card">
                 <div class="club-card-header-split">
-                    <h2 class="club-card-heading">Upcoming sessions & tournaments</h2>
+                    <h2 class="club-card-heading">Upcoming sessions</h2>
                     <span class="club-sessions-count-badge"><?= count($sessions) ?> upcoming</span>
                 </div>
 
@@ -163,9 +163,6 @@ require_once __DIR__ . '/includes/header.php';
                                             <span class="pill-badge pill-free">Free entry</span>
                                         <?php else: ?>
                                             <span class="pill-badge pill-blue">Guests welcome</span>
-                                        <?php endif; ?>
-                                        <?php if (stripos($s['title'], 'tournament') !== false || stripos($s['title'], 'cup') !== false || stripos($s['title'], 'shootout') !== false): ?>
-                                            <span class="pill-badge pill-purple">Tournament</span>
                                         <?php endif; ?>
                                     </div>
                                     <div class="club-session-subline">
