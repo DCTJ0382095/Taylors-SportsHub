@@ -49,6 +49,8 @@ $date_val = $session['session_date'] ?? ($_POST['session_date'] ?? date('Y-m-d',
 $start_val = $session['start_time'] ?? ($_POST['start_time'] ?? '18:00');
 $end_val = $session['end_time'] ?? ($_POST['end_time'] ?? '20:00');
 $price_val = isset($session['price']) ? (float)$session['price'] : (float)($_POST['price'] ?? 0.00);
+// Member price as text for the form: empty means members pay the same as everyone else.
+$member_price_val = (string) ($session['member_price'] ?? '');
 $capacity_val = $session['capacity'] ?? (int)($_POST['capacity'] ?? 16);
 $desc_val = $session['description'] ?? ($_POST['description'] ?? '');
 
@@ -98,6 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $start_val = trim($_POST['start_time'] ?? '');
             $end_val = trim($_POST['end_time'] ?? '');
             $price_val = max(0.00, (float)($_POST['price'] ?? 0.00));
+            $member_price_val = trim($_POST['member_price'] ?? '');
             $capacity_val = max(1, (int)($_POST['capacity'] ?? 1));
             $desc_val = trim($_POST['description'] ?? '');
             $cover_choice = trim($_POST['image_path'] ?? '');
@@ -113,6 +116,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $start_val = $session['start_time'];
                 $end_val = $session['end_time'];
                 $price_val = $session['price'];
+                $member_price_val = (string) ($session['member_price'] ?? '');
                 $capacity_val = $session['capacity'];
             }
 
@@ -146,8 +150,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = "Session start time must be in the future.";
             } elseif (strtotime($start_val) >= strtotime($end_val)) {
                 $error = "End time must be after start time.";
+            } elseif ($member_price_val !== '' && (!is_numeric($member_price_val) || (float) $member_price_val < 0)) {
+                $error = "The member price must be an amount in ringgit, or left empty.";
+            } elseif ($member_price_val !== '' && (float) $member_price_val > (float) $price_val) {
+                $error = "The member price can't be more than the normal price.";
             } else {
                 $status = ($action === 'publish') ? 'published' : 'draft';
+                // Empty, or a free session, means no separate member price (NULL in the database).
+                $member_price_db = ($member_price_val === '' || (float) $price_val <= 0) ? null : round((float) $member_price_val, 2);
 
                 if ($session_id > 0) {
                     if ($is_published) {
@@ -157,7 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     } else {
                         $stmt = $db->prepare("UPDATE sessions SET club_id = :club_id, title = :title, description = :desc, sport_type = :sport,
                                               venue = :venue, image_path = :image_path, session_date = :sdate, start_time = :stime, end_time = :etime,
-                                              price = :price, capacity = :cap, status = :st, updated_at = NOW()
+                                              price = :price, member_price = :member_price, capacity = :cap, status = :st, updated_at = NOW()
                                               WHERE id = :id");
                         $stmt->execute([
                             ':club_id' => $club_id_val,
@@ -170,15 +180,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             ':stime' => $start_val,
                             ':etime' => $end_val,
                             ':price' => $price_val,
+                            ':member_price' => $member_price_db,
                             ':cap' => $capacity_val,
                             ':st' => $status,
                             ':id' => $session_id,
                         ]);
                     }
                 } else {
-                    $stmt = $db->prepare("INSERT INTO sessions (club_id, title, description, sport_type, venue, image_path, session_date, start_time, end_time, price, capacity, status, created_by)
-                                          VALUES (:club_id, :title, :desc, :sport, :venue, :image_path, :sdate, :stime, :etime, :price, :cap, :st, :uid)");
-                    $stmt->execute([
+                    $stmt = $db->prepare("INSERT INTO sessions (club_id, title, description, sport_type, venue, image_path, session_date, start_time, end_time, price, member_price, capacity, status, created_by)
+                                          VALUES (:club_id, :title, :desc, :sport, :venue, :image_path, :sdate, :stime, :etime, :price, :member_price, :cap, :st, :uid)");                    $stmt->execute([
                         ':club_id' => $club_id_val,
                         ':title' => $title_val,
                         ':desc' => $desc_val,
@@ -189,6 +199,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ':stime' => $start_val,
                         ':etime' => $end_val,
                         ':price' => $price_val,
+                        ':member_price' => $member_price_db,
                         ':cap' => $capacity_val,
                         ':st' => $status,
                         ':uid' => $user['id'],
@@ -239,7 +250,7 @@ require_once __DIR__ . '/../includes/header.php';
 
     <?php if ($is_published): ?>
         <div style="background: #fafafa; border: 1px solid #e5e5ea; border-radius: 14px; padding: 1.25rem; margin-bottom: 2rem; font-size: 0.9rem; color: #424245;">
-            <strong>Note on Published Sessions:</strong> Per sports hub governance, date, time, venue, price, and capacity cannot be altered once published to protect registered students. To change session schedule, cancel this session and publish a replacement.
+            <strong>Note on Published Sessions:</strong> Per sports hub governance, date, time, venue, prices, and capacity cannot be altered once published to protect registered students. To change session schedule, cancel this session and publish a replacement.
         </div>
     <?php endif; ?>
 
@@ -335,14 +346,24 @@ require_once __DIR__ . '/../includes/header.php';
 
         <div class="editor-fields">
             <div>
-                <label for="price" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Price (MYR, 0 for Free)</label>
+                <label for="price" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Price (RM, 0 for free)</label>
                 <input type="number" step="0.50" min="0" id="price" name="price" value="<?= e((string)$price_val) ?>" required <?= $is_published ? 'readonly' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
+                <small style="display: block; margin-top: 0.3rem; color: #6e6e73; font-size: 0.8rem;">What non-members pay.</small>
             </div>
+            <div>
+                <label for="member_price" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Member price (RM, optional)</label>
+                <input type="number" step="0.50" min="0" id="member_price" name="member_price" value="<?= e($member_price_val) ?>" placeholder="Same as the price" <?= $is_published ? 'readonly' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
+                <small style="display: block; margin-top: 0.3rem; color: #6e6e73; font-size: 0.8rem;">What club members pay (committee, or an active membership). Leave empty if everyone pays the same; 0 makes it free for members.</small>
+            </div>
+        </div>
+
+        <div class="editor-fields">
             <div>
                 <label for="capacity" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Capacity (Max participants)</label>
                 <input type="number" min="1" id="capacity" name="capacity" value="<?= e((string)$capacity_val) ?>" required <?= $is_published ? 'readonly' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
             </div>
         </div>
+
 
         <div style="margin-bottom: 2rem;">
             <label for="description" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Session Description</label>
