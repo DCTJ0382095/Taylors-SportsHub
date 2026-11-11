@@ -2,6 +2,8 @@
 
 SportsHub is a PHP web application for campus sports sessions. Students can discover sessions, reserve places, submit payment receipts, and track registrations. Club managers can publish sessions, review receipts, and record external refunds.
 
+SportsHub covers club sessions only, with individual sign-up: there are no tournaments or team registrations.
+
 The application is configured for Taylor's University student email addresses. It includes demonstration data and prototype features; it is not a payment gateway.
 
 ## Features
@@ -12,6 +14,7 @@ The application is configured for Taylor's University student email addresses. I
 - Search and filter sessions by keyword, sport, date, and price.
 - Create a student account, sign in, and manage profile details.
 - Join free sessions immediately or reserve a paid place.
+- Pay the member price on a club's sessions while you're a member of that club.
 - Upload payment evidence and view receipt decisions and submission history.
 - Follow registration status, deadlines, cancellations, and refund progress in My Activities.
 - Request cancellation before a session starts.
@@ -20,6 +23,7 @@ The application is configured for Taylor's University student email addresses. I
 
 - Manage sessions and participants within authorised clubs.
 - Create drafts, publish sessions, close signup, and cancel sessions with a reason.
+- Upload a session cover picture or pick a built-in one, and set an optional member price.
 - Review payment evidence and reject receipts with an explanation.
 - Record partial or full refunds made outside the application.
 - Access protected evidence and retained receipt history.
@@ -145,6 +149,8 @@ SportsHub is for Taylor's University students only (`@sd.taylors.edu.my` account
     INSERT INTO club_managers (club_id, user_id, appointed_by, role, can_manage_sessions, can_manage_signups, can_edit_club)
     VALUES (LAST_INSERT_ID(), (SELECT id FROM users WHERE email = 'student@sd.taylors.edu.my'), 1, 'president', 1, 1, 1);
 
+A new club starts with no payment details. Before it can run sessions or paid memberships, its president must add the club's DuitNow QR and bank details in **Manager Workbench → Settings → Payment details**.
+
 **Running a club (committee).** After that, the club is run entirely by its committee:
 
 | Role | Can do |
@@ -176,6 +182,21 @@ Students can pay a club to become a member for a set time. Committee members alw
 **Demo memberships:** Liam Tan is an active Basketball member; Danial Hakim's Badminton membership has expired (try Renew); Chloe Lee has applied to Pickleball but hasn't paid.
 
 **Existing databases** upgrade automatically the first time you open the site. To get the demo memberships, drop the `tu_sportshub` database in phpMyAdmin and reload the site.
+
+## Running sessions
+
+**Creating a session (committee members with "Manage sessions").** In **Manager Workbench → Create New Session**, write the description students will see on the session page, choose a cover picture (upload your own, or pick a built-in one), and set:
+
+- **Price:** what non-members pay (0 makes it free).
+- **Member price (optional):** what club members pay. That means committee members, and students with an active membership. It can't be more than the price, and 0 makes the session free for members. Leave it empty and everyone pays the same.
+
+Prices, date, time, venue and capacity are locked once a session is published; the description and cover picture can still change.
+
+**Payment details (president).** In **Settings → Payment details**, the president uploads the club's DuitNow QR, enters its bank details, and can add a payment note (for example, what to use as the payment reference). Students see all three when they pay. Until the QR and bank details are complete, the club can't create or publish sessions or open paid memberships, and the workbench and Club settings show a warning.
+
+**Demo prices:** the Footwork Clinic costs RM 15, or RM 10 for Badminton members; the Pickleball Social Rally is free for Pickleball members; Pickleball Evening Doubles has no member price.
+
+**Existing databases** upgrade automatically: existing clubs keep their payment details, and existing sessions start without a member price. To get the new demo data, drop the `tu_sportshub` database in phpMyAdmin and reload the site.
 
 ## Project layout
 
@@ -256,12 +277,12 @@ Finite automated checks do not establish complete security, accessibility, usabi
 
 ## Current limitations
 
-- Member prices on sessions are not built yet. Guest participation and some club statistics (such as the founding year) are presentation-only content.
-- The automated test suites do not cover club memberships yet; the membership pages were checked by hand.
+- Guest participation and some club statistics (such as the founding year) are presentation-only content.
+- The automated test suites do not cover club memberships, member prices or the payment-details rule yet; these were checked by hand.
 - Forgot password is a placeholder; Remember me does not implement persistent login tokens.
 - Reservation expiry is request-driven; no scheduled cleanup worker is included.
 - Date filters include fixed demonstration months. Discovery can display already-started published sessions, although reservation handlers enforce the start boundary.
-- The quoted amount and bank-instruction text are saved with a reservation; the QR image is not an immutable reservation snapshot or a verified payment destination.
+- The quoted amount and payment instructions (bank details and payment note) are saved with a reservation. The QR shown is always the club's current one, and SportsHub does not verify that it is a real payment destination.
 - Receipt history is retained, but complete linked registration-attempt history is not implemented. Rebooking with existing financial evidence is blocked to preserve that evidence.
 - Exceptional post-start withdrawal and late-discovered-transfer reconciliation have no dedicated workflow.
 
