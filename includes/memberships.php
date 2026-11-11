@@ -74,3 +74,17 @@ function membership_feedback(): void {
     [$type, $text] = $messages[$key];
     echo '<div class="journey-notice notice-' . $type . '" role="' . ($type === 'error' ? 'alert' : 'status') . '">' . e($text) . '</div>';
 }
+
+// How many members a club has: committee members plus students whose paid membership hasn't expired.
+// UNION puts the two lists together and removes duplicates, so someone who is both is counted once.
+function count_club_members(int $club_id): int {
+    $db = get_db_connection();
+    $stmt = $db->prepare("SELECT COUNT(*) FROM (
+                              SELECT user_id FROM club_managers WHERE club_id = :club_a
+                              UNION
+                              SELECT user_id FROM club_memberships
+                              WHERE club_id = :club_b AND status = 'active' AND expires_at > NOW()
+                          ) AS members");
+    $stmt->execute([':club_a' => $club_id, ':club_b' => $club_id]);
+    return (int) $stmt->fetchColumn();
+}

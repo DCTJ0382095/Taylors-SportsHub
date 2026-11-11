@@ -633,3 +633,26 @@
 /* Uploaded club logo inside the badge square */
 .club-squircle-badge--image { background: #ffffff; overflow: hidden; padding: 0; }
 .club-squircle-badge--image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ---------- Membership card (real data) ---------- */
+.membership-card-top { display: flex; align-items: baseline; justify-content: space-between; }
+.membership-edit-link { font-size: 13px; font-weight: 600; color: #c8102e; text-decoration: none; }
+.membership-edit-link:hover { text-decoration: underline; }
+.membership-note { font-size: 13.5px; color: #6e6e73; line-height: 1.45; margin: 0 0 16px; }
+.membership-card form { margin: 0; }
+a.btn-club-apply { text-decoration: none; }
+a.btn-sidebar-apply { display: block; text-align: center; text-decoration: none; box-sizing: border-box; }
+.btn-sidebar-apply:disabled { background: #e5e5ea; color: #8e8e93; box-shadow: none; cursor: not-allowed; transform: none; }
+
+/* "Your status" pill: grey, green, amber, blue or red */
+.member-status-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; padding: 3px 10px; border-radius: 980px; border: 1px solid #e5e5ea; color: #6e6e73; background: #f5f5f7; }
+.member-status-pill .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.member-status-pill.tone-green { color: #176633; background: #eaf6ee; border-color: #bfe3cb; }
+.member-status-pill.tone-amber { color: #805000; background: #fff5da; border-color: #f3dca0; }
+.member-status-pill.tone-blue  { color: #064f92; background: #eaf3ff; border-color: #bcd6f5; }
+.member-status-pill.tone-red   { color: #b20820; background: #fff0f2; border-color: #f3bec7; }
+
+/* Messages after Apply / Renew (e.g. "You're already a member of this club.") */
+.membership-card .journey-notice { padding: 10px 14px; border-radius: 12px; margin: 0 0 16px; font-size: 13.5px; line-height: 1.45; border: 1px solid #d9d9e1; background: #f5f5f8; }
+.membership-card .notice-error { color: #b20820; background: #fff0f2; border-color: #f3bec7; }
+.membership-card .notice-success { color: #175f31; background: #edf7f0; border-color: #bbd7c4; }
