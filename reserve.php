@@ -89,7 +89,8 @@ try {
         exit;
     }
 
-    $price = (float)$session['price'];
+    // Club members pay the member price (if the session has one); everyone else pays the normal price.
+    $price = session_price_for($session, (int) $user['id']);
     $payment_instructions = "Bank: " . $session['bank_name'] . "\nAccount Name: " . $session['account_holder'] . "\nAccount Number: " . $session['account_number'];
 
     if ($price <= 0.001) {

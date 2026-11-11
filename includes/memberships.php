@@ -148,3 +148,32 @@ function render_membership_receipt_history(int $membership_id): void {
     </section>
     <?php
 }
+
+// Does this person get the member price for a session? Only if the session has one,
+// and they count as a member of its club (committee, or an active paid membership).
+function member_price_applies(array $session, ?int $user_id): bool {
+    return $user_id !== null
+        && ($session['member_price'] ?? null) !== null
+        && is_club_member((int) $session['club_id'], $user_id);
+}
+
+// What this person pays for a session: the member price if it applies, otherwise the normal price.
+function session_price_for(array $session, ?int $user_id): float {
+    return member_price_applies($session, $user_id) ? (float) $session['member_price'] : (float) $session['price'];
+}
+
+// The member price for labels, e.g. "Members RM 10.00" or "Free for members",
+// or null if the session has no (cheaper) member price.
+function format_member_price(array $session): ?string {
+    $member = $session['member_price'] ?? null;
+    if ($member === null || (float) $member >= (float) $session['price']) {
+        return null;
+    }
+    return (float) $member <= 0 ? 'Free for members' : 'Members ' . format_price($member);
+}
+
+// Both prices on one line, e.g. "RM 15.00 · Members RM 10.00", or just "RM 20.00" / "Free".
+function format_session_price(array $session): string {
+    $member = format_member_price($session);
+    return format_price($session['price']) . ($member ? ' · ' . $member : '');
+}

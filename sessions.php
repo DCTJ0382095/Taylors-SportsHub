@@ -200,8 +200,13 @@ function pagination_url(int $p): string {
                             <span class="badge-sport">
                                 <?= e($sess['sport_type']) ?>
                             </span>
-                            <span class="badge-price">
-                                <?= format_price($sess['price']) ?>
+                            <span class="price-badges">
+                                <span class="badge-price">
+                                    <?= format_price($sess['price']) ?>
+                                </span>
+                                <?php if (format_member_price($sess)): ?>
+                                    <span class="badge-price badge-member-price"><?= e(format_member_price($sess)) ?></span>
+                                <?php endif; ?>
                             </span>
                         </div>
                     </div>
