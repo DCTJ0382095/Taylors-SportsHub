@@ -111,7 +111,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="manager-club-name"><?= e($mc['name']) ?></div>
                     <div class="manager-club-role"><?= $role_label ?></div>
                     <div class="manager-club-actions">
-                        <?php if (can_manage_club($mc_id, $user['id'], 'club')): ?>
+                        <?php if (can_manage_club($mc_id, $user['id'], 'club') || can_manage_club($mc_id, $user['id'], 'signups')): ?>
                             <a href="<?= app_url('/manager/club-settings.php?club_id=' . $mc_id) ?>" class="manager-club-btn">Settings</a>
                         <?php endif; ?>
                         <a href="<?= app_url('/manager/committee.php?club_id=' . $mc_id) ?>" class="manager-club-btn">Committee</a>

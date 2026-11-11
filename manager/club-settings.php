@@ -1,6 +1,8 @@
 <?php
-// Club settings: committee members with the "edit club profile" permission can update
-// the club's public details. Only the president can change the payment details.
+// Club settings. Each section needs its own permission:
+// Club profile and Club images  -> "Edit club profile"
+// Membership                    -> "Manage sign-ups and payments"
+// Payment details               -> president only
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/helpers.php';
 
@@ -15,8 +17,10 @@ if (!$club) {
     render_error_page(404);
 }
 
-if (!can_manage_club($club_id, $user['id'], 'club')) {
-    render_error_page(403);
+$can_edit_club      = can_manage_club($club_id, $user['id'], 'club');
+$can_manage_signups = can_manage_club($club_id, $user['id'], 'signups');
+if (!$can_edit_club && !$can_manage_signups) {
+    render_error_page(403);   // needs at least one of the two permissions to open this page
 }
 $is_president = is_club_president($club_id, $user['id']);
 
@@ -68,6 +72,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Your form expired. Reload the page and try again.';
 
     } elseif ($form === 'profile') {
+        if (!$can_edit_club) {
+            render_error_page(403);
+        }
         $description = trim($_POST['description'] ?? '');
         $sport_type  = trim($_POST['sport_type'] ?? '');
         $schedule    = trim($_POST['training_schedule'] ?? '');
@@ -100,6 +107,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
     } elseif ($form === 'images') {
+        if (!$can_edit_club) {
+            render_error_page(403);
+        }
         $logo  = $_FILES['logo']  ?? null;
         $cover = $_FILES['cover'] ?? null;
         // An empty "choose file" box is reported as UPLOAD_ERR_NO_FILE.
@@ -127,6 +137,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         if (!$error) {
             header('Location: ' . app_url('/manager/club-settings.php?club_id=' . $club_id . '&saved=images'), true, 303);
+            exit;
+        }
+
+    } elseif ($form === 'membership') {
+        if (!$can_manage_signups) {
+            render_error_page(403);   // membership prices go with "Manage sign-ups and payments"
+        }
+        $open     = isset($_POST['membership_open']) ? 1 : 0;
+        $price    = trim($_POST['membership_price'] ?? '');
+        $months   = (int) ($_POST['membership_months'] ?? 0);
+        $benefits = trim($_POST['membership_benefits'] ?? '');
+
+        if (!preg_match('/^\d{1,4}(\.\d{1,2})?$/', $price)) {
+            $error = 'Enter a price in ringgit, like 30 or 30.50. Enter 0 for a free membership.';
+        } elseif (!in_array($months, MEMBERSHIP_LENGTH_OPTIONS, true)) {
+            $error = 'Choose a membership length from the list.';
+        } elseif (mb_strlen($benefits) > 1000) {
+            $error = 'The benefits list is too long (1,000 characters at most).';
+        } else {
+            $stmt = $db->prepare("UPDATE clubs
+                                  SET membership_open = :open, membership_price = :price,
+                                      membership_months = :months, membership_benefits = :benefits
+                                  WHERE id = :id");
+            $stmt->execute([
+                ':open'     => $open,
+                ':price'    => $price,
+                ':months'   => $months,
+                ':benefits' => $benefits !== '' ? $benefits : null,
+                ':id'       => $club_id,
+            ]);
+            header('Location: ' . app_url('/manager/club-settings.php?club_id=' . $club_id . '&saved=membership'), true, 303);
             exit;
         }
 
@@ -174,8 +215,11 @@ $val = fn(string $key) => is_string($_POST[$key] ?? null) ? $_POST[$key] : (stri
         <div class="settings-alert-success">Payment details saved.</div>
     <?php elseif ($saved === 'images'): ?>
         <div class="settings-alert-success">Club images updated.</div>
+    <?php elseif ($saved === 'membership'): ?>
+        <div class="settings-alert-success">Membership settings saved.</div>
     <?php endif; ?>
 
+    <?php if ($can_edit_club): ?>
     <!-- Club profile: anyone with the "edit club profile" permission -->
     <form method="POST" class="settings-card">
         <?= csrf_field() ?>
@@ -239,6 +283,49 @@ $val = fn(string $key) => is_string($_POST[$key] ?? null) ? $_POST[$key] : (stri
         </div>
         <button type="submit" class="manager-btn manager-btn-primary">Upload images</button>
     </form>
+    <?php endif; ?>
+
+    <!-- Membership: anyone with the "manage sign-ups and payments" permission -->
+    <?php if ($can_manage_signups): ?>
+        <?php
+            // A tickbox that isn't ticked isn't sent at all, so $val() can't be used for it.
+            // After a failed save, show what was ticked; otherwise show what's stored.
+            $membership_failed = ($_POST['form'] ?? '') === 'membership';
+            $open_checked = $membership_failed ? isset($_POST['membership_open']) : (bool) $club['membership_open'];
+        ?>
+        <form method="POST" class="settings-card" id="membership">
+            <?= csrf_field() ?>
+            <input type="hidden" name="form" value="membership">
+            <h2>Membership</h2>
+            <p class="settings-hint">Students pay this to become members of the club. A membership starts on the day its payment is approved. Committee members are always counted as members.</p>
+
+            <label class="settings-toggle">
+                <input type="checkbox" name="membership_open" <?= $open_checked ? 'checked' : '' ?>>
+                Accept new memberships and renewals
+            </label>
+            <div class="settings-field">
+                <label for="membership_price">Price (RM)</label>
+                <input type="number" id="membership_price" name="membership_price" min="0" max="9999.99" step="0.01" required value="<?= e($val('membership_price')) ?>">
+                <small>Enter 0 for a free membership. Free memberships start straight away.</small>
+            </div>
+            <div class="settings-field">
+                <label for="membership_months">Length</label>
+                <select id="membership_months" name="membership_months">
+                    <?php foreach (MEMBERSHIP_LENGTH_OPTIONS as $months): ?>
+                        <option value="<?= $months ?>" <?= (int) $val('membership_months') === $months ? 'selected' : '' ?>>
+                            <?= e(format_membership_length($months)) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <div class="settings-field">
+                <label for="membership_benefits">Benefits</label>
+                <textarea id="membership_benefits" name="membership_benefits" rows="4" maxlength="1000" placeholder="One benefit per line"><?= e($val('membership_benefits')) ?></textarea>
+                <small>One benefit per line. Each line shows with a ✓ on the club page.</small>
+            </div>
+            <button type="submit" class="manager-btn manager-btn-primary">Save membership settings</button>
+        </form>
+    <?php endif; ?>
 
     <!-- Payment details: president only -->
     <div class="settings-card">

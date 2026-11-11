@@ -465,7 +465,7 @@
 .settings-hint { color: #6e6e73; font-size: 0.88rem; margin: 0 0 1.25rem; }
 .settings-field { margin-bottom: 1.1rem; }
 .settings-field label { display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f; }
-.settings-field input, .settings-field textarea { width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box; font-family: inherit; }
+.settings-field input, .settings-field textarea, .settings-field select { width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box; font-family: inherit; }
 .settings-field input[readonly] { background: #f5f5f7; color: #6e6e73; }
 .settings-field small { display: block; color: #6e6e73; font-size: 0.8rem; margin-top: 0.3rem; }
 .settings-alert-success { background: #ecf8ef; border: 1px solid #bbf7d0; color: #1f7a35; padding: 0.85rem 1rem; border-radius: 12px; margin-bottom: 1.5rem; }
@@ -502,3 +502,7 @@
 .committee-check { display: flex; align-items: center; gap: 0.5rem; font-size: 0.92rem; margin-bottom: 0.4rem; cursor: pointer; }
 .committee-row-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
 .committee-perms { list-style: none; padding: 0; margin: 0; font-size: 0.92rem; color: #424245; }
+
+/* ---------- Membership settings ---------- */
+.settings-toggle { display: flex; align-items: center; gap: 0.6rem; font-size: 0.92rem; font-weight: 600; color: #1d1d1f; margin-bottom: 1.1rem; cursor: pointer; }
+.settings-toggle input { width: 18px; height: 18px; margin: 0; }
