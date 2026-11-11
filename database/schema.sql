@@ -27,6 +27,10 @@ CREATE TABLE IF NOT EXISTS `clubs` (
   `contact_email` VARCHAR(150) NULL,
   `instagram` VARCHAR(100) NULL,
   `training_schedule` VARCHAR(150) NULL,
+  `membership_open` TINYINT(1) NOT NULL DEFAULT 0,
+  `membership_price` DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+  `membership_months` INT NOT NULL DEFAULT 6,
+  `membership_benefits` TEXT NULL,
   `logo_path` VARCHAR(255) NULL,
   `banner_path` VARCHAR(255) NULL,
   `bank_name` VARCHAR(100) NOT NULL DEFAULT 'Maybank',
@@ -115,4 +119,30 @@ CREATE TABLE IF NOT EXISTS `refund_records` (
   UNIQUE KEY `unique_refund_submission` (`registration_id`, `submission_key`),
   CONSTRAINT `fk_refund_reg` FOREIGN KEY (`registration_id`) REFERENCES `registrations` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_refund_recorder` FOREIGN KEY (`recorded_by`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Club memberships: one row per student per club.
+-- When a student renews, the same row is reused, so nobody can hold two memberships of one club.
+-- "Expired" is not stored: a membership is expired when status is 'active' and expires_at is in the past.
+CREATE TABLE IF NOT EXISTS `club_memberships` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `club_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
+  `status` ENUM('awaiting_payment', 'awaiting_approval', 'payment_rejected', 'active') NOT NULL DEFAULT 'awaiting_payment',
+  `price_snapshot` DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+  `months_snapshot` INT NOT NULL DEFAULT 6,
+  `payment_instructions_snapshot` TEXT NULL,
+  `receipt_path` VARCHAR(255) NULL,
+  `receipt_uploaded_at` DATETIME NULL,
+  `rejection_reason` VARCHAR(255) NULL,
+  `reviewed_by` INT NULL,
+  `reviewed_at` DATETIME NULL,
+  `starts_at` DATETIME NULL,
+  `expires_at` DATETIME NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY `unique_club_member` (`club_id`, `user_id`),
+  CONSTRAINT `fk_member_club` FOREIGN KEY (`club_id`) REFERENCES `clubs` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_member_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_member_reviewer` FOREIGN KEY (`reviewed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

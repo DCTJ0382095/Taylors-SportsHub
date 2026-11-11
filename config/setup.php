@@ -84,6 +84,40 @@ function initialize_workflow_schema(PDO $db): void {
             ADD COLUMN instagram VARCHAR(100) NULL AFTER contact_email,
             ADD COLUMN training_schedule VARCHAR(150) NULL AFTER instagram");
     }
+    // Memberships: each club's membership settings (open or closed, price, length, benefits).
+    if (!$db->query("SHOW COLUMNS FROM clubs LIKE 'membership_open'")->fetch()) {
+        $db->exec("ALTER TABLE clubs
+            ADD COLUMN membership_open TINYINT(1) NOT NULL DEFAULT 0 AFTER training_schedule,
+            ADD COLUMN membership_price DECIMAL(10, 2) NOT NULL DEFAULT 0.00 AFTER membership_open,
+            ADD COLUMN membership_months INT NOT NULL DEFAULT 6 AFTER membership_price,
+            ADD COLUMN membership_benefits TEXT NULL AFTER membership_months");
+    }
+    // Memberships: the table of who is a member of which club.
+    // Keep this the same as the club_memberships table in database/schema.sql.
+    if (!$db->query("SHOW TABLES LIKE 'club_memberships'")->fetch()) {
+        $db->exec("CREATE TABLE club_memberships (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            club_id INT NOT NULL,
+            user_id INT NOT NULL,
+            status ENUM('awaiting_payment', 'awaiting_approval', 'payment_rejected', 'active') NOT NULL DEFAULT 'awaiting_payment',
+            price_snapshot DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+            months_snapshot INT NOT NULL DEFAULT 6,
+            payment_instructions_snapshot TEXT NULL,
+            receipt_path VARCHAR(255) NULL,
+            receipt_uploaded_at DATETIME NULL,
+            rejection_reason VARCHAR(255) NULL,
+            reviewed_by INT NULL,
+            reviewed_at DATETIME NULL,
+            starts_at DATETIME NULL,
+            expires_at DATETIME NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            UNIQUE KEY unique_club_member (club_id, user_id),
+            CONSTRAINT fk_member_club FOREIGN KEY (club_id) REFERENCES clubs (id) ON DELETE CASCADE,
+            CONSTRAINT fk_member_user FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE,
+            CONSTRAINT fk_member_reviewer FOREIGN KEY (reviewed_by) REFERENCES users (id) ON DELETE SET NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+    }
     initialize_receipt_history($db);
 }
 

@@ -2,6 +2,7 @@
 USE `tu_sportshub`;
 
 -- Clear demo tables in dependency order using transactional statements.
+DELETE FROM `club_memberships`;
 DELETE FROM `refund_records`;
 DELETE FROM `registrations`;
 DELETE FROM `sessions`;
@@ -58,3 +59,20 @@ INSERT INTO `registrations` (`id`, `session_id`, `user_id`, `status`, `price_sna
 UPDATE `clubs` SET `contact_email` = 'badminton.club@taylors.edu.my', `instagram` = '@taylorsbadminton', `training_schedule` = 'Training every Tuesday, 8–10 PM' WHERE `id` = 1;
 UPDATE `clubs` SET `contact_email` = 'basketball.club@taylors.edu.my', `instagram` = '@taylorsbasketball', `training_schedule` = 'Training every Friday, 7–10 PM' WHERE `id` = 2;
 UPDATE `clubs` SET `contact_email` = 'pickleball.club@taylors.edu.my', `instagram` = '@taylorspickleball', `training_schedule` = 'Training every Wednesday, 7–9 PM' WHERE `id` = 3;
+
+-- Membership settings for each club (the committee changes these in Club settings)
+UPDATE `clubs` SET `membership_open` = 1, `membership_price` = 30.00, `membership_months` = 6,
+  `membership_benefits` = "Members-only sparring nights and team ladders\nPriority sign-up for the Semester Cup\nClub jersey at a member price" WHERE `id` = 1;
+UPDATE `clubs` SET `membership_open` = 1, `membership_price` = 25.00, `membership_months` = 6,
+  `membership_benefits` = "Weekly members-only scrimmages\nInter-varsity team trials" WHERE `id` = 2;
+UPDATE `clubs` SET `membership_open` = 1, `membership_price` = 35.00, `membership_months` = 12,
+  `membership_benefits` = "Free paddle loan at every session\nDoubles ladder ranking" WHERE `id` = 3;
+
+-- Demo memberships
+-- Liam: active member of Basketball (approved by Chloe a month ago, 5 months left)
+-- Danial: Badminton membership that expired last month, so he can try Renew
+-- Chloe: applied to Pickleball but hasn't paid yet, so she can try uploading a receipt
+INSERT INTO `club_memberships` (`club_id`, `user_id`, `status`, `price_snapshot`, `months_snapshot`, `payment_instructions_snapshot`, `reviewed_by`, `reviewed_at`, `starts_at`, `expires_at`) VALUES
+(2, 3, 'active', 25.00, 6, "Bank: CIMB Bank\nAccount Name: Taylor's Basketball Club\nAccount Number: 800987654321", 4, DATE_SUB(NOW(), INTERVAL 1 MONTH), DATE_SUB(NOW(), INTERVAL 1 MONTH), DATE_ADD(NOW(), INTERVAL 5 MONTH)),
+(1, 5, 'active', 30.00, 6, "Bank: Maybank\nAccount Name: Taylor's Badminton Club\nAccount Number: 514012345678", 2, DATE_SUB(NOW(), INTERVAL 7 MONTH), DATE_SUB(NOW(), INTERVAL 7 MONTH), DATE_SUB(NOW(), INTERVAL 1 MONTH)),
+(3, 4, 'awaiting_payment', 35.00, 12, "Bank: Maybank\nAccount Name: Taylor's Pickleball Club\nAccount Number: 514088239912", NULL, NULL, NULL, NULL);
