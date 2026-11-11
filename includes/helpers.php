@@ -340,3 +340,14 @@ function club_payment_instructions(array $club): string {
     }
     return $text;
 }
+
+// Can this club take payments? It needs a DuitNow QR picture and all three bank details.
+// Clubs that can't are not allowed to run sessions or paid memberships.
+function club_payment_ready(array $club): bool {
+    foreach (['bank_name', 'account_holder', 'account_number'] as $field) {
+        if (trim((string) ($club[$field] ?? '')) === '') {
+            return false;
+        }
+    }
+    return club_qr_url($club['duitnow_qr_path'] ?? null) !== null;
+}

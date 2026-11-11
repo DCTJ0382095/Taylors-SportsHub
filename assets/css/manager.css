@@ -539,3 +539,6 @@
 .settings-qr-preview { width: 120px; height: 160px; object-fit: contain; border: 1px solid #e5e5ea; border-radius: 12px; background: #fff; flex-shrink: 0; }
 .settings-qr-missing { display: flex; align-items: center; justify-content: center; text-align: center; color: #b20820; font-size: 0.85rem; font-weight: 600; background: #fff0f2; border-color: #f3bec7; }
 @media (max-width: 640px) { .settings-qr { flex-direction: column; } }
+
+/* Workbench club card: payment details still missing */
+.manager-club-warning { font-size: 0.78rem; font-weight: 600; line-height: 1.35; color: #b20820; background: #fff0f2; border-radius: 8px; padding: 0.4rem 0.6rem; margin: -0.5rem 0 0.85rem; }

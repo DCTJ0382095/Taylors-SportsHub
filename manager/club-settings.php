@@ -117,6 +117,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Choose a membership length from the list.';
         } elseif (mb_strlen($benefits) > 1000) {
             $error = 'The benefits list is too long (1,000 characters at most).';
+        } elseif ($open && (float) $price > 0 && !club_payment_ready($club)) {
+            $error = "Add the club's payment details (DuitNow QR and bank details) before opening paid memberships.";
         } else {
             $stmt = $db->prepare("UPDATE clubs
                                   SET membership_open = :open, membership_price = :price,
@@ -194,6 +196,13 @@ $val = fn(string $key) => is_string($_POST[$key] ?? null) ? $_POST[$key] : (stri
 <div class="session-editor">
     <a href="<?= app_url('/manager/sessions.php') ?>" class="settings-back">← Back to Manager Workbench</a>
     <h1 class="settings-title"><?= e($club['name']) ?> settings</h1>
+
+    <?php if (!club_payment_ready($club)): ?>
+        <div class="manager-alert-error">
+            This club can't run sessions or paid memberships yet: it needs a DuitNow QR and bank details.
+            <?= $is_president ? '<a href="#payment">Add them below.</a>' : 'Ask the club president to add them.' ?>
+        </div>
+    <?php endif; ?>
 
     <?php if ($error): ?>
         <div class="manager-alert-error"><?= e($error) ?></div>

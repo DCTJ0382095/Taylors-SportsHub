@@ -40,9 +40,16 @@ if (empty($clubs)) {
     render_error_page(403);   // on a committee, but not allowed to manage sessions anywhere
 }
 
+// Which of these clubs can run sessions: each needs a DuitNow QR and bank details first.
+$club_ready = [];
+foreach ($clubs as $c) {
+    $club_ready[(int) $c['id']] = club_payment_ready($c);
+}
+$first_ready_club = array_search(true, $club_ready, true);   // the first ready club's id, or false
+
 $error = null;
 $title_val = $session['title'] ?? ($_POST['title'] ?? '');
-$club_id_val = $session['club_id'] ?? ($_POST['club_id'] ?? ($clubs[0]['id'] ?? 0));
+$club_id_val = $session['club_id'] ?? ($_POST['club_id'] ?? ($first_ready_club ?: ($clubs[0]['id'] ?? 0)));
 $sport_val = $session['sport_type'] ?? ($_POST['sport_type'] ?? ($clubs[0]['sport_type'] ?? 'Badminton'));
 $venue_val = $session['venue'] ?? ($_POST['venue'] ?? '');
 $date_val = $session['session_date'] ?? ($_POST['session_date'] ?? date('Y-m-d', strtotime('+3 days')));
@@ -144,6 +151,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if ($cover_error) {
                 $error = $cover_error;
+            } elseif (!$is_published && empty($club_ready[(int) $club_id_val])) {
+                $error = "This club can't run sessions until its president adds a DuitNow QR and bank details in Club settings.";
             } elseif (empty($title_val) || empty($venue_val) || empty($date_val) || empty($start_val) || empty($end_val) || empty($desc_val)) {
                 $error = "Please fill in all required fields.";
             } elseif (!$is_published && strtotime($date_val . ' ' . $start_val) <= time()) {
@@ -188,7 +197,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 } else {
                     $stmt = $db->prepare("INSERT INTO sessions (club_id, title, description, sport_type, venue, image_path, session_date, start_time, end_time, price, member_price, capacity, status, created_by)
-                                          VALUES (:club_id, :title, :desc, :sport, :venue, :image_path, :sdate, :stime, :etime, :price, :member_price, :cap, :st, :uid)");                    $stmt->execute([
+                                          VALUES (:club_id, :title, :desc, :sport, :venue, :image_path, :sdate, :stime, :etime, :price, :member_price, :cap, :st, :uid)");                    
+                                          $stmt->execute([
                         ':club_id' => $club_id_val,
                         ':title' => $title_val,
                         ':desc' => $desc_val,
@@ -248,6 +258,12 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     <?php endif; ?>
 
+    <?php if (!$is_published && in_array(false, $club_ready, true)): ?>
+        <div style="background: #fff8eb; border: 1px solid #f3dca0; color: #805000; padding: 0.85rem 1rem; border-radius: 12px; margin-bottom: 1.5rem; font-size: 0.9rem;">
+            <?= $first_ready_club ? 'Some of your clubs' : 'None of your clubs' ?> can run sessions yet. A club needs a DuitNow QR and bank details first: its president adds them in Club settings → Payment details.
+        </div>
+    <?php endif; ?>
+
     <?php if ($is_published): ?>
         <div style="background: #fafafa; border: 1px solid #e5e5ea; border-radius: 14px; padding: 1.25rem; margin-bottom: 2rem; font-size: 0.9rem; color: #424245;">
             <strong>Note on Published Sessions:</strong> Per sports hub governance, date, time, venue, prices, and capacity cannot be altered once published to protect registered students. To change session schedule, cancel this session and publish a replacement.
@@ -261,7 +277,10 @@ require_once __DIR__ . '/../includes/header.php';
             <label for="club_id" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Organising Club</label>
             <select name="club_id" id="club_id" <?= $is_published ? 'disabled' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; background: #fff;">
                 <?php foreach ($clubs as $c): ?>
-                    <option value="<?= $c['id'] ?>" <?= (int)$club_id_val === (int)$c['id'] ? 'selected' : '' ?>><?= e($c['name']) ?> (<?= e($c['sport_type']) ?>)</option>
+                    <?php $ready = $club_ready[(int) $c['id']]; ?>
+                    <option value="<?= $c['id'] ?>" <?= (int)$club_id_val === (int)$c['id'] ? 'selected' : '' ?> <?= $ready || $is_published ? '' : 'disabled' ?>>
+                        <?= e($c['name']) ?> (<?= e($c['sport_type']) ?>)<?= $ready ? '' : ' (add payment details first)' ?>
+                    </option>
                 <?php endforeach; ?>
             </select>
         </div>

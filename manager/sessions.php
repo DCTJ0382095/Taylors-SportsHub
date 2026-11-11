@@ -133,6 +133,9 @@ require_once __DIR__ . '/../includes/header.php';
                     </div>
                     <div class="manager-club-name"><?= e($mc['name']) ?></div>
                     <div class="manager-club-role"><?= $role_label ?></div>
+                    <?php if (!club_payment_ready($mc)): ?>
+                        <div class="manager-club-warning">Payment details missing: no sessions until the president adds them.</div>
+                    <?php endif; ?>
                     <div class="manager-club-actions">
                         <?php if (can_manage_club($mc_id, $user['id'], 'club') || can_manage_club($mc_id, $user['id'], 'signups')): ?>
                             <a href="<?= app_url('/manager/club-settings.php?club_id=' . $mc_id) ?>" class="manager-club-btn">Settings</a>

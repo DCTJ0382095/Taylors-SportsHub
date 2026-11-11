@@ -37,7 +37,7 @@ try {
         $stop = 'committee_member';     // committee members already count as members
     } elseif ($member_status === 'active') {
         $stop = 'already_member';       // renewing only opens once a membership has expired
-    } elseif (!$club['membership_open']) {
+    } elseif (!$club['membership_open'] || ((float) $club['membership_price'] > 0 && !club_payment_ready($club))) {
         $stop = 'memberships_closed';
     }
     if ($stop) {
