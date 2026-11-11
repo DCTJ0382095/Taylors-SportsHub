@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             if (!$new_user || $new_user['status'] !== 'active') {
                 $error = 'No active SportsHub account uses that email. Ask them to register first.';
-            } elseif (get_club_membership($club_id, (int) $new_user['id'])) {
+            } elseif (get_committee_role($club_id, (int) $new_user['id'])) {
                 $error = 'That student is already on the committee.';
             } else {
                 $stmt = $db->prepare("INSERT INTO club_managers
