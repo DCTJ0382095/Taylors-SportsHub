@@ -12,7 +12,7 @@ $r = $q->fetch();
 if (!$r) {
     render_error_page(404);
 }
-if ($r["user_id"] !== $user["id"] && !is_club_manager($r["club_id"], $user["id"])) {
+if ($r["user_id"] !== $user["id"] && !can_manage_club($r["club_id"], $user["id"], 'signups')) {
     render_error_page(403);
 }
 $path = $r["receipt_path"];
