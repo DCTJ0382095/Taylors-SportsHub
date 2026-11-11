@@ -88,3 +88,17 @@ function count_club_members(int $club_id): int {
     $stmt->execute([':club_a' => $club_id, ':club_b' => $club_id]);
     return (int) $stmt->fetchColumn();
 }
+
+// The words and colour for a membership status pill, e.g. ['Awaiting payment', 'amber'].
+// The club page, My memberships and My Activities all use this, so they always match.
+function membership_status_label(?string $state): array {
+    return match ($state) {
+        'committee'         => ['Committee member', 'green'],
+        'active'            => ['Member', 'green'],
+        'awaiting_payment'  => ['Awaiting payment', 'amber'],
+        'awaiting_approval' => ['Awaiting approval', 'blue'],
+        'payment_rejected'  => ['Payment rejected', 'red'],
+        'expired'           => ['Expired', 'grey'],
+        default             => ['Not a member', 'grey'],
+    };
+}

@@ -245,18 +245,8 @@ require_once __DIR__ . '/includes/header.php';
                     <p>Guests can still join sessions that allow guests without a club membership.</p>
                 </div>
 
-                <?php
-                    // The words and colour of the "Your status" pill.
-                    [$status_text, $status_tone] = match ($member_status) {
-                        'committee'         => ['Committee member', 'green'],
-                        'active'            => ['Member', 'green'],
-                        'awaiting_payment'  => ['Awaiting payment', 'amber'],
-                        'awaiting_approval' => ['Awaiting approval', 'blue'],
-                        'payment_rejected'  => ['Payment rejected', 'red'],
-                        'expired'           => ['Expired', 'grey'],
-                        default             => ['Not a member', 'grey'],
-                    };
-                ?>
+                <?php [$status_text, $status_tone] = membership_status_label($member_status); ?>
+                
                 <div class="membership-status-row">
                     <span class="status-label">Your status</span>
                     <span class="member-status-pill tone-<?= $status_tone ?>"><span class="status-dot"></span> <?= $status_text ?></span>
