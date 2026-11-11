@@ -74,6 +74,9 @@ require_once __DIR__ . '/../includes/header.php';
     <?php if (!empty($managed_clubs)): ?>
         <div class="manager-club-links">
             <?php foreach ($managed_clubs as $mc): ?>
+                <a href="<?= app_url('/manager/committee.php?club_id=' . $mc['id']) ?>" class="manager-btn manager-btn-secondary">
+                    <?= e($mc['name']) ?> committee
+                </a>                
                 <?php if (can_manage_club((int) $mc['id'], $user['id'], 'club')): ?>
                     <a href="<?= app_url('/manager/club-settings.php?club_id=' . $mc['id']) ?>" class="manager-btn manager-btn-secondary">
                         <?= e($mc['name']) ?> settings

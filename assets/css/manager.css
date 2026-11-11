@@ -470,3 +470,13 @@
 .settings-field small { display: block; color: #6e6e73; font-size: 0.8rem; margin-top: 0.3rem; }
 .settings-alert-success { background: #ecf8ef; border: 1px solid #bbf7d0; color: #1f7a35; padding: 0.85rem 1rem; border-radius: 12px; margin-bottom: 1.5rem; }
 .manager-club-links { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0 0 1.5rem; }
+
+/* ---------- Committee page ---------- */
+.committee-row { border-top: 1px solid #e5e5ea; padding: 1rem 0; }
+.committee-row:first-of-type { border-top: none; padding-top: 0; }
+.committee-row-person { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 0.75rem; margin-bottom: 0.6rem; }
+.committee-row-person span { color: #6e6e73; font-size: 0.88rem; }
+.committee-row-role { background: #f5f5f7; border-radius: 999px; padding: 0.15rem 0.6rem; font-size: 0.78rem !important; font-weight: 600; color: #424245 !important; }
+.committee-check { display: flex; align-items: center; gap: 0.5rem; font-size: 0.92rem; margin-bottom: 0.4rem; cursor: pointer; }
+.committee-row-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+.committee-perms { list-style: none; padding: 0; margin: 0; font-size: 0.92rem; color: #424245; }
