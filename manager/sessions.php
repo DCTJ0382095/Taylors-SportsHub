@@ -71,6 +71,18 @@ require_once __DIR__ . '/../includes/header.php';
         </a>
     </div>
 
+    <?php if (!empty($managed_clubs)): ?>
+        <div class="manager-club-links">
+            <?php foreach ($managed_clubs as $mc): ?>
+                <?php if (can_manage_club((int) $mc['id'], $user['id'], 'club')): ?>
+                    <a href="<?= app_url('/manager/club-settings.php?club_id=' . $mc['id']) ?>" class="manager-btn manager-btn-secondary">
+                        <?= e($mc['name']) ?> settings
+                    </a>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+    
     <!-- Executive Metrics Grid -->
     <div class="manager-metrics-grid">
         <div class="manager-metric-card">

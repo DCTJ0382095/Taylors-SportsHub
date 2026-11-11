@@ -53,3 +53,8 @@ INSERT INTO `registrations` (`id`, `session_id`, `user_id`, `status`, `price_sna
 -- Danial registered for paid session -> awaiting payment
 INSERT INTO `registrations` (`id`, `session_id`, `user_id`, `status`, `price_snapshot`, `payment_instructions_snapshot`, `payment_deadline`) VALUES
 (3, 2, 5, 'awaiting_payment', 15.00, 'Maybank 514012345678 (Taylor\'s Badminton Club)', '2026-11-20 17:00:00');
+
+-- Club contact details (previously hard-coded in club.php)
+UPDATE `clubs` SET `contact_email` = 'badminton.club@taylors.edu.my', `instagram` = '@taylorsbadminton', `training_schedule` = 'Training every Tuesday, 8–10 PM' WHERE `id` = 1;
+UPDATE `clubs` SET `contact_email` = 'basketball.club@taylors.edu.my', `instagram` = '@taylorsbasketball', `training_schedule` = 'Training every Friday, 7–10 PM' WHERE `id` = 2;
+UPDATE `clubs` SET `contact_email` = 'pickleball.club@taylors.edu.my', `instagram` = '@taylorspickleball', `training_schedule` = 'Training every Wednesday, 7–9 PM' WHERE `id` = 3;

@@ -77,6 +77,13 @@ function initialize_workflow_schema(PDO $db): void {
         $db->exec("UPDATE club_managers
             SET role = 'president', can_manage_sessions = 1, can_manage_signups = 1, can_edit_club = 1");
     }
+    // Club profile details that used to be hard-coded in club.php.
+    if (!$db->query("SHOW COLUMNS FROM clubs LIKE 'contact_email'")->fetch()) {
+        $db->exec("ALTER TABLE clubs
+            ADD COLUMN contact_email VARCHAR(150) NULL AFTER sport_type,
+            ADD COLUMN instagram VARCHAR(100) NULL AFTER contact_email,
+            ADD COLUMN training_schedule VARCHAR(150) NULL AFTER instagram");
+    }
     initialize_receipt_history($db);
 }
 
