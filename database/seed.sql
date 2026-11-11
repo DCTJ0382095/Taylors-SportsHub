@@ -25,8 +25,11 @@ INSERT INTO `clubs` (`id`, `name`, `slug`, `description`, `sport_type`, `logo_pa
 (3, "Taylor's Pickleball Club", 'taylors-pickleball-club', "Taylor's premier racket community for pickleball enthusiasts. Weekly social rallies, coaching clinics, and doubles ladder shootouts on multi-courts.", 'Pickleball', 'assets/images/logo/logo.webp', 'assets/images/sports/pickleball-banner.webp', 'Maybank', "Taylor's Pickleball Club", '514088239912', 'assets/images/payment/duitnow-qr.webp', 'active');
 
 -- Appoint Club Manager (Alex Wong manages Badminton Club)
-INSERT INTO `club_managers` (`id`, `club_id`, `user_id`, `appointed_by`) VALUES
-(1, 1, 2, 1);
+INSERT INTO `club_managers` (`id`, `club_id`, `user_id`, `appointed_by`, `role`, `can_manage_sessions`, `can_manage_signups`, `can_edit_club`) VALUES
+(1, 1, 2, 1, 'president', 1, 1, 1),   -- Alex Wong: president of Badminton (appointed by Admin)
+(2, 1, 3, 2, 'committee', 0, 1, 0),   -- Liam Tan: Badminton committee, sign-ups and payments only (appointed by Alex)
+(3, 2, 4, 1, 'president', 1, 1, 1),   -- Chloe Lee: president of Basketball (appointed by Admin)
+(4, 3, 5, 1, 'president', 1, 1, 1);   -- Danial Hakim: president of Pickleball (appointed by Admin)
 
 -- Seed Sessions
 INSERT INTO `sessions` (`id`, `club_id`, `title`, `description`, `sport_type`, `venue`, `image_path`, `session_date`, `start_time`, `end_time`, `price`, `capacity`, `status`, `created_by`) VALUES
