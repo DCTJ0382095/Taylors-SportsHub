@@ -102,3 +102,15 @@ function membership_status_label(?string $state): array {
         default             => ['Not a member', 'grey'],
     };
 }
+
+// One sentence telling the student what happens next with this membership.
+// The payment page and My Activities both use it.
+function membership_next_step(array $membership): string {
+    return match (membership_state($membership)) {
+        'awaiting_payment'  => 'Transfer ' . format_price($membership['price_snapshot']) . ' to the club, then upload your receipt.',
+        'payment_rejected'  => 'The committee could not confirm the payment. Read the reason, then upload a new receipt.',
+        'awaiting_approval' => 'The committee is checking the payment. The membership starts on the day they approve it.',
+        'active'            => 'Membership is active until ' . format_membership_date($membership['expires_at']) . '.',
+        default             => 'This membership ended on ' . format_membership_date($membership['expires_at']) . '. You can renew it from My memberships or the club page.',
+    };
+}

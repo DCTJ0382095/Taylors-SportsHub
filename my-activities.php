@@ -38,15 +38,37 @@ foreach ($all as $r) {
     $groups[$group][] = $r;
 }
 
+// Club memberships go into the same tabs as sessions, depending on where each one stands.
+// Clubs where you're on the committee are left out: committee members are members without signing up.
+$stmt = $db->prepare("SELECT m.*, c.name AS club_name, c.logo_path, c.membership_open
+                      FROM club_memberships m
+                      INNER JOIN clubs c ON c.id = m.club_id
+                      WHERE m.user_id = :user_id
+                        AND m.club_id NOT IN (SELECT club_id FROM club_managers WHERE user_id = :user_id_again)
+                      ORDER BY c.name ASC");
+$stmt->execute([':user_id' => $user['id'], ':user_id_again' => $user['id']]);
+$membership_groups = array_fill_keys(array_keys($tabs), []);
+foreach ($stmt->fetchAll() as $m) {
+    $m['state'] = membership_state($m);
+    $membership_groups['all'][] = $m;
+    $membership_tab = match ($m['state']) {
+        'awaiting_payment', 'payment_rejected' => 'payment',
+        'awaiting_approval' => 'review',
+        'active' => 'confirmed',
+        default => 'history',            // expired
+    };
+    $membership_groups[$membership_tab][] = $m;
+}
+
 $page_title = "My Activities";
 require_once __DIR__ . "/includes/header.php";
 ?>
 
 <div class="activities-page">
     <header class="activities-header">
-        <div class="activities-eyebrow">SPORTSHUB / SESSIONS</div>
+        <div class="activities-eyebrow">SPORTSHUB / ACTIVITIES</div>
         <h1 class="activities-title">My Activities</h1>
-        <p class="activities-subtitle">Your registrations, current status and next steps.</p>
+        <p class="activities-subtitle">Your session registrations and club memberships, where each one stands, and what to do next.</p>
     </header>
 
     <?php journey_feedback(); ?>
@@ -54,15 +76,15 @@ require_once __DIR__ . "/includes/header.php";
     <nav class="activities-tabs" aria-label="Filter activities">
         <?php foreach ($tabs as $key => $label): ?>
             <a href="?tab=<?= $key ?>" class="activity-tab <?= $key === $tab ? 'active' : '' ?>" <?= $key === $tab ? 'aria-current="page"' : '' ?>>
-                <?= $label ?> (<?= count($groups[$key]) ?>)
+                <?= $label ?> (<?= count($groups[$key]) + count($membership_groups[$key]) ?>)
             </a>
         <?php endforeach; ?>
     </nav>
 
-    <?php if (empty($groups[$tab])): ?>
+    <?php if (empty($groups[$tab]) && empty($membership_groups[$tab])): ?>
         <section class="activities-empty-card">
             <h2>No activities found</h2>
-            <p>Your registrations appear here with their current status and next action.</p>
+            <p>Your session registrations and club memberships appear here with their current status and next action.</p>
             <div class="activity-actions-row" style="justify-content: center;">
                 <a class="btn-activity primary" href="<?= app_url('/sessions.php') ?>">Explore sessions</a>
                 <?php if ($tab !== "all"): ?>
@@ -71,6 +93,81 @@ require_once __DIR__ . "/includes/header.php";
             </div>
         </section>
     <?php else: ?>
+        <?php foreach ($membership_groups[$tab] as $m): ?>
+            <?php
+                $state = $m['state'];
+                [$status_text, $status_tone] = membership_status_label($state);
+                $logo_url = get_club_logo_url($m);
+                $club_url = app_url('/club.php?id=' . $m['club_id']);
+                // Waiting on payment while an old expiry date exists means this is a renewal.
+                $is_renewal = $m['expires_at'] && in_array($state, ['awaiting_payment', 'awaiting_approval', 'payment_rejected'], true);
+            ?>
+            <!-- A club membership: same tabs as sessions, but its own look -->
+            <article class="activity-card activity-card--membership">
+                <div class="activity-card-layout">
+                    <div class="activity-thumb activity-thumb--club">
+                        <div class="activity-club-logo">
+                            <?php if ($logo_url): ?>
+                                <img src="<?= e($logo_url) ?>" alt="">
+                            <?php else: ?>
+                                <?= e(get_club_initials($m['club_name'])) ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-header-row">
+                            <div>
+                                <span class="activity-kind">Club membership<?= $is_renewal ? ' · Renewal' : '' ?></span>
+                                <h2 class="activity-name"><a href="<?= $club_url ?>"><?= e($m['club_name']) ?></a></h2>
+                            </div>
+                            <span class="member-status-pill tone-<?= $status_tone ?>"><span class="status-dot"></span> <?= $status_text ?></span>
+                        </div>
+
+                        <div class="activity-facts-list">
+                            <div class="activity-fact-row">
+                                <span class="fact-row-label">Price</span>
+                                <span class="fact-row-val" style="font-weight: 700;"><?= format_price($m['price_snapshot']) ?> · <?= e(format_membership_length((int) $m['months_snapshot'])) ?></span>
+                            </div>
+                            <?php if ($state === 'active' || $state === 'expired'): ?>
+                                <div class="activity-fact-row">
+                                    <span class="fact-row-label"><?= $state === 'active' ? 'Expires' : 'Expired on' ?></span>
+                                    <span class="fact-row-val"><?= e(format_membership_date($m['expires_at'])) ?></span>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="activity-callout <?= $state === 'payment_rejected' ? 'alert' : '' ?>">
+                            <div class="callout-step-title">Next step</div>
+                            <p style="margin: 0;"><?= e(membership_next_step($m)) ?></p>
+                            <?php if ($state === 'payment_rejected' && $m['rejection_reason']): ?>
+                                <p style="margin-top: 4px; margin-bottom: 0;"><strong>Reason:</strong> <?= e($m['rejection_reason']) ?></p>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="activity-actions-row">
+                            <?php if ($state === 'expired' && $m['membership_open']): ?>
+                                <form method="POST" action="<?= app_url('/membership-join.php') ?>">
+                                    <?= csrf_field() ?>
+                                    <input type="hidden" name="club_id" value="<?= (int) $m['club_id'] ?>">
+                                    <button type="submit" class="btn-activity primary">Renew membership</button>
+                                </form>
+                            <?php else: ?>
+                                <a class="btn-activity <?= in_array($state, ['awaiting_payment', 'payment_rejected'], true) ? 'primary' : '' ?>" href="<?= app_url('/membership-payment.php?id=' . $m['id']) ?>">
+                                    <?= match ($state) {
+                                        'awaiting_payment'  => 'Pay & submit receipt',
+                                        'payment_rejected'  => 'Resubmit receipt',
+                                        'awaiting_approval' => 'View payment review',
+                                        default             => 'View membership',
+                                    } ?>
+                                </a>
+                            <?php endif; ?>
+                            <a class="btn-activity" href="<?= $club_url ?>">View club</a>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        <?php endforeach; ?>
+
         <?php foreach ($groups[$tab] as $r): ?>
             <article class="activity-card">
                 <div class="activity-card-layout">

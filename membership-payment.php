@@ -87,13 +87,7 @@ $headings = [
     'active'            => "You're a member.",
     'expired'           => 'This membership has expired.',
 ];
-$next_step = match ($state) {
-    'awaiting_payment'  => 'Transfer ' . format_price($membership['price_snapshot']) . ' to the club, then upload your receipt on this page.',
-    'payment_rejected'  => 'The committee could not confirm the payment. Read the reason, then upload a new receipt.',
-    'awaiting_approval' => 'The committee is checking the payment. The membership starts on the day they approve it.',
-    'active'            => 'Membership is active until ' . format_membership_date($membership['expires_at']) . '.',
-    'expired'           => 'This membership ended on ' . format_membership_date($membership['expires_at']) . '. Renew it from the club page.',
-};
+$next_step = membership_next_step($membership);
 // The expiry date means something different depending on the state.
 $expiry_label = match ($state) {
     'active'  => 'Expires',
