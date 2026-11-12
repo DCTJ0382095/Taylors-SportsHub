@@ -226,17 +226,25 @@ Add your package's PHP executable directory to the terminal's `PATH` if `php` is
 
 ### PHP suites
 
-Run the end-to-end state/helper suite through the disposable-database runner:
+Run every PHP suite through the disposable-database runner:
 
 ```sh
-php -d zend.assertions=1 -d assert.exception=1 tests/run-existing.php test_e2e.php
+php -d zend.assertions=1 -d assert.exception=1 -d assert.active=1 tests/run.php
 ```
 
 The runner creates and drops a separate test database, so the test database account needs permission for both operations. Keep assertions enabled and use the runner rather than executing the seed-dependent test files directly.
 
-Other suites are `test_m3.php`, `test_m4.php`, `test_m5.php`, `test_m6.php`, and `test_receipt_history.php`. Replace the last filename in the command to run one of them.
+To run only some suites, add their file names to the end of the command, for example `tests/run.php test_clubs.php`. The suites are:
 
-These PHP suites cover public-page rendering, reservation/capacity helpers, manager scope, review and cancellation states, refunds, and receipt-history migration. Browser tests provide real HTTP-handler and concurrent-reservation coverage.
+| Suite | What it checks |
+|---|---|
+| `test_portability.php` | Installation paths, and database settings from environment variables. |
+| `test_csrf.php` | Form tokens: creation, reuse, and rejection of missing or foreign tokens. |
+| `test_helpers.php` | Student emails, club scope, places and expiry, cancellation rules, public pages (Home's tab title, started sessions hidden), and the profile page. |
+| `test_receipt_history.php` | Upgrading older databases so every payment receipt is kept. |
+| `test_clubs.php` | Committee titles, membership status, member prices, the payment-details rule, the club page, and the committee-title upgrade. |
+
+Browser tests provide real HTTP-handler and concurrent-reservation coverage.
 
 ### Browser suites
 
@@ -253,7 +261,7 @@ PowerShell example for XAMPP on port 80:
 ```powershell
 $env:NODE_PATH = (Resolve-Path ../sportshub-test-tools/node_modules).Path
 $env:SPORTSHUB_URL = 'http://localhost/sportshub'
-node tests/noted-gaps.cjs
+node tests/regressions.cjs
 node tests/ux-journey.cjs
 ```
 
@@ -262,7 +270,7 @@ macOS shell example for MAMP on port 8888:
 ```sh
 export NODE_PATH="$PWD/../sportshub-test-tools/node_modules"
 export SPORTSHUB_URL='http://localhost:8888/sportshub'
-node tests/noted-gaps.cjs
+node tests/regressions.cjs
 node tests/ux-journey.cjs
 ```
 
@@ -270,14 +278,14 @@ Set `SPORTSHUB_URL` to the URL you use in your browser if your package, port, or
 
 Run the browser suites sequentially; they share a disposable-fixture state file. They create generated test accounts and records and clean them up after execution. Browser requests can also run the application's normal overdue-reservation expiry checks.
 
-- `noted-gaps.cjs` checks targeted handler, receipt-history, keyboard-navigation, responsive-layout, and styling regressions.
+- `regressions.cjs` checks targeted handler, receipt-history, keyboard-navigation, responsive-layout, and styling regressions.
 - `ux-journey.cjs` checks registration, upload, review, cancellation, refunds, access boundaries, and final-place concurrency. It also runs axe checks and writes local screenshots/results to `docs/ux-evidence/`.
 
 Finite automated checks do not establish complete security, accessibility, usability, or concurrency coverage. Real bank transfers and real-world committee workflows are not exercised by these suites.
 
 ## Current limitations
 
-- The automated test suites do not cover club memberships, member prices or the payment-details rule yet; these were checked by hand.
+- The PHP suites check membership status, member prices and the payment-details rule through their helper functions. The membership payment and review pages were checked by hand.
 - Forgot password is a placeholder; Remember me does not implement persistent login tokens.
 - Reservation expiry is request-driven; no scheduled cleanup worker is included.
 - Date filters include fixed demonstration months.
