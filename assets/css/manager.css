@@ -1,6 +1,6 @@
 /* ==========================================================================
    Club Manager Portal Styles (manager.css)
-   Taylor's SportsHub - Apple-calibrated Manager Workbench
+   Taylor's SportsHub - Apple-calibrated Manager Workspace
    ========================================================================== */
 
 .manager-container {
@@ -495,7 +495,7 @@
 .settings-field small { display: block; color: #6e6e73; font-size: 0.8rem; margin-top: 0.3rem; }
 .settings-alert-success { background: #ecf8ef; border: 1px solid #bbf7d0; color: #1f7a35; padding: 0.85rem 1rem; border-radius: 12px; margin-bottom: 1.5rem; }
 
-/* ---------- "Your clubs" cards on the Manager Workbench ---------- */
+/* ---------- "Your clubs" cards on the Manager Workspace ---------- */
 .manager-section-title { font-size: 1.15rem; font-weight: 700; color: #1d1d1f; margin: 0 0 0.85rem; }
 .manager-club-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
 .manager-club-card { background: #ffffff; border: 1px solid #e5e5ea; border-radius: 20px; padding: 1.25rem; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); }

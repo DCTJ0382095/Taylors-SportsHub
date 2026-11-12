@@ -167,13 +167,13 @@ A president cannot remove themselves; they must hand the presidency to another c
 
 Students can pay a club to become a member for a set time. Committee members always count as members of their own club, without paying.
 
-**Setting it up (committee members with "Manage sign-ups and payments").** In **Manager Workbench → Settings → Membership**, open or close memberships and set the price (RM 0 makes it free), the length (1, 3, 6 or 12 months) and the benefits shown on the club page. The club page's membership card has an **Edit** link to the same place.
+**Setting it up (committee members with "Manage sign-ups and payments").** In **Manager Workspace → Settings → Membership**, open or close memberships and set the price (RM 0 makes it free), the length (1, 3, 6 or 12 months) and the benefits shown on the club page. The club page's membership card has an **Edit** link to the same place.
 
 **Joining (students).**
 
 1. On the club page, choose **Apply for membership**. The price, length and bank details are saved at that moment.
 2. Pay the club, then upload the receipt on the membership payment page.
-3. A committee member with "Manage sign-ups and payments" reviews it in **Manager Workbench → Membership Sign-ups**. Approving starts the membership that day; rejecting needs a reason, and the student uploads a new receipt. Nobody can approve their own payment.
+3. A committee member with "Manage sign-ups and payments" reviews it in **Manager Workspace → Membership Sign-ups**. Approving starts the membership that day; rejecting needs a reason, and the student uploads a new receipt. Nobody can approve their own payment.
 
 **Where students see it.** **My memberships** (the card icon next to your name) shows one card per club with its status and expiry. **Renew** only becomes available once a membership has expired, and uses the club's current price and length. Membership sign-ups also appear in **My Activities**, in the same tabs as session registrations.
 
