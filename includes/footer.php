@@ -36,7 +36,7 @@
         </div>
 
         <div class="footer-bottom-bar">
-            <span>© <?= date('Y') ?> Taylor's University. All rights reserved.</span>
+            <span>A student project for ITS64504 · Not an official Taylor's University service</span>
             <div style="display:flex; gap:20px; align-items:center;">
                 <a href="<?= APP_BASE_PATH ?>/privacy.php" class="footer-link">Privacy policy</a>
                 <a href="<?= APP_BASE_PATH ?>/terms.php" class="footer-link">Terms of use</a>
