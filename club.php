@@ -14,12 +14,12 @@ if (!$club) {
 }
 
 // Fetch sessions
-$stmt = $db->prepare("SELECT * FROM sessions WHERE club_id = :id AND status = 'published' ORDER BY session_date ASC, start_time ASC");
+$stmt = $db->prepare("SELECT * FROM sessions WHERE club_id = :id AND status = 'published' AND CONCAT(session_date, ' ', start_time) >= NOW() ORDER BY session_date ASC, start_time ASC");
 $stmt->execute([':id' => $club_id]);
 $sessions = $stmt->fetchAll();
 
 // The club's real committee: the president first, then members in the order they joined.
-$stmt = $db->prepare("SELECT u.name, cm.role
+$stmt = $db->prepare("SELECT u.name, cm.role, cm.title
                       FROM club_managers cm
                       INNER JOIN users u ON u.id = cm.user_id
                       WHERE cm.club_id = :id
@@ -31,7 +31,8 @@ $committee = $stmt->fetchAll();
 $viewer = current_user();                                  // null if nobody is logged in
 $member_status = $viewer ? get_member_status($club_id, $viewer['id']) : null;
 $my_membership = $viewer ? get_user_club_membership($club_id, $viewer['id']) : null;
-$can_edit_membership = $viewer && can_manage_club($club_id, $viewer['id'], 'signups');
+// Same people who get the Settings button in the Manager Workspace (club details or memberships).
+$can_edit_club = $viewer && (can_manage_club($club_id, $viewer['id'], 'club') || can_manage_club($club_id, $viewer['id'], 'signups'));
 $member_count = count_club_members($club_id);
 // One benefit per line. trim() removes spaces (and Windows' hidden "\r"), array_filter() drops empty lines.
 $benefits = array_filter(array_map('trim', explode("\n", $club['membership_benefits'] ?? '')));
@@ -41,24 +42,20 @@ $club_metadata = [
     1 => [
         'initials' => 'BC',
         'badge_bg' => 'linear-gradient(135deg, #1b4931 0%, #0d281a 100%)',
-        'est_year' => 'Est. 2009',
     ],
     2 => [
         'initials' => 'BB',
         'badge_bg' => 'linear-gradient(135deg, #7c2d12 0%, #431407 100%)',
-        'est_year' => 'Est. 2014',
     ],
     3 => [
         'initials' => 'PB',
         'badge_bg' => 'linear-gradient(135deg, #0369a1 0%, #0c4a6e 100%)',
-        'est_year' => 'Est. 2024',
     ]
 ];
 
 $meta = $club_metadata[$club_id] ?? [
     'initials' => strtoupper(substr($club['name'], 0, 2)),
     'badge_bg' => 'linear-gradient(135deg, #374151 0%, #111827 100%)',
-    'est_year' => 'Est. 2020',
 ];
 
 $page_title = $club['name'];
@@ -68,8 +65,7 @@ require_once __DIR__ . '/includes/header.php';
 <div class="club-page-container">
     <!-- Breadcrumb -->
     <nav class="club-breadcrumb" aria-label="Breadcrumb">
-        <a href="<?= app_url('/sessions.php') ?>">Explore sessions</a> / 
-        <a href="<?= app_url('/clubs.php') ?>">Sports clubs</a> / 
+        <a href="<?= app_url('/clubs.php') ?>">Sports Clubs</a> /
         <span class="breadcrumb-current"><?= e($club['name']) ?></span>
     </nav>
 
@@ -92,14 +88,14 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
             <?php endif; ?>
             <div class="club-identity-details">
-                <h1 class="club-profile-title"><?= e($club['name']) ?></h1>
+                <div class="club-title-row">
+                    <h1 class="club-profile-title"><?= e($club['name']) ?></h1>
+                    <?php if ($can_edit_club): ?>
+                        <a href="<?= app_url('/manager/club-settings.php?club_id=' . $club_id) ?>" class="club-edit-btn">Edit</a>
+                    <?php endif; ?>
+                </div>
                 <div class="club-profile-meta-row">
-                    <span class="badge-registered-club">
-                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
-                        <span>Registered sports club</span>
-                    </span>
-                    <span class="club-meta-separator">·</span>
-                    <span class="club-meta-text"><?= e($club['sport_type']) ?> · <?= $member_count ?> <?= $member_count === 1 ? 'member' : 'members' ?> · <?= e($meta['est_year']) ?></span>
+                    <span class="club-meta-text"><?= e($club['sport_type']) ?> · <?= $member_count ?> <?= $member_count === 1 ? 'member' : 'members' ?></span>
                 </div>
             </div>
         </div>
@@ -148,7 +144,6 @@ require_once __DIR__ . '/includes/header.php';
                             $day_num = $date_obj->format('j');
                             $month_abbr = strtoupper($date_obj->format('M'));
                             $day_name = $date_obj->format('D');
-                            $is_free = (float)$s['price'] <= 0;
                             $seat_info = get_session_seat_info($s['id']);
                         ?>
                             <a href="<?= app_url('/session-detail.php?id=' . $s['id']) ?>" class="club-session-row-item">
@@ -159,11 +154,6 @@ require_once __DIR__ . '/includes/header.php';
                                 <div class="club-session-info-col">
                                     <div class="club-session-title-line">
                                         <h3 class="club-session-title"><?= e($s['title']) ?></h3>
-                                        <?php if ($is_free): ?>
-                                            <span class="pill-badge pill-free">Free entry</span>
-                                        <?php else: ?>
-                                            <span class="pill-badge pill-blue">Guests welcome</span>
-                                        <?php endif; ?>
                                     </div>
                                     <div class="club-session-subline">
                                         <span><?= e($day_name) ?> · <?= date('g:i A', strtotime($s['start_time'])) ?> · <?= e($s['venue']) ?></span>
@@ -171,7 +161,10 @@ require_once __DIR__ . '/includes/header.php';
                                 </div>
                                 <div class="club-session-price-action">
                                     <span class="club-session-price">
-                                        <?= e(format_session_price($s)) ?>
+                                        <?= e(format_price($s['price'])) ?>
+                                        <?php if (format_member_price($s)): ?>
+                                            <br><?= e(format_price($s['member_price'])) ?>
+                                        <?php endif; ?>
                                     </span>
                                     <svg class="club-session-arrow" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
                                 </div>
@@ -196,7 +189,7 @@ require_once __DIR__ . '/includes/header.php';
                             </div>
                             <div class="committee-details">
                                 <div class="committee-name"><?= e($member['name']) ?></div>
-                                <div class="committee-role"><?= $is_pres ? 'President' : 'Committee member' ?></div>
+                                <div class="committee-role"><?= e(committee_title($member)) ?></div>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -210,9 +203,6 @@ require_once __DIR__ . '/includes/header.php';
             <div class="club-sidebar-card membership-card" id="membership">
                 <div class="membership-card-top">
                     <div class="sidebar-card-label">MEMBERSHIP</div>
-                    <?php if ($can_edit_membership): ?>
-                        <a href="<?= app_url('/manager/club-settings.php?club_id=' . $club_id . '#membership') ?>" class="membership-edit-link">Edit</a>
-                    <?php endif; ?>
                 </div>
 
                 <?php membership_feedback(); ?>
@@ -237,16 +227,11 @@ require_once __DIR__ . '/includes/header.php';
                     </ul>
                 <?php endif; ?>
 
-                <div class="membership-notice-box">
-                    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                    <p>Guests can still join sessions that allow guests without a club membership.</p>
-                </div>
-
                 <?php [$status_text, $status_tone] = membership_status_label($member_status); ?>
                 
                 <div class="membership-status-row">
                     <span class="status-label">Your status</span>
-                    <span class="member-status-pill tone-<?= $status_tone ?>"><span class="status-dot"></span> <?= $status_text ?></span>
+                    <span class="member-status-pill tone-<?= $status_tone ?>"><?= $status_text ?></span>
                 </div>
 
                 <?php if (!$viewer): ?>
@@ -295,12 +280,6 @@ require_once __DIR__ . '/includes/header.php';
                         <svg class="info-icon" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" x2="22" y1="12" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                         <span class="info-text"><?= e($club['instagram']) ?></span>
                     </div>
-                    <?php endif; ?>
-                    <?php if (!empty($club['bank_name'])): ?>
-                        <div class="club-info-row">
-                            <svg class="info-icon" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
-                            <span class="info-text"><?= e($club['bank_name']) ?>: <?= e($club['account_number']) ?></span>
-                        </div>
                     <?php endif; ?>
                 </div>
             </div>

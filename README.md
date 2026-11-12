@@ -149,7 +149,7 @@ SportsHub is for Taylor's University students only (`@sd.taylors.edu.my` account
     INSERT INTO club_managers (club_id, user_id, appointed_by, role, can_manage_sessions, can_manage_signups, can_edit_club)
     VALUES (LAST_INSERT_ID(), (SELECT id FROM users WHERE email = 'student@sd.taylors.edu.my'), 1, 'president', 1, 1, 1);
 
-A new club starts with no payment details. Before it can run sessions or paid memberships, its president must add the club's DuitNow QR and bank details in **Manager Workbench → Settings → Payment details**.
+A new club starts with no payment details. Before it can run sessions or paid memberships, its president must add the club's DuitNow QR and bank details in **Manager Workspace → Settings → Payment details**.
 
 **Running a club (committee).** After that, the club is run entirely by its committee:
 
@@ -177,7 +177,7 @@ Students can pay a club to become a member for a set time. Committee members alw
 
 **Where students see it.** **My memberships** (the card icon next to your name) shows one card per club with its status and expiry. **Renew** only becomes available once a membership has expired, and uses the club's current price and length. Membership sign-ups also appear in **My Activities**, in the same tabs as session registrations.
 
-**Where committees see it.** The **Members** button on each workbench club card lists the committee, paid members and expired memberships. Every receipt and decision is kept in a history on the payment and review pages.
+**Where committees see it.** The **Members** button on each workspace club card lists the committee, paid members and expired memberships. Every receipt and decision is kept in a history on the payment and review pages.
 
 **Demo memberships:** Danial Hakim is an active Badminton member and has applied to Basketball without paying. Mei Ling's Badminton membership has expired (try Renew) and her Basketball receipt was rejected. Ravi Kumar's Badminton receipt is waiting for review.
 
@@ -185,14 +185,14 @@ Students can pay a club to become a member for a set time. Committee members alw
 
 ## Running sessions
 
-**Creating a session (committee members with "Manage sessions").** In **Manager Workbench → Create New Session**, write the description students will see on the session page, choose a cover picture (upload your own, or pick a built-in one), and set:
+**Creating a session (committee members with "Manage sessions").** In **Manager Workspace → Create new session**, write the description students will see on the session page, choose a cover picture (upload your own, or pick a built-in one), and set:
 
 - **Price:** what non-members pay (0 makes it free).
 - **Member price (optional):** what club members pay. That means committee members, and students with an active membership. It can't be more than the price, and 0 makes the session free for members. Leave it empty and everyone pays the same.
 
 Prices, date, time, venue and capacity are locked once a session is published; the description and cover picture can still change.
 
-**Payment details (president).** In **Settings → Payment details**, the president uploads the club's DuitNow QR, enters its bank details, and can add a payment note (for example, what to use as the payment reference). Students see all three when they pay. Until the QR and bank details are complete, the club can't create or publish sessions or open paid memberships, and the workbench and Club settings show a warning.
+**Payment details (president).** In **Settings → Payment details**, the president uploads the club's DuitNow QR, enters its bank details, and can add a payment note (for example, what to use as the payment reference). Students see all three when they pay. Until the QR and bank details are complete, the club can't create or publish sessions or open paid memberships, and the workspace and Club settings show a warning.
 
 **Demo sessions:** the Footwork Clinic costs RM 15, or RM 10 for Badminton members. There's also a draft, a session with sign-up closed, a cancelled session with refunds in progress, one that has already happened, and a full one.
 
@@ -273,15 +273,14 @@ Run the browser suites sequentially; they share a disposable-fixture state file.
 - `noted-gaps.cjs` checks targeted handler, receipt-history, keyboard-navigation, responsive-layout, and styling regressions.
 - `ux-journey.cjs` checks registration, upload, review, cancellation, refunds, access boundaries, and final-place concurrency. It also runs axe checks and writes local screenshots/results to `docs/ux-evidence/`.
 
-Finite automated checks do not establish complete security, accessibility, usability, or concurrency coverage. Real bank transfers and real-world organiser workflows are not exercised by these suites.
+Finite automated checks do not establish complete security, accessibility, usability, or concurrency coverage. Real bank transfers and real-world committee workflows are not exercised by these suites.
 
 ## Current limitations
 
-- Guest participation and some club statistics (such as the founding year) are presentation-only content.
 - The automated test suites do not cover club memberships, member prices or the payment-details rule yet; these were checked by hand.
 - Forgot password is a placeholder; Remember me does not implement persistent login tokens.
 - Reservation expiry is request-driven; no scheduled cleanup worker is included.
-- Date filters include fixed demonstration months. Discovery can display already-started published sessions, although reservation handlers enforce the start boundary.
+- Date filters include fixed demonstration months.
 - The quoted amount and payment instructions (bank details and payment note) are saved with a reservation. The QR shown is always the club's current one, and SportsHub does not verify that it is a real payment destination.
 - Receipt history is retained, but complete linked registration-attempt history is not implemented. Rebooking with existing financial evidence is blocked to preserve that evidence.
 - Exceptional post-start withdrawal and late-discovered-transfer reconciliation have no dedicated workflow.

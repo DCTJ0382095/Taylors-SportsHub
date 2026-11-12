@@ -1,5 +1,5 @@
 <?php
-$page_title = "Explore Sessions · Taylor's SportsHub";
+$page_title = "Explore Sessions";
 require_once __DIR__ . '/includes/header.php';
 
 $db = get_db_connection();
@@ -15,8 +15,8 @@ $page = max(1, (int)($_GET['page'] ?? 1));
 $per_page = 6;
 $offset = ($page - 1) * $per_page;
 
-// Build query
-$where = ["s.status = 'published'"];
+// Build query: published sessions that haven't started yet
+$where = ["s.status = 'published'", "CONCAT(s.session_date, ' ', s.start_time) >= NOW()"];
 $params = [];
 
 if ($search !== '') {
@@ -76,7 +76,7 @@ $stmt->execute($params);
 $sessions = $stmt->fetchAll();
 
 // Get distinct sports for dropdown
-$sports = $db->query("SELECT DISTINCT sport_type FROM sessions WHERE status = 'published' ORDER BY sport_type ASC")->fetchAll(PDO::FETCH_COLUMN);
+$sports = $db->query("SELECT DISTINCT sport_type FROM sessions WHERE status = 'published' AND CONCAT(session_date, ' ', start_time) >= NOW() ORDER BY sport_type ASC")->fetchAll(PDO::FETCH_COLUMN);
 
 // Helper function to build pagination query URL
 function pagination_url(int $p): string {
@@ -93,7 +93,7 @@ function pagination_url(int $p): string {
             DISCOVER / CAMPUS SPORTS 2026
         </div>
         <h1 class="sessions-title">
-            Find your next session.
+            Find your next session
         </h1>
         <p class="sessions-subtitle">
             Explore approved student sports sessions across campus, from casual open rallies to structured clinics.
@@ -167,8 +167,8 @@ function pagination_url(int $p): string {
                 <input type="hidden" name="date" value="<?= e($date_filter) ?>">
                 <input type="hidden" name="price" value="<?= e($price_filter) ?>">
                 <select name="sort" class="sort-select" onchange="this.form.submit()">
-                    <option value="date_asc" <?= $sort === 'date_asc' ? 'selected' : '' ?>>Date: soonest first</option>
-                    <option value="date_desc" <?= $sort === 'date_desc' ? 'selected' : '' ?>>Date: latest first</option>
+                    <option value="date_asc" <?= $sort === 'date_asc' ? 'selected' : '' ?>>Date: earliest</option>
+                    <option value="date_desc" <?= $sort === 'date_desc' ? 'selected' : '' ?>>Date: latest</option>
                     <option value="popular" <?= $sort === 'popular' ? 'selected' : '' ?>>Most popular</option>
                 </select>
             </form>
@@ -205,7 +205,7 @@ function pagination_url(int $p): string {
                                     <?= format_price($sess['price']) ?>
                                 </span>
                                 <?php if (format_member_price($sess)): ?>
-                                    <span class="badge-price badge-member-price"><?= e(format_member_price($sess)) ?></span>
+                                    <span class="badge-price badge-member-price"><?= e(format_price($sess['member_price'])) ?></span>
                                 <?php endif; ?>
                             </span>
                         </div>
@@ -229,16 +229,16 @@ function pagination_url(int $p): string {
                                 </div>
                                 <div class="session-meta-item">
                                     <svg class="session-meta-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                                    <span><?= e($sess['venue']) ?></span>
+                                    <span class="session-meta-venue" title="<?= e($sess['venue']) ?>"><?= e($sess['venue']) ?></span>
                                 </div>
                             </div>
                         </div>
                         <div class="session-card-footer">
                             <span class="seats-status <?= $seat_info['is_full'] ? 'full' : 'open' ?>">
                                 <?php if ($seat_info['is_full']): ?>
-                                    Full (<?= $seat_info['capacity'] ?> / <?= $seat_info['capacity'] ?>)
+                                    Session Full
                                 <?php else: ?>
-                                    <?= $seat_info['seats_left'] ?> places left
+                                    <?= $seat_info['seats_left'] ?> <?= $seat_info['seats_left'] === 1 ? 'place' : 'places' ?> left
                                 <?php endif; ?>
                             </span>
                             <span class="card-action-indicator">

@@ -104,7 +104,7 @@ function is_admin(int $user_id): bool {
 // or null if they are not on that club's committee.
 function get_committee_role(int $club_id, int $user_id): ?array {
     $db = get_db_connection();
-    $stmt = $db->prepare("SELECT role, can_manage_sessions, can_manage_signups, can_edit_club
+    $stmt = $db->prepare("SELECT role, title, can_manage_sessions, can_manage_signups, can_edit_club
                           FROM club_managers
                           WHERE club_id = :club_id AND user_id = :user_id
                           LIMIT 1");
@@ -120,6 +120,14 @@ function is_club_president(int $club_id, int $user_id): bool {
     }
     $row = get_committee_role($club_id, $user_id);
     return $row !== null && $row['role'] === 'president';
+}
+
+// What to call a committee member: "President", the title the president gave them, or "Committee member".
+function committee_title(array $member): string {
+    if ($member['role'] === 'president') {
+        return 'President';
+    }
+    return $member['title'] ?: 'Committee member';
 }
 
 // Can this user do a particular job in this club?

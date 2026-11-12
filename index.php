@@ -1,5 +1,4 @@
 <?php
-$page_title = "Taylor's SportsHub · Student Sports & Club Sessions";
 require_once __DIR__ . '/includes/header.php';
 
 $db = get_db_connection();
@@ -13,26 +12,15 @@ $stmt = $db->query("SELECT s.*, c.name AS club_name, c.slug AS club_slug, c.logo
                     ORDER BY s.session_date ASC, s.start_time ASC");
 $all_upcoming = $stmt->fetchAll();
 
-// If none in the future (demo safe fallback), show published sessions
-if (empty($all_upcoming)) {
-    $stmt = $db->query("SELECT s.*, c.name AS club_name, c.slug AS club_slug, c.logo_path AS club_logo, c.banner_path AS club_banner 
-                        FROM sessions s 
-                        INNER JOIN clubs c ON s.club_id = c.id 
-                        WHERE s.status = 'published' 
-                        ORDER BY s.session_date ASC, s.start_time ASC");
-    $all_upcoming = $stmt->fetchAll();
-}
-
 $spotlight = !empty($all_upcoming) ? $all_upcoming[0] : null;
 $spotlight_seats = $spotlight ? get_session_seat_info((int)$spotlight['id']) : null;
 
 // Display top 3 for the home cards grid
 $upcoming_sessions = array_slice($all_upcoming, 0, 3);
 
-// Fetch active clubs with session count & manager name
+// Fetch active clubs with their number of upcoming sessions
 $stmt = $db->query("SELECT c.*, 
-                    (SELECT COUNT(*) FROM sessions s WHERE s.club_id = c.id AND s.status = 'published') AS session_count,
-                    (SELECT u.name FROM club_managers cm INNER JOIN users u ON cm.user_id = u.id WHERE cm.club_id = c.id LIMIT 1) AS manager_name
+                    (SELECT COUNT(*) FROM sessions s WHERE s.club_id = c.id AND s.status = 'published' AND CONCAT(s.session_date, ' ', s.start_time) >= NOW()) AS session_count
                     FROM clubs c 
                     WHERE c.status = 'active' 
                     ORDER BY c.name ASC");
@@ -46,7 +34,7 @@ $clubs = $stmt->fetchAll();
         <div class="hero-grid">
             <div>
                 <div class="section-label">YOUR CAMPUS. YOUR COURT. / 2026</div>
-                <h1 class="hero-heading">Get back<br>in the game.</h1>
+                <h1 class="hero-heading">Get back<br>in the game</h1>
                 <p class="hero-lead">
                     Friendly rallies, new connections and a clear plan. Discover free and paid sessions from Taylor's Sports Clubs.
                 </p>
@@ -72,7 +60,7 @@ $clubs = $stmt->fetchAll();
                     </a>
                     <a href="<?= APP_BASE_PATH ?>/sessions.php?price=free" class="quick-tag-chip">
                         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                        <span>Free Sessions</span>
+                        <span>Free sessions</span>
                     </a>
                 </div>
 
@@ -148,6 +136,9 @@ $clubs = $stmt->fetchAll();
             </a>
         </div>
 
+        <?php if (empty($upcoming_sessions)): ?>
+            <p style="font-size: 15px; color: #6e6e73; margin: 0;">No upcoming sessions right now. Check back soon.</p>
+        <?php endif; ?>
         <div class="session-cards-grid">
             <?php foreach ($upcoming_sessions as $session): 
                 $seats = get_session_seat_info((int)$session['id']);
@@ -166,7 +157,7 @@ $clubs = $stmt->fetchAll();
                                 </span>
                                 <?php if (format_member_price($session)): ?>
                                     <span style="background: #c8102e; color: #ffffff; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 980px; box-shadow: 0 2px 6px rgba(0,0,0,0.12);">
-                                        <?= e(format_member_price($session)) ?>
+                                        <?= e(format_price($session['member_price'])) ?>
                                     </span>
                                 <?php endif; ?>
                             </span>
@@ -178,16 +169,16 @@ $clubs = $stmt->fetchAll();
                             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
                             <span><?= e(format_session_date($session['session_date'])) ?> · <?= e(format_session_time($session['start_time'])) ?></span>
                         </div>
-                        <div class="session-card-venue">
+                        <div class="session-card-venue" title="<?= e($session['venue']) ?>">
                             <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
                             <span><?= e($session['venue']) ?></span>
                         </div>
                         <div class="session-card-footer">
                             <div style="font-size: 13px; font-weight: 600; color: <?= $seats['is_full'] ? '#d70015' : '#248a3d' ?>;">
-                                <?= $seats['is_full'] ? 'Session Full' : $seats['seats_left'] . ' of ' . $seats['capacity'] . ' places left' ?>
+                                <?= $seats['is_full'] ? 'Session Full' : $seats['seats_left'] . ($seats['seats_left'] === 1 ? ' place left' : ' places left') ?>
                             </div>
                             <span style="color: #c8102e; font-size: 13.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
-                                <span>View</span>
+                                <span>View session</span>
                                 <span>→</span>
                             </span>
                         </div>
@@ -206,7 +197,7 @@ $clubs = $stmt->fetchAll();
                 <p class="section-desc" style="font-size: 15px; color: #6e6e73; margin: 0;">Approved student sports clubs organizing regular campus sessions.</p>
             </div>
             <a href="<?= APP_BASE_PATH ?>/clubs.php" style="color: #c8102e; font-weight: 600; text-decoration: none; font-size: 14.5px; display: inline-flex; align-items: center; gap: 4px;">
-                <span>All sports clubs</span>
+                <span>View all sports clubs</span>
                 <span>→</span>
             </a>
         </div>
@@ -236,7 +227,7 @@ $clubs = $stmt->fetchAll();
                                 <?= $club['session_count'] ?> active <?= $club['session_count'] === 1 ? 'session' : 'sessions' ?>
                             </span>
                             <span style="color: #c8102e; font-size: 13.5px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
-                                <span>View Profile</span>
+                                <span>View profile</span>
                                 <span>→</span>
                             </span>
                         </div>
@@ -251,7 +242,7 @@ $clubs = $stmt->fetchAll();
         <div class="community-invite-banner">
             <div class="community-invite-left">
                 <span class="community-invite-eyebrow">MORE THAN A SESSION</span>
-                <h2 class="community-invite-title">Find your people.<br>Make your next rally.</h2>
+                <h2 class="community-invite-title">Find your people<br>Make your next rally</h2>
                 <p class="community-invite-lead">
                     From your first practice to your next regular game, join at your pace. Your student account keeps every session in one place.
                 </p>
@@ -271,7 +262,7 @@ $clubs = $stmt->fetchAll();
             </div>
 
             <div class="community-invite-right">
-                <div class="community-invite-stat-title">One club.<br>More time to play.</div>
+                <div class="community-invite-stat-title">One club<br>More time to play</div>
                 <div class="community-invite-stat-desc">Free and paid individual sessions. No membership required.</div>
             </div>
         </div>
@@ -286,7 +277,7 @@ $clubs = $stmt->fetchAll();
             <div class="journey-step-item">
                 <span class="journey-step-num">02 /</span>
                 <h4 class="journey-step-title">Reserve your place</h4>
-                <p class="journey-step-desc">Free sessions confirm immediately. Paid sessions need a receipt and organiser review.</p>
+                <p class="journey-step-desc">Free sessions confirm immediately. Paid sessions need a receipt and committee review.</p>
             </div>
             <div class="journey-step-item">
                 <span class="journey-step-num">03 /</span>

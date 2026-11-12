@@ -61,7 +61,7 @@ require_once __DIR__ . '/includes/header.php';
         <div class="auth-hero-col">
             <span class="section-label">WELCOME BACK TO CAMPUS LIFE</span>
             <h1 class="auth-hero-title">
-                Your next great<br>moment is waiting.
+                Your next great<br>moment is waiting
             </h1>
             <p class="auth-hero-desc">
                 Pick up where you left off. Your sports sessions, your community, all in one place.
@@ -78,7 +78,7 @@ require_once __DIR__ . '/includes/header.php';
         <!-- Right Card -->
         <div class="auth-form-card">
             <span class="auth-card-eyebrow">TAYLOR'S SPORTS HUB</span>
-            <h2 class="auth-card-title">Good to see you again.</h2>
+            <h2 class="auth-card-title">Good to see you again</h2>
             <p class="auth-card-sub">Log in with your Taylor's email to save your seat.</p>
 
             <?php if ($error): ?>

@@ -1,5 +1,5 @@
 <?php
-// My memberships: every club you're a member of (or have applied to), with its status and expiry.
+// My Memberships: every club you're a member of (or have applied to), with its status and expiry.
 // Clubs where you're on the committee are included, because committee members always count as members.
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/helpers.php';
@@ -38,13 +38,13 @@ foreach ($stmt->fetchAll() as $row) {
 // A to Z by club name.
 usort($cards, fn($a, $b) => strcmp($a['name'], $b['name']));
 
-$page_title = 'My memberships';
+$page_title = 'My Memberships';
 require_once __DIR__ . '/includes/header.php';
 ?>
 <div class="memberships-page">
     <header class="memberships-header">
         <div class="memberships-eyebrow">SPORTSHUB / CLUBS</div>
-        <h1 class="memberships-title">My memberships</h1>
+        <h1 class="memberships-title">My Memberships</h1>
         <p class="memberships-subtitle">The clubs you belong to, when each membership ends, and renewals.</p>
     </header>
 
@@ -60,6 +60,7 @@ require_once __DIR__ . '/includes/header.php';
                 <?php
                     $state = $card['state'];
                     [$status_text, $status_tone] = membership_status_label($state);
+                    if ($state === 'active') $status_text = 'Active';
                     $logo_url = get_club_logo_url($card);
                     $club_url = app_url('/club.php?id=' . $card['club_id']);
                 ?>
@@ -74,7 +75,7 @@ require_once __DIR__ . '/includes/header.php';
                         </a>
                         <div class="membership-tile-heading">
                             <h2><a href="<?= $club_url ?>"><?= e($card['name']) ?></a></h2>
-                            <span class="member-status-pill tone-<?= $status_tone ?>"><span class="status-dot"></span> <?= $status_text ?></span>
+                            <span class="member-status-pill tone-<?= $status_tone ?>"><?= $status_text ?></span>
                         </div>
                     </div>
 

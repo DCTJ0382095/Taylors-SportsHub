@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS `club_managers` (
   `user_id` INT NOT NULL,
   `appointed_by` INT NOT NULL,
   `role` ENUM('president', 'committee') NOT NULL DEFAULT 'committee',
+  `title` VARCHAR(50) NULL,
   `can_manage_sessions` TINYINT(1) NOT NULL DEFAULT 0, 
   `can_manage_signups` TINYINT(1) NOT NULL DEFAULT 0,
   `can_edit_club` TINYINT(1) NOT NULL DEFAULT 0, 

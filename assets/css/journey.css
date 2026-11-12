@@ -15,17 +15,13 @@ button:disabled { cursor: wait; opacity: .7; }
 .journey-button:hover { background: #f1f1f5; }
 .journey-button.primary:hover { color: #fff; }
 .journey-button:active { transform: scale(.98); }
-.status-badge { display: inline-block; padding: .45rem .65rem; border-radius: 8px; font-size: .78rem; font-weight: 600; line-height: 1.4; }
-.badge-confirmed { color: #176633; background: #eaf6ee; }
-.badge-warning { color: #805000; background: #fff5da; }
-.badge-info { color: #064f92; background: #eaf3ff; }
-.badge-danger { color: #b20820; background: #fff0f2; }
-.badge-muted { color: #555560; background: #eeeef2; }
 .journey-page { max-width: 1240px; margin: auto; padding: 3rem 1.5rem 4rem; }
 .journey-page.narrow { max-width: 850px; }
 .journey-header { margin-bottom: 1.75rem; }
-.journey-breadcrumb { font-size: .75rem; font-weight: 600; color: #b6081c; margin-bottom: 1.4rem; }
-.journey-breadcrumb a { text-decoration: underline; text-underline-offset: 3px; }
+.journey-breadcrumb { font-size: 13px; color: var(--text-muted, #86868b); margin-bottom: 1.4rem; }
+.journey-breadcrumb a { color: var(--text-secondary, #424245); text-decoration: none; transition: color 0.15s ease; }
+.journey-breadcrumb a:hover { color: var(--color-primary, #c8102e); }
+.journey-breadcrumb .breadcrumb-current { color: var(--text-main, #1d1d1f); font-weight: 500; }
 .journey-page h1 { font-size: clamp(2rem, 3.5vw, 2.9rem); line-height: 1.08; letter-spacing: -.035em; margin: 0 0 1.25rem; }
 .journey-page h2 { font-size: 1.35rem; line-height: 1.25; letter-spacing: -.02em; margin: 0 0 1.1rem; }
 .journey-page h3 { font-size: 1rem; margin: 0 0 .5rem; }
@@ -92,3 +88,7 @@ button:disabled { cursor: wait; opacity: .7; }
 @media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
   .mobile-drawer { background: #fff !important; backdrop-filter: none !important; }
 }
+
+/* Card title on the left, status pill on the right */
+.journey-card-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 1rem; }
+.journey-card-header h2 { margin: 0; }

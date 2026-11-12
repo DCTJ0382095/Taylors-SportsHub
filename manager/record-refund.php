@@ -130,11 +130,15 @@ $page_title = "Record external refund";
 require_once __DIR__ . "/../includes/header.php";
 ?>
 <div class="journey-page narrow">
- <header class="journey-header"><nav class="journey-breadcrumb" aria-label="Breadcrumb"><a href="<?= app_url(
-     "/manager/participants.php?session_id=" . $reg["session_id"],
- ) ?>">Participants</a> / Refund</nav><h1>Record external refund.</h1><p class="journey-subtitle"><?= e(
-    $reg["student_name"],
-) ?> · <?= e($reg["session_title"]) ?></p></header>
+ <header class="journey-header">
+    <nav class="journey-breadcrumb" aria-label="Breadcrumb">
+        <a href="<?= app_url("/manager/sessions.php") ?>">Manager Workspace</a> /
+        <a href="<?= app_url("/manager/participants.php?session_id=" . $reg["session_id"]) ?>">Participants</a> /
+        <span class="breadcrumb-current"><?= e($reg["student_name"]) ?></span>
+    </nav>
+    <h1>Record external refund</h1>
+    <p class="journey-subtitle"><?= e($reg["student_name"]) ?> · <?= e($reg["session_title"]) ?></p>
+ </header>
  <?php if ($error): ?><div class="journey-notice notice-error" role="alert" tabindex="-1" data-focus-error><?= e(
     $error,
 ) ?></div><?php endif; ?>

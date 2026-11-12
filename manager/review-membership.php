@@ -93,9 +93,11 @@ require_once __DIR__ . '/../includes/header.php';
 <div class="journey-page">
   <header class="journey-header">
     <nav class="journey-breadcrumb" aria-label="Breadcrumb">
-      <a href="<?= app_url('/manager/sessions.php?status=memberships') ?>">Membership Sign-ups</a> / Review
+      <a href="<?= app_url('/manager/sessions.php') ?>">Manager Workspace</a> /
+      <a href="<?= app_url('/manager/sessions.php?status=memberships') ?>">Membership Sign-ups</a> /
+      <span class="breadcrumb-current"><?= e($membership['member_name']) ?></span>
     </nav>
-    <h1>Review membership payment.</h1>
+    <h1>Review membership payment</h1>
     <p class="journey-subtitle"><?= e($membership['member_name']) ?> · <?= e($membership['club_name']) ?></p>
   </header>
 
@@ -118,7 +120,7 @@ require_once __DIR__ . '/../includes/header.php';
     </section>
 
     <section class="journey-card">
-      <h2>Decision</h2>
+      <h2>Payment details</h2>
       <dl class="journey-facts">
         <dt>Student</dt><dd><?= e($membership['member_name']) ?></dd>
         <dt>Email</dt><dd><?= e($membership['member_email']) ?></dd>

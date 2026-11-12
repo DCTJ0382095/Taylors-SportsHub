@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } else {
         $db->beginTransaction();
         try {
-            // Same lock order as reservation and organiser cancellation: session, registration.
+            // Same lock order as reservation and committee cancellation: session, registration.
             $q = $db->prepare("SELECT id FROM sessions WHERE id=? FOR UPDATE");
             $q->execute([$reg["session_id"]]);
             $q = $db->prepare($sql . " FOR UPDATE");
@@ -101,11 +101,15 @@ $page_title = "Review payment evidence";
 require_once __DIR__ . "/../includes/header.php";
 ?>
 <div class="journey-page">
- <header class="journey-header"><nav class="journey-breadcrumb" aria-label="Breadcrumb"><a href="<?= app_url(
-     "/manager/participants.php?session_id=" . $reg["session_id"],
- ) ?>">Participants</a> / Payment review</nav><h1>Review payment evidence.</h1><p class="journey-subtitle"><?= e(
-    $reg["student_name"],
-) ?> · <?= e($reg["session_title"]) ?></p></header>
+ <header class="journey-header">
+    <nav class="journey-breadcrumb" aria-label="Breadcrumb">
+        <a href="<?= app_url("/manager/sessions.php") ?>">Manager Workspace</a> /
+        <a href="<?= app_url("/manager/participants.php?session_id=" . $reg["session_id"]) ?>">Participants</a> /
+        <span class="breadcrumb-current"><?= e($reg["student_name"]) ?></span>
+    </nav>
+    <h1>Review payment evidence</h1>
+    <p class="journey-subtitle"><?= e($reg["student_name"]) ?> · <?= e($reg["session_title"]) ?></p>
+ </header>
  <?php if ($error): ?><div class="journey-notice notice-error" role="alert" tabindex="-1" data-focus-error><?= e(
     $error,
 ) ?></div><?php endif; ?>

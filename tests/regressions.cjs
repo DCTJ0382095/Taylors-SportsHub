@@ -352,7 +352,7 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
                 sql('DELETE FROM club_managers WHERE club_id=? AND user_id=?',[f.club,f.users.student.id]);
             }
         });
-        await check('organiser cancellation queues paid refunds and releases unpaid/free places', async () => {
+        await check('committee cancellation queues paid refunds and releases unpaid/free places', async () => {
             await outsider.goto(base+`/session-detail.php?id=${f.sessions.paid}`);
             await post(outsider,'/reserve.php',{session_id:f.sessions.paid});
             const paid=JSON.parse(fixture('read'));

@@ -412,6 +412,9 @@
   font-size: 13px;
   color: var(--text-muted, #6e6e73);
   margin-bottom: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .session-card-footer {

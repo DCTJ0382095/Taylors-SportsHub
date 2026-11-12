@@ -4,8 +4,7 @@ require_once __DIR__ . '/includes/header.php';
 
 $db = get_db_connection();
 $stmt = $db->query("SELECT c.*, 
-                    (SELECT COUNT(*) FROM sessions s WHERE s.club_id = c.id AND s.status = 'published') AS session_count,
-                    (SELECT u.name FROM club_managers cm INNER JOIN users u ON cm.user_id = u.id WHERE cm.club_id = c.id LIMIT 1) AS manager_name
+                    (SELECT COUNT(*) FROM sessions s WHERE s.club_id = c.id AND s.status = 'published' AND CONCAT(s.session_date, ' ', s.start_time) >= NOW()) AS session_count
                     FROM clubs c 
                     WHERE c.status = 'active' 
                     ORDER BY c.name ASC");
@@ -51,25 +50,18 @@ $clubs = $stmt->fetchAll();
                                 <h2 class="club-card-name">
                                     <?= e($club['name']) ?>
                                 </h2>
-                                <span class="club-card-count">
-                                    <?= $club['session_count'] ?> active <?= $club['session_count'] === 1 ? 'session' : 'sessions' ?>
-                                </span>
                             </div>
                             <p class="club-card-desc">
                                 <?= e($club['description']) ?>
                             </p>
-
-                            <?php if (!empty($club['manager_name'])): ?>
-                                <div class="club-card-mgr">
-                                    <strong>Club Manager:</strong> <?= e($club['manager_name']) ?>
-                                </div>
-                            <?php endif; ?>
                         </div>
 
                         <div class="club-card-footer">
-                            <span>Explore club</span>
+                            <span class="club-card-count">
+                                <?= $club['session_count'] ?> active <?= $club['session_count'] === 1 ? 'session' : 'sessions' ?>
+                            </span>
                             <span class="club-card-footer-arrow">
-                                <span>View sessions</span>
+                                <span>View profile</span>
                                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                             </span>
                         </div>

@@ -60,10 +60,10 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="participants-actions">
             <?php if ($session['status'] === 'published'): ?>
                 <a href="<?= app_url('/manager/close-signup.php?id=' . $session['id']) ?>" class="btn-participants-control secondary">
-                    Close Signup
+                    Close signup
                 </a>
                 <a href="<?= app_url('/manager/cancel-session.php?id=' . $session['id']) ?>" class="btn-participants-control danger">
-                    Cancel Session
+                    Cancel session
                 </a>
             <?php endif; ?>
         </div>
@@ -87,7 +87,12 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
         <div class="participants-metric-card">
             <span class="metric-card-label">Price</span>
-            <div class="metric-card-val color-primary"><?= format_price($session['price']) ?></div>
+            <div class="metric-card-val color-primary">
+                <?= format_price($session['price']) ?>
+                <?php if (format_member_price($session)): ?>
+                    <br><?= format_price($session['member_price']) ?>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 
@@ -95,7 +100,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="participants-card">
         <div class="participants-card-header">
             <h2 class="participants-card-title">
-                Registered Students (<?= count($participants) ?>)
+                Registered students (<?= count($participants) ?>)
             </h2>
         </div>
 
@@ -108,15 +113,15 @@ require_once __DIR__ . '/../includes/header.php';
                 </p>
                 <div class="participants-empty-actions">
                     <a href="<?= app_url('/session-detail.php?id=' . $session['id']) ?>" target="_blank" class="btn-table-action primary">
-                        <span>View Public Session</span>
+                        <span>View public session</span>
                         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M7 17L17 7M7 7h10v10"/></svg>
                     </a>
                     <button type="button" data-copy-link="<?= app_url('/session-detail.php?id=' . $session['id']) ?>" class="btn-table-action secondary">
                         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
-                        <span>Copy Link</span>
+                        <span>Copy link</span>
                     </button>
                     <a href="<?= app_url('/manager/sessions.php') ?>" class="btn-table-action secondary">
-                        Back to Workspace
+                        Back to Manager Workspace
                     </a>
                 </div>
             </div>
@@ -128,7 +133,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <th>Student</th>
                             <th>Status</th>
                             <th>Price</th>
-                            <th>Registered At</th>
+                            <th>Registered at</th>
                             <th class="col-action">Action</th>
                         </tr>
                     </thead>
@@ -162,12 +167,12 @@ require_once __DIR__ . '/../includes/header.php';
                                 <td class="col-action-cell">
                                     <?php if ($p['status'] === 'awaiting_approval'): ?>
                                         <a href="<?= app_url('/manager/review-receipt.php?id=' . $p['id']) ?>" class="btn-table-action primary">
-                                            <span>Review Receipt</span>
+                                            <span>Review receipt</span>
                                             <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                                         </a>
                                     <?php elseif ($p['status'] === 'cancellation_pending'): ?>
                                         <a href="<?= app_url('/manager/record-refund.php?id=' . $p['id']) ?>" class="btn-table-action dark">
-                                            <span>Record Refund</span>
+                                            <span>Record refund</span>
                                             <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                                         </a>
                                     <?php elseif (!empty($p['receipt_path'])): ?>
@@ -179,7 +184,7 @@ require_once __DIR__ . '/../includes/header.php';
                                         <?php else: ?>
                                             <button type="button" class="btn-table-action secondary" data-receipt-zoom="<?= app_url('/evidence.php?registration_id=' . $p['id']) ?>" data-receipt-title="Receipt · <?= e($p['name']) ?> (<?= format_price($p['price_snapshot']) ?>)">
                                                 <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                                                <span>View Receipt</span>
+                                                <span>View receipt</span>
                                             </button>
                                         <?php endif; ?>
                                     <?php else: ?>

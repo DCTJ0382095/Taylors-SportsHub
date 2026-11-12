@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$page_title = "Cancel Registration · " . $reg['title'];
+$page_title = "Cancel registration · " . $reg['title'];
 require_once __DIR__ . '/includes/header.php';
 ?>
 
@@ -105,7 +105,7 @@ require_once __DIR__ . '/includes/header.php';
         </span>
 
         <h1 style="font-size: 1.85rem; font-weight: 800; color: #1d1d1f; margin: 0 0 0.5rem; letter-spacing: -0.02em;">
-            Cancel Registration?
+            Cancel registration?
         </h1>
         <p style="color: #6e6e73; font-size: 0.95rem; line-height: 1.5; margin: 0 0 1.5rem;">
             You are requesting to withdraw from <strong><?= e($reg['title']) ?></strong> on <?= format_session_date($reg['session_date']) ?>.
@@ -121,7 +121,7 @@ require_once __DIR__ . '/includes/header.php';
             <div style="background: #fafafa; border-radius: 14px; padding: 1.25rem; border: 1px solid #e5e5ea; margin-bottom: 1.75rem;">
                 <div style="font-size: 0.95rem; font-weight: 700; color: #1d1d1f; margin-bottom: 0.35rem;"><?= $reg['status']==='awaiting_approval'?'Settlement review before refund':'Full refund entitlement' ?> (<?= format_price($reg['price_snapshot']) ?>)</div>
                 <p style="font-size: 0.85rem; color: #6e6e73; margin: 0;">
-                    <?= $reg['status']==='awaiting_approval'?'Your receipt is still under review. The organiser must check whether money arrived before resolving cancellation. If payment is confirmed, a full external refund is due.':'Requesting cancellation before session start entitles you to a full external refund of your approved payment.' ?> Your place stays held until resolution. Recipient details are private to you and authorised club managers.
+                    <?= $reg['status']==='awaiting_approval'?'Your receipt is still under review. The committee must check whether money arrived before resolving cancellation. If payment is confirmed, a full external refund is due.':'Requesting cancellation before session start entitles you to a full external refund of your approved payment.' ?> Your place stays held until resolution. Recipient details are private to you and authorised club managers.
                 </p>
             </div>
 
@@ -130,14 +130,14 @@ require_once __DIR__ . '/includes/header.php';
 
                 <div style="margin-bottom: 1.25rem;">
                     <label for="recipient_bank_name" style="display: block; font-size: 0.88rem; font-weight: 600; color: #1d1d1f; margin-bottom: 0.4rem;">
-                        Your Bank Name
+                        Your bank name
                     </label>
                     <input type="text" id="recipient_bank_name" name="recipient_bank_name" maxlength="100" value="<?= e($_POST['recipient_bank_name']??'') ?>" placeholder="Bank name…" required style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
                 </div>
 
                 <div style="margin-bottom: 1.25rem;">
                     <label for="recipient_account_name" style="display: block; font-size: 0.88rem; font-weight: 600; color: #1d1d1f; margin-bottom: 0.4rem;">
-                        Account Holder Full Name
+                        Account holder full name
                     </label>
                     <input type="text" id="recipient_account_name" name="recipient_account_name" maxlength="150" value="<?= e($_POST['recipient_account_name']??$user['name']) ?>" required style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
                 </div>
@@ -151,7 +151,7 @@ require_once __DIR__ . '/includes/header.php';
 
                 <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
                     <a href="<?= app_url('/my-activities.php') ?>" class="journey-button">
-                        Keep Registration
+                        Keep registration
                     </a>
                     <button type="submit" class="journey-button primary registration-cancel-button">
                         Request cancellation
@@ -166,10 +166,10 @@ require_once __DIR__ . '/includes/header.php';
                 </p>
                 <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
                     <a href="<?= app_url('/my-activities.php') ?>" class="journey-button">
-                        Keep Registration
+                        Keep registration
                     </a>
                     <button type="submit" class="journey-button primary registration-cancel-button">
-                        Yes, Cancel Spot
+                        Yes, cancel my place
                     </button>
                 </div>
             </form>

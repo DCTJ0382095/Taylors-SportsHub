@@ -90,16 +90,16 @@ function count_club_members(int $club_id): int {
 }
 
 // The words and colour for a membership status pill, e.g. ['Awaiting payment', 'amber'].
-// The club page, My memberships and My Activities all use this, so they always match.
+// The club page, My Memberships and My Activities all use this, so they always match.
 function membership_status_label(?string $state): array {
     return match ($state) {
-        'committee'         => ['Committee member', 'green'],
+        'committee'         => ['Committee Member', 'green'],
         'active'            => ['Member', 'green'],
-        'awaiting_payment'  => ['Awaiting payment', 'amber'],
-        'awaiting_approval' => ['Awaiting approval', 'blue'],
-        'payment_rejected'  => ['Payment rejected', 'red'],
+        'awaiting_payment'  => ['Awaiting Payment', 'amber'],
+        'awaiting_approval' => ['Awaiting Approval', 'blue'],
+        'payment_rejected'  => ['Payment Rejected', 'red'],
         'expired'           => ['Expired', 'grey'],
-        default             => ['Not a member', 'grey'],
+        default             => ['Not a Member', 'grey'],
     };
 }
 
@@ -111,7 +111,7 @@ function membership_next_step(array $membership): string {
         'payment_rejected'  => 'The committee could not confirm the payment. Read the reason, then upload a new receipt.',
         'awaiting_approval' => 'The committee is checking the payment. The membership starts on the day they approve it.',
         'active'            => 'Membership is active until ' . format_membership_date($membership['expires_at']) . '.',
-        default             => 'This membership ended on ' . format_membership_date($membership['expires_at']) . '. You can renew it from My memberships or the club page.',
+        default             => 'This membership ended on ' . format_membership_date($membership['expires_at']) . '. You can renew it from My Memberships or the club page.',
     };
 }
 
@@ -172,8 +172,8 @@ function format_member_price(array $session): ?string {
     return (float) $member <= 0 ? 'Free for members' : 'Members ' . format_price($member);
 }
 
-// Both prices on one line, e.g. "RM 15.00 · Members RM 10.00", or just "RM 20.00" / "Free".
+// Both prices on one line, e.g. "RM 15.00 · RM 10.00", or just "RM 20.00" / "Free".
 function format_session_price(array $session): string {
-    $member = format_member_price($session);
+    $member = format_member_price($session) ? format_price($session['member_price']) : null;
     return format_price($session['price']) . ($member ? ' · ' . $member : '');
 }

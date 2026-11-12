@@ -194,7 +194,7 @@ $val = fn(string $key) => is_string($_POST[$key] ?? null) ? $_POST[$key] : (stri
 ?>
 
 <div class="session-editor">
-    <a href="<?= app_url('/manager/sessions.php') ?>" class="settings-back">← Back to Manager Workbench</a>
+    <a href="<?= app_url('/manager/sessions.php') ?>" class="settings-back">← Back to Manager Workspace</a>
     <h1 class="settings-title"><?= e($club['name']) ?> settings</h1>
 
     <?php if (!club_payment_ready($club)): ?>
@@ -217,6 +217,35 @@ $val = fn(string $key) => is_string($_POST[$key] ?? null) ? $_POST[$key] : (stri
     <?php endif; ?>
 
     <?php if ($can_edit_club): ?>
+    <!-- Club images: logo and cover image -->
+    <form method="POST" enctype="multipart/form-data" class="settings-card">
+        <?= csrf_field() ?>
+        <input type="hidden" name="form" value="images">
+        <h2>Club images</h2>
+        <p class="settings-hint">The logo appears on the club page and the Manager Workspace. The cover image is the banner on the club page and the picture on the Sports clubs list.</p>
+
+        <div class="settings-images">
+            <div class="settings-image-field">
+                <span class="settings-image-label">Logo</span>
+                <?php $logo_url = get_club_logo_url($club); ?>
+                <?php if ($logo_url): ?>
+                    <img src="<?= e($logo_url) ?>" alt="Current logo" class="settings-logo-preview">
+                <?php else: ?>
+                    <div class="settings-logo-preview club-logo-fallback"><?= e(get_club_initials($club['name'])) ?></div>
+                <?php endif; ?>
+                <input type="file" name="logo" accept="image/jpeg,image/png,image/webp">
+                <small>Square image · JPG, PNG or WebP · up to 2 MB</small>
+            </div>
+            <div class="settings-image-field">
+                <span class="settings-image-label">Cover image</span>
+                <img src="<?= e(get_club_banner_url($club)) ?>" alt="Current cover image" class="settings-cover-preview">
+                <input type="file" name="cover" accept="image/jpeg,image/png,image/webp">
+                <small>Wide image (about 3:1) · JPG, PNG or WebP · up to 5 MB</small>
+            </div>
+        </div>
+        <button type="submit" class="manager-btn manager-btn-primary">Upload images</button>
+    </form>
+    <?php endif; ?>
     <!-- Club profile: anyone with the "edit club profile" permission -->
     <form method="POST" class="settings-card">
         <?= csrf_field() ?>
@@ -252,35 +281,6 @@ $val = fn(string $key) => is_string($_POST[$key] ?? null) ? $_POST[$key] : (stri
         <button type="submit" class="manager-btn manager-btn-primary">Save club profile</button>
     </form>
 
-    <!-- Club images: logo and cover image -->
-    <form method="POST" enctype="multipart/form-data" class="settings-card">
-        <?= csrf_field() ?>
-        <input type="hidden" name="form" value="images">
-        <h2>Club images</h2>
-        <p class="settings-hint">The logo appears on the club page and the Manager Workbench. The cover image is the banner on the club page and the picture on the Sports clubs list.</p>
-
-        <div class="settings-images">
-            <div class="settings-image-field">
-                <span class="settings-image-label">Logo</span>
-                <?php $logo_url = get_club_logo_url($club); ?>
-                <?php if ($logo_url): ?>
-                    <img src="<?= e($logo_url) ?>" alt="Current logo" class="settings-logo-preview">
-                <?php else: ?>
-                    <div class="settings-logo-preview club-logo-fallback"><?= e(get_club_initials($club['name'])) ?></div>
-                <?php endif; ?>
-                <input type="file" name="logo" accept="image/jpeg,image/png,image/webp">
-                <small>Square image · JPG, PNG or WebP · up to 2 MB</small>
-            </div>
-            <div class="settings-image-field">
-                <span class="settings-image-label">Cover image</span>
-                <img src="<?= e(get_club_banner_url($club)) ?>" alt="Current cover image" class="settings-cover-preview">
-                <input type="file" name="cover" accept="image/jpeg,image/png,image/webp">
-                <small>Wide image (about 3:1) · JPG, PNG or WebP · up to 5 MB</small>
-            </div>
-        </div>
-        <button type="submit" class="manager-btn manager-btn-primary">Upload images</button>
-    </form>
-    <?php endif; ?>
 
     <!-- Membership: anyone with the "manage sign-ups and payments" permission -->
     <?php if ($can_manage_signups): ?>

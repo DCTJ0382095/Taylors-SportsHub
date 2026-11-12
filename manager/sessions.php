@@ -79,16 +79,16 @@ $metric_published = count(array_filter($all_mgr_rows, fn($r) => $r['status'] ===
 $metric_draft = count(array_filter($all_mgr_rows, fn($r) => $r['status'] === 'draft'));
 $metric_pending_receipts = array_sum(array_column($all_mgr_rows, 'pending_review_count'));
 
-$page_title = "Manager Workbench · Sessions";
+$page_title = "Manager Workspace · Sessions";
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="manager-container">
-    <!-- Workbench Header -->
+    <!-- Workbench header -->
     <div class="manager-header-row">
         <div class="manager-title-group">
             <span class="manager-eyebrow">Club Operations</span>
-            <h1 class="manager-title">Manager Workbench</h1>
+            <h1 class="manager-title">Manager Workspace</h1>
             <p class="manager-desc">
                 Manage club sessions, review payment receipts, and record refunds.
             </p>
@@ -97,7 +97,7 @@ require_once __DIR__ . '/../includes/header.php';
         <?php if ($can_create_sessions): ?>
         <a href="<?= app_url('/manager/session-edit.php') ?>" class="manager-btn-create">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            <span>Create New Session</span>
+            <span>Create new session</span>
         </a>
         <?php endif; ?>
         </div>
@@ -117,10 +117,9 @@ require_once __DIR__ . '/../includes/header.php';
                     $logo_url = get_club_logo_url($mc);
                     if ($is_admin) {
                         $role_label = 'Admin';
-                    } elseif (is_club_president($mc_id, $user['id'])) {
-                        $role_label = 'President';
                     } else {
-                        $role_label = 'Committee member';
+                        // "President", the title the president gave them, or "Committee member"
+                        $role_label = committee_title(get_committee_role($mc_id, $user['id']));
                     }
                 ?>
                 <div class="manager-club-card">
@@ -132,9 +131,9 @@ require_once __DIR__ . '/../includes/header.php';
                         <?php endif; ?>
                     </div>
                     <div class="manager-club-name"><?= e($mc['name']) ?></div>
-                    <div class="manager-club-role"><?= $role_label ?></div>
+                    <div class="manager-club-role"><?= e($role_label) ?></div>
                     <?php if (!club_payment_ready($mc)): ?>
-                        <div class="manager-club-warning">Payment details missing: no sessions until the president adds them.</div>
+                        <div class="manager-club-warning" title="No sessions or paid memberships until the president adds the DuitNow QR and bank details in Settings.">Payment details missing</div>
                     <?php endif; ?>
                     <div class="manager-club-actions">
                         <?php if (can_manage_club($mc_id, $user['id'], 'club') || can_manage_club($mc_id, $user['id'], 'signups')): ?>
@@ -151,19 +150,19 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="manager-metrics-grid">
         <div class="manager-metric-card">
             <div class="manager-metric-val"><?= $metric_total ?></div>
-            <div class="manager-metric-label">All Sessions</div>
+            <div class="manager-metric-label">All sessions</div>
         </div>
         <div class="manager-metric-card">
             <div class="manager-metric-val"><?= $metric_published ?></div>
-            <div class="manager-metric-label">Published Active</div>
+            <div class="manager-metric-label">Published</div>
         </div>
         <div class="manager-metric-card">
             <div class="manager-metric-val <?= $metric_pending_receipts > 0 ? 'alert' : '' ?>"><?= $metric_pending_receipts ?></div>
-            <div class="manager-metric-label">Receipts to Review</div>
+            <div class="manager-metric-label">Receipts to review</div>
         </div>
         <div class="manager-metric-card">
             <div class="manager-metric-val"><?= $metric_draft ?></div>
-            <div class="manager-metric-label">Draft Sessions</div>
+            <div class="manager-metric-label">Draft sessions</div>
         </div>
     </div>
 
@@ -260,12 +259,12 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="manager-empty-actions">
                 <?php if ($can_create_sessions): ?>
                 <a href="<?= app_url('/manager/session-edit.php') ?>" class="manager-btn-create">
-                    + Create New Session
+                    + Create new session
                 </a>
                 <?php endif; ?>
                 <?php if ($filter_status !== ''): ?>
                     <a href="<?= app_url('/manager/sessions.php') ?>" class="manager-empty-btn-all">
-                        Show All Sessions
+                        Show all sessions
                     </a>
                 <?php endif; ?>
             </div>
@@ -280,9 +279,12 @@ require_once __DIR__ . '/../includes/header.php';
                             <span class="manager-card-club-tag"><?= e($s['club_name']) ?> · <?= e($s['sport_type']) ?></span>
                         </div>
 
-                        <h3 class="manager-card-title">
-                            <?= e($s['title']) ?>
-                        </h3>
+                        <div class="manager-card-title-row">
+                            <h3 class="manager-card-title"><?= e($s['title']) ?></h3>
+                            <?php if ($s['status'] === 'published' && can_manage_club((int) $s['club_id'], $user['id'], 'sessions')): ?>
+                                <a href="<?= app_url('/manager/session-edit.php?id=' . $s['id']) ?>" class="manager-card-edit">Edit</a>
+                            <?php endif; ?>
+                        </div>
 
                         <div class="manager-meta-row">
                             <span class="manager-meta-item">
@@ -306,21 +308,23 @@ require_once __DIR__ . '/../includes/header.php';
 
                     <!-- Participant & Review Stats + Actions -->
                     <div class="manager-card-aside">
-                        <div class="manager-stat-badge">
-                            <div class="manager-stat-val">
-                                <?= $s['confirmed_count'] ?> / <?= $s['capacity'] ?>
-                            </div>
-                            <div class="manager-stat-label">Confirmed</div>
-                        </div>
-
-                        <?php if ($s['pending_review_count'] > 0): ?>
-                            <div class="manager-stat-badge alert">
+                        <div class="manager-stat-stack">
+                            <div class="manager-stat-badge">
                                 <div class="manager-stat-val">
-                                    <?= $s['pending_review_count'] ?>
+                                    <?= $s['confirmed_count'] ?> / <?= $s['capacity'] ?>
                                 </div>
-                                <div class="manager-stat-label alert-text">Receipts to Review</div>
+                                <div class="manager-stat-label">Confirmed</div>
                             </div>
-                        <?php endif; ?>
+
+                            <?php if ($s['pending_review_count'] > 0): ?>
+                                <div class="manager-stat-badge alert">
+                                    <div class="manager-stat-val">
+                                        <?= $s['pending_review_count'] ?>
+                                    </div>
+                                    <div class="manager-stat-label alert-text">Receipts to review</div>
+                                </div>
+                            <?php endif; ?>
+                        </div>
 
                         <!-- Actions -->
                         <div class="manager-btn-group">
@@ -332,14 +336,14 @@ require_once __DIR__ . '/../includes/header.php';
                             <?php if (can_manage_club((int) $s['club_id'], $user['id'], 'sessions')): ?>
                             <?php if ($s['status'] === 'draft'): ?>
                                 <a href="<?= app_url('/manager/session-edit.php?id=' . $s['id']) ?>" class="manager-btn manager-btn-secondary">
-                                    Edit Draft
+                                    Edit draft
                                 </a>
                             <?php elseif ($s['status'] === 'published'): ?>
                                 <a href="<?= app_url('/manager/close-signup.php?id=' . $s['id']) ?>" class="manager-btn manager-btn-secondary">
-                                    Close Signup
+                                    Close signup
                                 </a>
                                 <a href="<?= app_url('/manager/cancel-session.php?id=' . $s['id']) ?>" class="manager-btn manager-btn-danger">
-                                    Cancel Session
+                                    Cancel session
                                 </a>
                             <?php endif; ?>
                             <?php endif; ?>

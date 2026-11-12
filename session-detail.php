@@ -40,8 +40,7 @@ require_once __DIR__ . '/includes/header.php';
 
     <!-- Breadcrumb -->
     <nav class="session-detail-breadcrumb" aria-label="Breadcrumb">
-        <a href="<?= app_url('/sessions.php') ?>">Explore sessions</a> / 
-        <a href="<?= app_url('/sessions.php?sport=' . urlencode($session['sport_type'])) ?>"><?= e($session['sport_type']) ?></a> / 
+        <a href="<?= app_url('/sessions.php') ?>">Explore Sessions</a> /
         <span class="breadcrumb-current"><?= e($session['title']) ?></span>
     </nav>
 
@@ -56,7 +55,7 @@ require_once __DIR__ . '/includes/header.php';
             <div class="session-eyebrow"><?= strtoupper(e($session['sport_type'])) ?> · <?= strtoupper(e($session['club_name'])) ?></div>
             <h1 class="session-detail-title"><?= e($session['title']) ?></h1>
             <div class="session-detail-subtitle">
-                <?= e($session['club_name']) ?> · Campus Sports Session
+                <?= e($session['club_name']) ?> · Campus sports session
             </div>
 
             <div class="session-info-card">
@@ -68,7 +67,7 @@ require_once __DIR__ . '/includes/header.php';
 
                 <?php if ($session['status'] === 'cancelled'): ?>
                     <div class="session-state-banner alert">
-                        <strong>Session Cancelled by Organiser</strong>
+                        <strong>Session cancelled by the committee</strong>
                         <p style="margin: 4px 0 0;"><?= e($session['cancellation_reason'] ?: 'No reason provided.') ?></p>
                     </div>
                 <?php endif; ?>
@@ -92,7 +91,7 @@ require_once __DIR__ . '/includes/header.php';
                     </div>
                     <div class="fact-row">
                         <span class="fact-label">Time</span>
-                        <span class="fact-value"><?= format_session_time_range($session['start_time'], $session['end_time']) ?> MYT</span>
+                        <span class="fact-value"><?= format_session_time_range($session['start_time'], $session['end_time']) ?></span>
                     </div>
                     <div class="fact-row">
                         <span class="fact-label">Venue</span>
@@ -122,15 +121,19 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="session-callout-box">
                     <?php if ($your_price > 0): ?>
                         <h4>Payment required</h4>
-                        <p>Reserve a place, pay externally and upload your receipt within 24 hours or before start, whichever is earlier.</p>
+                        <p>
+                            Reserve a place, pay externally and upload your receipt within 24 hours or before start, whichever is earlier.
+                            <?php if (!$gets_member_price && format_member_price($session)): ?>
+                                Members of <?= e($session['club_name']) ?> pay less.
+                                <a href="<?= app_url('/club.php?id=' . $session['club_id']) ?>">See membership</a>
+                            <?php endif; ?>
+                        </p>
                     <?php else: ?>
                         <h4><?= $gets_member_price ? 'Free for members' : 'Free session' ?></h4>
                         <p>Instant confirmation upon reservation. No payment or receipt required.</p>
                     <?php endif; ?>
                     <?php if ($gets_member_price): ?>
                         <p class="member-price-note">You're a member of <?= e($session['club_name']) ?>, so you pay the member price.</p>
-                    <?php elseif (format_member_price($session)): ?>
-                        <p class="member-price-note">Members of <?= e($session['club_name']) ?> pay less. <a href="<?= app_url('/club.php?id=' . $session['club_id']) ?>">See membership</a></p>
                     <?php endif; ?>
                 </div>
 
@@ -143,16 +146,16 @@ require_once __DIR__ . '/includes/header.php';
                     <?php elseif ($existing_reg && in_array($existing_reg['status'], ['confirmed', 'awaiting_payment', 'awaiting_approval', 'payment_rejected', 'cancellation_pending'])): ?>
                         <div class="session-registered-box">
                             <div class="session-registered-header">
-                                <span style="font-size: 12.5px; color: var(--text-muted);">Your Registration:</span>
+                                <span style="font-size: 12.5px; color: var(--text-muted);">Your registration:</span>
                                 <div><?= get_status_badge($existing_reg['status']) ?></div>
                             </div>
                             <?php if ($existing_reg['status'] === 'awaiting_payment'): ?>
                                 <p style="font-size: 12.5px; color: var(--text-secondary); margin: 6px 0 12px;">
-                                    Place held! Submit receipt before <?= format_session_time($existing_reg['payment_deadline']) ?> on <?= format_session_date($existing_reg['payment_deadline']) ?>.
+                                    Place held! Please submit receipt under 24 hours.
                                 </p>
                             <?php elseif ($existing_reg['status'] === 'awaiting_approval'): ?>
                                 <p style="font-size: 12.5px; color: var(--text-secondary); margin: 6px 0 12px;">
-                                    Receipt uploaded. Your place is held during organiser review.
+                                    Receipt uploaded. Your place is held during committee review.
                                 </p>
                             <?php elseif ($existing_reg['status'] === 'payment_rejected'): ?>
                                 <p style="font-size: 12.5px; color: #d70015; margin: 6px 0 12px;">
@@ -160,13 +163,13 @@ require_once __DIR__ . '/includes/header.php';
                                 </p>
                             <?php endif; ?>
                             <a href="<?= app_url('/payment.php?id=' . $existing_reg['id']) ?>" class="btn-reserve">
-                                View registration & next step
+                                View registration
                             </a>
                         </div>
                     <?php elseif ($session['status'] !== 'published' || $seat_info['is_started']): ?>
                         <div class="session-state-banner">
                             <?php if ($session['status'] === 'closed'): ?>
-                                Registration for this session has been closed by the organiser.
+                                Registration for this session has been closed by the committee.
                             <?php elseif ($session['status'] === 'cancelled'): ?>
                                 This session is cancelled.
                             <?php elseif ($seat_info['is_started']): ?>
@@ -177,7 +180,8 @@ require_once __DIR__ . '/includes/header.php';
                         </div>
                     <?php elseif ($seat_info['is_full']): ?>
                         <div class="session-state-banner alert">
-                            This session is currently full (<?= $seat_info['capacity'] ?> / <?= $seat_info['capacity'] ?>). Check back later if a spot opens up.
+                            This session is currently full (<?= $seat_info['capacity'] ?>/<?= $seat_info['capacity'] ?>).<br>
+                            Check back later if a spot opens up.
                         </div>
                     <?php else: ?>
                         <!-- Can Register -->
@@ -185,7 +189,7 @@ require_once __DIR__ . '/includes/header.php';
                             <?= csrf_field() ?>
                             <input type="hidden" name="session_id" value="<?= $session['id'] ?>">
                             <button type="submit" class="btn-reserve">
-                                <?= $your_price <= 0 ? 'Join free session' : 'Reserve place · ' . format_price($your_price) ?>                            </button>
+                                <?= $your_price <= 0 ? 'Reserve place · Free' : 'Reserve place · ' . format_price($your_price) ?>                            </button>
                         </form>
                     <?php endif; ?>
                 </div>
@@ -206,7 +210,7 @@ require_once __DIR__ . '/includes/header.php';
                             <?php endif; ?>
                             <?php if ($can_sessions): ?>
                                 <a href="<?= app_url('/manager/session-edit.php?id=' . $session['id']) ?>" class="manager-pill-btn">
-                                    Edit Settings
+                                    Edit settings
                                 </a>
                             <?php endif; ?>
                         </div>

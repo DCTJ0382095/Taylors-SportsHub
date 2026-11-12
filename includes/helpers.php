@@ -69,11 +69,11 @@ function can_cancel_registration(array $reg): bool {
 
 function registration_next_step(array $reg): string {
     if ($reg['status'] === 'awaiting_approval' && !empty($reg['cancellation_requested_at'])) {
-        return 'Cancellation requested. The organiser must check external settlement before resolving any refund. Your place stays held during review.';
+        return 'Cancellation requested. The committee must check external settlement before resolving any refund. Your place stays held during review.';
     }
     return match ($reg['status']) {
         'awaiting_payment' => 'Your place is held. Transfer the quoted amount, then submit a receipt before the deadline.',
-        'awaiting_approval' => 'Your place is held during review, including after the session starts. Receipt submission does not confirm payment. Wait for the organiser’s decision.',
+        'awaiting_approval' => 'Your place is held during review, including after the session starts. Receipt submission does not confirm payment. Wait for the committee’s decision.',
         'payment_rejected' => 'Check the rejection reason and resubmit evidence before the deadline. A rejected receipt does not prove that no money arrived.',
         'confirmed' => (float)$reg['price_snapshot'] > 0 ? 'Payment approved. Your registration is confirmed.' : 'Your place is confirmed. No payment is required.',
         'cancellation_pending' => 'Your cancellation is pending a full external refund. Your place stays occupied until the refund is fully recorded.',
@@ -86,7 +86,7 @@ function registration_next_step(array $reg): string {
 // Allowlisted feedback: never echo arbitrary query-string messages as status.
 function journey_feedback(): void {
     $messages = [
-        'uploaded' => ['success', 'Receipt submitted. Your place is held while the organiser checks payment.'],
+        'uploaded' => ['success', 'Receipt submitted. Your place is held while the committee checks payment.'],
         'confirmed' => ['success', 'Your place is confirmed. No payment is required for this session.'],
         'approved' => ['success', 'Payment decision saved. The participant’s current registration and refund status are shown below.'],
         'rejected' => ['success', 'Decision saved. The participant can see the rejection reason and deadline.'],
@@ -99,14 +99,14 @@ function journey_feedback(): void {
         'save_failed' => ['error', 'Receipt could not be saved. Your registration is unchanged. Choose the file again and retry.'],
         'deadline_passed' => ['error', 'Receipt deadline passed. Uploads are closed; check your registration status.'],
         'invalid_status' => ['error', 'This action is no longer available. Your current registration status is shown below.'],
-        'history_retained' => ['error', 'Previous payment or refund evidence is retained for this session. Contact the organiser before making another reservation or transfer.'],
+        'history_retained' => ['error', 'Previous payment or refund evidence is retained for this session. Contact the committee before making another reservation or transfer.'],
         'session_cancelled' => ['error', 'The session is cancelled. New reservations and receipt uploads are closed.'],
         'session_full' => ['error', 'The last place was reserved before your request completed. Check another session or try again later.'],
         'session_started' => ['error', 'This session has started. New reservations are closed.'],
         'not_published' => ['error', 'Signup is closed. Existing payment deadlines remain valid unless the session is cancelled.'],
         'closed' => ['success', 'Signup closed. Existing receipt deadlines remain valid; new reservations are blocked.'],
         'csrf_error' => ['error', 'Your form session expired. Reload this page and try again.'],
-        'cannot_cancel_past_start' => ['error', 'Self-service cancellation closes at session start. Contact your organiser for an exceptional withdrawal.'],
+        'cannot_cancel_past_start' => ['error', 'Self-service cancellation closes at session start. Contact your club committee for an exceptional withdrawal.'],
     ];
     $key = $_GET['msg'] ?? '';
     if (!isset($messages[$key])) return;

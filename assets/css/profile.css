@@ -90,11 +90,11 @@
   box-shadow: var(--shadow-xs);
 }
 
+/* Two fields side by side. Each field already has 16px below it, so the row adds no extra space */
 .profile-form-grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 16px;
+  column-gap: 16px;
 }
 
 .profile-form-group {
@@ -157,6 +157,16 @@
   margin-bottom: 20px;
 }
 
+/* Avatar on the left, badge pinned to the top-right corner of the card */
+.profile-sidebar-top {
+  align-self: stretch;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
 .profile-role-badge {
   display: inline-block;
   background: #fee2e2;
@@ -165,12 +175,13 @@
   font-weight: 600;
   padding: 3px 10px;
   border-radius: 980px;
-  margin: 6px 0;
+  white-space: nowrap;
 }
 
 .profile-user-faculty {
   font-size: 13px;
   color: var(--text-secondary, #424245);
+  margin-top: 4px;
 }
 
 .profile-user-member-since {

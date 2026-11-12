@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = "Session expired. Please try again.";
     } else {
         $reason = trim($_POST['cancellation_reason'] ?? '');
-        $registration_reason = 'Session cancelled by organiser: ' . $reason;
+        $registration_reason = 'Session cancelled by the committee: ' . $reason;
         if ($reason === '' || mb_strlen($registration_reason) > 255) {
             $error = 'Enter a cancellation reason of 1–223 characters.';
         } else {
@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$page_title = "Cancel Session · " . $session['title'];
+$page_title = "Cancel session · " . $session['title'];
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
@@ -84,7 +84,7 @@ require_once __DIR__ . '/../includes/header.php';
             Emergency Action
         </span>
         <h1 class="manager-confirm-title">
-            Cancel Session?
+            Cancel session?
         </h1>
         <p class="manager-confirm-desc">
             Cancelling <strong><?= e($session['title']) ?></strong> will close registrations permanently. Any paid participants will have their registrations queued for a full external refund.
@@ -101,17 +101,17 @@ require_once __DIR__ . '/../includes/header.php';
 
             <div class="form-field">
                 <label for="cancellation_reason" class="auth-label">
-                    Reason for Cancellation
+                    Reason for cancellation
                 </label>
                 <textarea id="cancellation_reason" name="cancellation_reason" rows="3" maxlength="223" required placeholder="e.g. Venue maintenance, adverse weather, or emergency coach unavailability..." class="form-input"></textarea>
             </div>
 
             <div class="manager-confirm-actions">
                 <a href="<?= app_url('/manager/sessions.php') ?>" class="manager-btn manager-btn-secondary">
-                    Keep Session
+                    Keep session
                 </a>
                 <button type="submit" class="manager-btn manager-btn-danger">
-                    Confirm & Cancel Session
+                    Confirm & cancel session
                 </button>
             </div>
         </form>

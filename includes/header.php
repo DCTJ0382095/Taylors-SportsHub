@@ -35,20 +35,30 @@ if ($is_manager_route) {
 } else {
     $page_css = $css_map[$current_page] ?? null;
 }
+// Some page stylesheets build on shared ones. Linking those here (not with @import inside the CSS)
+// gives every file its own ?v= number, so browsers always fetch the newest copy after a change.
+$page_css_files = match ($page_css) {
+    'payment.css' => ['journey.css', 'registration-actions.css', 'payment.css'],
+    'session-detail.css' => ['registration-actions.css', 'session-detail.css'],
+    null => [],
+    default => [$page_css],
+};
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= isset($page_title) ? e($page_title) . " · Taylor's SportsHub" : "Taylor's SportsHub · Student Sports & Club Sessions" ?></title>
+    <title><?= isset($page_title) ? e($page_title) . " · Taylor's SportsHub" : "Taylor's SportsHub · Student sports & club sessions" ?></title>
     <link rel="icon" type="image/x-icon" href="<?= APP_BASE_PATH ?>/favicon.ico">
     <link rel="icon" type="image/webp" href="<?= APP_BASE_PATH ?>/assets/images/logo/logo.webp">
     <link rel="apple-touch-icon" href="<?= APP_BASE_PATH ?>/assets/images/logo/logo.webp">
     <link rel="stylesheet" href="<?= APP_BASE_PATH ?>/assets/css/style.css?v=<?= filemtime(__DIR__ . '/../assets/css/style.css') ?>">
-    <?php if ($page_css && file_exists(__DIR__ . '/../assets/css/' . $page_css)): ?>
-        <link rel="stylesheet" href="<?= APP_BASE_PATH ?>/assets/css/<?= e($page_css) ?>?v=<?= filemtime(__DIR__ . '/../assets/css/' . $page_css) ?>">
-    <?php endif; ?>
+    <?php foreach ($page_css_files as $css_file): ?>
+        <?php if (file_exists(__DIR__ . '/../assets/css/' . $css_file)): ?>
+            <link rel="stylesheet" href="<?= APP_BASE_PATH ?>/assets/css/<?= e($css_file) ?>?v=<?= filemtime(__DIR__ . '/../assets/css/' . $css_file) ?>">
+        <?php endif; ?>
+    <?php endforeach; ?>
     <link rel="stylesheet" href="<?= APP_BASE_PATH ?>/assets/css/form-controls.css?v=<?= filemtime(__DIR__ . '/../assets/css/form-controls.css') ?>">
     <link rel="stylesheet" href="<?= APP_BASE_PATH ?>/assets/css/alignment.css?v=<?= filemtime(__DIR__ . '/../assets/css/alignment.css') ?>">
 </head>
@@ -79,12 +89,13 @@ if ($is_manager_route) {
                 <?php if ($is_any_manager): ?>
                     <a href="<?= APP_BASE_PATH ?>/manager/sessions.php" class="btn-manage-club">
                         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        <span>Manager workspace</span>
+                        <span>Manager Workspace</span>
                     </a>
                 <?php endif; ?>
 
-                <a href="<?= APP_BASE_PATH ?>/memberships.php" class="nav-inbox-btn" title="My memberships" aria-label="My memberships">
-                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M14 10h4M14 14h4"/></svg>
+                <a href="<?= APP_BASE_PATH ?>/memberships.php" class="btn-manage-club nav-memberships-btn" aria-label="My Memberships">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M14 10h4M14 14h4"/></svg>
+                    <span>Memberships</span>
                 </a>
 
                 <div class="user-account">
@@ -101,7 +112,7 @@ if ($is_manager_route) {
                         </div>
                         <a href="<?= APP_BASE_PATH ?>/profile.php" class="dropdown-item">My Profile</a>
                         <a href="<?= APP_BASE_PATH ?>/my-activities.php" class="dropdown-item">My Activities</a>
-                        <a href="<?= APP_BASE_PATH ?>/memberships.php" class="dropdown-item">My memberships</a>
+                        <a href="<?= APP_BASE_PATH ?>/memberships.php" class="dropdown-item">My Memberships</a>
 
                         <div class="dropdown-divider"></div>
                         <form method="POST" action="<?= APP_BASE_PATH ?>/logout.php" style="margin: 0;">
@@ -148,7 +159,7 @@ if ($is_manager_route) {
         <?php if ($current_user): ?>
             <a href="<?= APP_BASE_PATH ?>/profile.php" class="mobile-nav-link <?= $current_page === 'profile.php' ? 'active' : '' ?>">My Profile</a>
             <a href="<?= APP_BASE_PATH ?>/my-activities.php" class="mobile-nav-link <?= in_array($current_page, ['my-activities.php', 'payment.php', 'cancel-registration.php']) ? 'active' : '' ?>">My Activities</a>
-            <a href="<?= APP_BASE_PATH ?>/memberships.php" class="mobile-nav-link <?= $current_page === 'memberships.php' ? 'active' : '' ?>">My memberships</a>
+            <a href="<?= APP_BASE_PATH ?>/memberships.php" class="mobile-nav-link <?= $current_page === 'memberships.php' ? 'active' : '' ?>">My Memberships</a>
             <?php if ($is_any_manager): ?>
                 <a href="<?= APP_BASE_PATH ?>/manager/sessions.php" class="mobile-nav-link manager-nav-link">Manager Workspace</a>
             <?php endif; ?>

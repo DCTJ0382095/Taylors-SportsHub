@@ -6,7 +6,7 @@ $reg_id = (int) ($_GET["id"] ?? 0);
 $db = get_db_connection();
 expire_overdue_reservations();
 $stmt = $db->prepare(
-    "SELECT r.*, s.title,s.sport_type,s.venue,s.session_date,s.start_time,s.end_time,s.status AS session_status,s.cancellation_reason AS session_cancellation_reason,c.id AS club_id,c.name AS club_name,c.duitnow_qr_path FROM registrations r INNER JOIN sessions s ON r.session_id=s.id INNER JOIN clubs c ON s.club_id=c.id WHERE r.id=?",
+    "SELECT r.*, s.title,s.sport_type,s.venue,s.session_date,s.start_time,s.end_time,s.status AS session_status,s.cancellation_reason AS session_cancellation_reason,c.id AS club_id,c.name AS club_name,c.duitnow_qr_path,u.name AS student_name FROM registrations r INNER JOIN sessions s ON r.session_id=s.id INNER JOIN clubs c ON s.club_id=c.id INNER JOIN users u ON r.user_id=u.id WHERE r.id=?",
 );
 $stmt->execute([$reg_id]);
 $reg = $stmt->fetch();
@@ -36,23 +36,30 @@ require_once __DIR__ . "/includes/header.php";
 ?>
 <div class="journey-page">
   <header class="journey-header">
-    <nav class="journey-breadcrumb" aria-label="Breadcrumb"><a href="<?= app_url(
-        "/my-activities.php",
-    ) ?>">My Activities</a> / Registration</nav>
+    <nav class="journey-breadcrumb" aria-label="Breadcrumb">
+        <?php if ($is_owner): ?>
+            <a href="<?= app_url("/my-activities.php") ?>">My Activities</a> /
+            <span class="breadcrumb-current"><?= e($reg["title"]) ?></span>
+        <?php else: ?>
+            <a href="<?= app_url("/manager/sessions.php") ?>">Manager Workspace</a> /
+            <a href="<?= app_url("/manager/participants.php?session_id=" . $reg["session_id"]) ?>">Participants</a> /
+            <span class="breadcrumb-current"><?= e($reg["student_name"]) ?></span>
+        <?php endif; ?>
+    </nav>
     <h1><?= $can_upload
         ? ($reg["status"] === "payment_rejected"
-            ? "Resubmit your receipt."
-            : "Complete your payment.")
+            ? "Resubmit your receipt"
+            : "Complete your payment")
         : ($is_refund
-            ? "Cancellation & refund."
-            : "Your registration.") ?></h1>
+            ? "Cancellation & refund"
+            : "Your registration") ?></h1>
     <p class="journey-subtitle"><?= e($reg["title"]) ?> · <?= format_session_date(
      $reg["session_date"],
  ) ?> · <?= format_session_time_range($reg["start_time"], $reg["end_time"]) ?></p>
   </header>
   <?php journey_feedback(); ?>
   <?php if ($reg["session_status"] === "cancelled"): ?>
-    <div class="journey-notice notice-error"><strong>Session cancelled by organiser</strong><p><?= e(
+    <div class="journey-notice notice-error"><strong>Session cancelled by the committee</strong><p><?= e(
         $reg["session_cancellation_reason"],
     ) ?></p><p>New reservations and receipt uploads are closed. Payment and refund resolution remain separate.</p></div>
   <?php endif; ?>
@@ -86,10 +93,10 @@ require_once __DIR__ . "/includes/header.php";
                 <strong>Payment details</strong>
                 <p style="white-space:pre-line; margin-top: 6px;"><?= e(
                     $reg["payment_instructions_snapshot"] ?:
-                    "Instructions unavailable. Contact your club organiser before transferring.",
+                    "Instructions unavailable. Contact your club committee before transferring.",
                 ) ?></p>
               </div>
-              <p class="journey-help">These instructions were saved when you reserved. Keep your transfer receipt. A transfer alone does not submit it to SportsHub.</p>
+              <p class="journey-help">After paying, keep your receipt and upload it below. Paying alone does not confirm your place.</p>
             </div>
           </div>
 
@@ -121,14 +128,14 @@ require_once __DIR__ . "/includes/header.php";
     $refunded,
     2,
 ) ?></dd><dt>Remaining</dt><dd>RM <?= number_format($remaining, 2) ?></dd></dl>
-          <p class="journey-help">Refunds happen externally. This page shows transfers recorded by your organiser; SportsHub does not move money.</p>
+          <p class="journey-help">Refunds happen externally. This page shows transfers recorded by your committee; SportsHub does not move money.</p>
           <?php if ($reg["recipient_account_number"]): ?>
             <div class="journey-callout"><strong>Private refund recipient</strong><p><?= e(
                 $reg["recipient_bank_name"],
             ) ?><br><?= e($reg["recipient_account_name"]) ?><br><?= e($reg["recipient_account_number"]) ?></p></div>
           <?php elseif (
               $remaining > 0.001
-          ): ?><div class="journey-callout"><strong>Recipient details needed</strong><p>Contact your club organiser through your existing private channel to arrange the refund. No turnaround time has been set.</p></div><?php endif; ?>
+          ): ?><div class="journey-callout"><strong>Recipient details needed</strong><p>Contact your club committee through your existing private channel to arrange the refund. No turnaround time has been set.</p></div><?php endif; ?>
           <?php foreach ($refunds as $refund): ?><div class="journey-callout"><strong>RM <?= number_format(
     (float) $refund["amount"],
     2,
@@ -140,7 +147,7 @@ require_once __DIR__ . "/includes/header.php";
         </section>
       <?php endif; ?>
       <?php if ($reg["receipt_path"]): ?>
-        <section class="journey-card"><h2>Submitted evidence</h2><p class="journey-help">A receipt is evidence of a claimed transfer. Only organiser review confirms settlement.</p><a class="journey-button" href="<?= app_url(
+        <section class="journey-card"><h2>Submitted evidence</h2><p class="journey-help">A receipt is evidence of a claimed transfer. Only committee review confirms settlement.</p><a class="journey-button" href="<?= app_url(
             "/evidence.php?registration_id=" . $reg_id,
         ) ?>" target="_blank" rel="noopener">Open receipt ↗</a></section>
       <?php endif; ?>
@@ -158,8 +165,10 @@ require_once __DIR__ . "/includes/header.php";
 
     <!-- Your Reservation Summary Column (Right / Sidebar) -->
     <section class="journey-card" aria-labelledby="reservation-heading">
-      <h2 id="reservation-heading">Your reservation</h2>
-      <?= get_status_badge($reg["status"]) ?>
+      <div class="journey-card-header">
+        <h2 id="reservation-heading">Your reservation</h2>
+        <?= get_status_badge($reg["status"]) ?>
+      </div>
       <dl class="journey-facts">
         <dt><?= $can_upload ? "Amount due" : "Quoted amount" ?></dt><dd><?= format_price($reg["price_snapshot"]) ?></dd>
         <dt>Club</dt><dd><?= e($reg["club_name"]) ?></dd>
@@ -183,7 +192,7 @@ require_once __DIR__ . "/includes/header.php";
 ) ?></p><?php endif; ?>
       <div class="journey-actions">
         <a class="journey-button" href="<?= app_url("/session-detail.php?id=" . $reg["session_id"]) ?>">View session</a>
-        <?php if ($is_owner && can_cancel_registration($reg)): ?><a class="journey-button" href="<?= app_url(
+        <?php if ($is_owner && can_cancel_registration($reg)): ?><a class="journey-button registration-cancel-button" href="<?= app_url(
     "/cancel-registration.php?id=" . $reg_id,
 ) ?>">Cancel registration</a><?php endif; ?>
         <?php if (!$is_owner): ?><a class="journey-button" href="<?= app_url(

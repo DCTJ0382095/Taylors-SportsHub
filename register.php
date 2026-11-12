@@ -80,7 +80,7 @@ require_once __DIR__ . '/includes/header.php';
         <div class="auth-hero-col">
             <span class="section-label">YOUR CAMPUS EXPERIENCE STARTS HERE</span>
             <h1 class="auth-hero-title">
-                A new connection.<br>A new rally.
+                A new connection<br>A new rally
             </h1>
             <p class="auth-hero-desc">
                 One account for the moments that matter. Join university sports clubs, book your court places, and track your active journey at Taylor's.
@@ -103,12 +103,12 @@ require_once __DIR__ . '/includes/header.php';
                         <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
                     </div>
 
-                    <h2 class="auth-card-title">You're part of it.</h2>
+                    <h2 class="auth-card-title">You're part of it</h2>
 
                     <div class="status-alert-box success" role="alert">
                         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
                         <div>
-                            <div class="auth-status-title">Your account is ready.</div>
+                            <div class="auth-status-title">Your account is ready</div>
                             <div>Welcome to Taylor's SportsHub, <?= e($success_user['name']) ?>.</div>
                         </div>
                     </div>
@@ -131,7 +131,7 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="status-alert-box danger" role="alert">
                         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
                         <div>
-                            <div class="auth-status-title">This email is already registered.</div>
+                            <div class="auth-status-title">This email is already registered</div>
                             <div>Log in or reset your password to access your account.</div>
                         </div>
                     </div>
@@ -155,7 +155,7 @@ require_once __DIR__ . '/includes/header.php';
             <?php else: ?>
                 <!-- Standard Register Form -->
                 <span class="auth-card-eyebrow">TAYLOR'S SPORTS HUB</span>
-                <h2 class="auth-card-title">Create your account.</h2>
+                <h2 class="auth-card-title">Create your account</h2>
                 <p class="auth-card-sub">
                     Already part of the community? <a href="<?= APP_BASE_PATH ?>/login.php" class="auth-switch-link">Log in</a>
                 </p>
@@ -219,7 +219,7 @@ require_once __DIR__ . '/includes/header.php';
                     <div class="form-field">
                         <label class="auth-checkbox-label">
                             <input type="checkbox" name="terms" value="1" checked required class="auth-checkbox">
-                            <span>I agree to the Taylor's SportsHub Rules, Fair Play Guidelines and cancellation terms.</span>
+                            <span>I agree to the Taylor's SportsHub rules, fair play guidelines and cancellation terms.</span>
                         </label>
                         <?php if (!empty($errors['terms'])): ?>
                             <div class="field-error-msg"><?= e($errors['terms']) ?></div>

@@ -26,7 +26,7 @@
             </div>
 
             <div>
-                <h4 class="footer-col-title">Legal & Campus</h4>
+                <h4 class="footer-col-title">Legal & campus</h4>
                 <ul class="footer-links-list">
                     <li><a href="<?= APP_BASE_PATH ?>/privacy.php" class="footer-link">Privacy policy (PDPA)</a></li>
                     <li><a href="<?= APP_BASE_PATH ?>/terms.php" class="footer-link">Terms of use</a></li>

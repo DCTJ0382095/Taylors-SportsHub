@@ -35,6 +35,13 @@ function permissions_from_form(): array {
     ];
 }
 
+// The title the president typed, e.g. "Vice President". Empty means plain "Committee member".
+// mb_substr keeps it to 50 letters, the size of the title column.
+function title_from_form(): ?string {
+    $title = trim($_POST['title'] ?? '');
+    return $title === '' ? null : mb_substr($title, 0, 50);
+}
+
 // Finds a committee row by its id, but ONLY if it belongs to this club.
 function find_member(PDO $db, int $member_id, int $club_id): ?array {
     $stmt = $db->prepare("SELECT cm.*, u.name FROM club_managers cm
@@ -70,10 +77,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $error = 'That student is already on the committee.';
             } else {
                 $stmt = $db->prepare("INSERT INTO club_managers
-                        (club_id, user_id, appointed_by, role, can_manage_sessions, can_manage_signups, can_edit_club)
-                    VALUES (:club_id, :user_id, :appointed_by, 'committee', :sessions, :signups, :club)");
+                        (club_id, user_id, appointed_by, role, title, can_manage_sessions, can_manage_signups, can_edit_club)
+                    VALUES (:club_id, :user_id, :appointed_by, 'committee', :title, :sessions, :signups, :club)");
                 $stmt->execute(
-                    [':club_id' => $club_id, ':user_id' => $new_user['id'], ':appointed_by' => $user['id']]
+                    [':club_id' => $club_id, ':user_id' => $new_user['id'], ':appointed_by' => $user['id'], ':title' => title_from_form()]
                     + permissions_from_form()
                 );
                 header('Location: ' . $back . '&saved=added', true, 303);
@@ -90,9 +97,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         } elseif ($action === 'update') {
             $stmt = $db->prepare("UPDATE club_managers
-                                  SET can_manage_sessions = :sessions, can_manage_signups = :signups, can_edit_club = :club
+                                  SET title = :title, can_manage_sessions = :sessions, can_manage_signups = :signups, can_edit_club = :club
                                   WHERE id = :id");
-            $stmt->execute([':id' => $member_id] + permissions_from_form());
+            $stmt->execute([':id' => $member_id, ':title' => title_from_form()] + permissions_from_form());
             header('Location: ' . $back . '&saved=updated', true, 303);
             exit;
 
@@ -107,13 +114,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 // 1. The current president becomes a committee member (keeping every permission).
                 $stmt = $db->prepare("UPDATE club_managers
-                                      SET role = 'committee', can_manage_sessions = 1, can_manage_signups = 1, can_edit_club = 1
+                                      SET role = 'committee', title = NULL, can_manage_sessions = 1, can_manage_signups = 1, can_edit_club = 1
                                       WHERE club_id = :club_id AND role = 'president'");
                 $stmt->execute([':club_id' => $club_id]);
 
                 // 2. The chosen member becomes president.
                 $stmt = $db->prepare("UPDATE club_managers
-                                      SET role = 'president', can_manage_sessions = 1, can_manage_signups = 1, can_edit_club = 1
+                                      SET role = 'president', title = NULL, can_manage_sessions = 1, can_manage_signups = 1, can_edit_club = 1
                                       WHERE id = :id");
                 $stmt->execute([':id' => $member_id]);
 
@@ -132,7 +139,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // The current committee, president first.
-$stmt = $db->prepare("SELECT cm.id, cm.role, cm.can_manage_sessions, cm.can_manage_signups, cm.can_edit_club,
+$stmt = $db->prepare("SELECT cm.id, cm.role, cm.title, cm.can_manage_sessions, cm.can_manage_signups, cm.can_edit_club,
                              u.name, u.email
                       FROM club_managers cm
                       INNER JOIN users u ON u.id = cm.user_id
@@ -164,7 +171,7 @@ $can_view_payments = can_manage_club($club_id, $user['id'], 'signups');
 
 $messages = [
     'added'       => 'Committee member added.',
-    'updated'     => 'Permissions saved.',
+        'updated'     => 'Changes saved.',
     'removed'     => 'Committee member removed.',
     'handed_over' => 'The presidency has been handed over.',
 ];
@@ -179,7 +186,7 @@ require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="session-editor">
-    <a href="<?= app_url('/manager/sessions.php') ?>" class="settings-back">← Back to Manager Workbench</a>
+    <a href="<?= app_url('/manager/sessions.php') ?>" class="settings-back">← Back to Manager Workspace</a>
     <h1 class="settings-title"><?= e($club['name']) ?> members</h1>
 
     <?php if ($error): ?>
@@ -192,37 +199,59 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="settings-card">
         <h2>Members (<?= count($members) + count($paid_members) ?>)</h2>
         <p class="settings-hint">Committee members always count as members. Students become members when the committee approves their payment.</p>
-        <ul class="member-list">
+        <div class="settings-field">
+            <input type="search" id="member-search" placeholder="Search by name or email" aria-label="Search members" autocomplete="off">
+        </div>
+        <ul class="member-list" id="member-list">
             <?php foreach ($members as $m): ?>
                 <li class="member-list-row">
                     <div class="member-list-person"><strong><?= e($m['name']) ?></strong><span><?= e($m['email']) ?></span></div>
-                    <span class="member-tag member-tag--committee"><?= $m['role'] === 'president' ? 'President' : 'Committee' ?></span>
+                    <span class="member-tag member-tag--committee"><?= e(committee_title($m)) ?></span>
                 </li>
             <?php endforeach; ?>
             <?php foreach ($paid_members as $p): ?>
                 <li class="member-list-row">
                     <div class="member-list-person"><strong><?= e($p['name']) ?></strong><span><?= e($p['email']) ?></span></div>
-                    <span class="member-tag">Until <?= e(format_membership_date($p['expires_at'])) ?></span>
+                    <span class="member-tag">Active</span>
                     <?php if ($can_view_payments): ?>
                         <a href="<?= app_url('/membership-payment.php?id=' . $p['id']) ?>" class="member-list-link">View</a>
                     <?php endif; ?>
                 </li>
             <?php endforeach; ?>
         </ul>
+        <p class="settings-hint" id="member-search-empty" hidden>No members match your search.</p>
     </div>
 
+    <!-- Students whose paid membership has run out -->
+    <?php if (!empty($expired_members)): ?>
+        <div class="settings-card">
+            <h2>Expired memberships (<?= count($expired_members) ?>)</h2>
+            <p class="settings-hint">These students were members. They can renew from the club page.</p>
+            <ul class="member-list">
+                <?php foreach ($expired_members as $p): ?>
+                    <li class="member-list-row">
+                        <div class="member-list-person"><strong><?= e($p['name']) ?></strong><span><?= e($p['email']) ?></span></div>
+                        <span class="member-tag member-tag--expired">Expired <?= e(format_membership_date($p['expires_at'])) ?></span>
+                        <?php if ($can_view_payments): ?>
+                            <a href="<?= app_url('/membership-payment.php?id=' . $p['id']) ?>" class="member-list-link">View</a>
+                        <?php endif; ?>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
+
     <div class="settings-card">
-        <h2>Committee</h2>
-        <p class="settings-hint">
-            <?= $is_president ? 'Tick what each member may do, then save their row.' : 'Only the president can change the committee.' ?>
-        </p>
+        <?php if (!$is_president): ?>
+            <p class="settings-hint">Only the president can change the committee.</p>
+        <?php endif; ?>
 
         <?php foreach ($members as $m): ?>
             <div class="committee-row">
                 <div class="committee-row-person">
                     <strong><?= e($m['name']) ?></strong>
                     <span><?= e($m['email']) ?></span>
-                    <span class="committee-row-role"><?= $m['role'] === 'president' ? 'President' : 'Committee member' ?></span>
+                    <span class="committee-row-role"><?= e(committee_title($m)) ?></span>
                 </div>
 
                 <?php if ($m['role'] === 'president'): ?>
@@ -232,6 +261,10 @@ require_once __DIR__ . '/../includes/header.php';
                     <form method="POST">
                         <?= csrf_field() ?>
                         <input type="hidden" name="member_id" value="<?= (int) $m['id'] ?>">
+                        <div class="settings-field">
+                            <label for="title-<?= (int) $m['id'] ?>">Title</label>
+                            <input type="text" id="title-<?= (int) $m['id'] ?>" name="title" maxlength="50" value="<?= e($m['title'] ?? '') ?>" placeholder="e.g. Vice President, Secretary, Treasurer">
+                        </div>
                         <?php foreach ($permission_labels as $column => $label): ?>
                             <label class="committee-check">
                                 <input type="checkbox" name="<?= $column ?>" <?= $m[$column] ? 'checked' : '' ?>>
@@ -268,6 +301,10 @@ require_once __DIR__ . '/../includes/header.php';
                 <label for="email">Student email</label>
                 <input type="email" id="email" name="email" required placeholder="name@sd.taylors.edu.my">
             </div>
+            <div class="settings-field">
+                <label for="new-title">Title (optional)</label>
+                <input type="text" id="new-title" name="title" maxlength="50" placeholder="e.g. Vice President, Secretary, Treasurer">
+            </div>
             <?php foreach ($permission_labels as $column => $label): ?>
                 <label class="committee-check">
                     <input type="checkbox" name="<?= $column ?>"> <?= e($label) ?>
@@ -277,24 +314,20 @@ require_once __DIR__ . '/../includes/header.php';
         </form>
     <?php endif; ?>
 
-    <!-- Students whose paid membership has run out -->
-    <?php if (!empty($expired_members)): ?>
-        <div class="settings-card">
-            <h2>Expired memberships (<?= count($expired_members) ?>)</h2>
-            <p class="settings-hint">These students were members. They can renew from the club page.</p>
-            <ul class="member-list">
-                <?php foreach ($expired_members as $p): ?>
-                    <li class="member-list-row">
-                        <div class="member-list-person"><strong><?= e($p['name']) ?></strong><span><?= e($p['email']) ?></span></div>
-                        <span class="member-tag member-tag--expired">Ended <?= e(format_membership_date($p['expires_at'])) ?></span>
-                        <?php if ($can_view_payments): ?>
-                            <a href="<?= app_url('/membership-payment.php?id=' . $p['id']) ?>" class="member-list-link">View</a>
-                        <?php endif; ?>
-                    </li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    <?php endif; ?>
-</div>
-
+    <script>
+    // Members search: hide every row whose text doesn't contain what was typed.
+    const memberSearch = document.getElementById('member-search');
+    const memberRows = document.querySelectorAll('#member-list .member-list-row');
+    const noMatches = document.getElementById('member-search-empty');
+    memberSearch.addEventListener('input', () => {
+        const query = memberSearch.value.trim().toLowerCase();
+        let shown = 0;
+        memberRows.forEach(row => {
+            const match = row.textContent.toLowerCase().includes(query);
+            row.hidden = !match;
+            if (match) shown++;
+        });
+        noMatches.hidden = shown > 0;
+    });
+    </script>
 <?php require_once __DIR__ . '/../includes/footer.php'; ?>

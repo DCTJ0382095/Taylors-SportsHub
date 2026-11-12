@@ -240,15 +240,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$page_title = $session ? "Edit Session · Manager" : "Create Session · Manager";
+$page_title = $session ? "Edit session · Manager Workspace" : "Create session · Manager Workspace";
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="session-editor">
     <div style="margin-bottom: 2rem;">
-        <a href="<?= app_url('/manager/sessions.php') ?>" style="color: #6e6e73; text-decoration: none; font-size: 0.88rem;">← Back to Sessions</a>
+        <a href="<?= app_url('/manager/sessions.php') ?>" style="color: #6e6e73; text-decoration: none; font-size: 0.88rem;">← Back to Manager Workspace</a>
         <h1 style="font-size: 2rem; font-weight: 800; color: #1d1d1f; margin: 0.5rem 0 0; letter-spacing: -0.02em;">
-            <?= $session ? ($is_published ? "Manage Published Session" : "Edit Draft Session") : "Create New Session" ?>
+            <?= $session ? ($is_published ? "Manage published session" : "Edit draft session") : "Create new session" ?>
         </h1>
     </div>
 
@@ -260,13 +260,13 @@ require_once __DIR__ . '/../includes/header.php';
 
     <?php if (!$is_published && in_array(false, $club_ready, true)): ?>
         <div style="background: #fff8eb; border: 1px solid #f3dca0; color: #805000; padding: 0.85rem 1rem; border-radius: 12px; margin-bottom: 1.5rem; font-size: 0.9rem;">
-            <?= $first_ready_club ? 'Some of your clubs' : 'None of your clubs' ?> can run sessions yet. A club needs a DuitNow QR and bank details first: its president adds them in Club settings → Payment details.
+            <?= $first_ready_club ? "Some of your clubs can't" : 'None of your clubs can' ?> run sessions yet. A club needs a DuitNow QR and bank details first: its president adds them in Club settings → Payment details.
         </div>
     <?php endif; ?>
 
     <?php if ($is_published): ?>
         <div style="background: #fafafa; border: 1px solid #e5e5ea; border-radius: 14px; padding: 1.25rem; margin-bottom: 2rem; font-size: 0.9rem; color: #424245;">
-            <strong>Note on Published Sessions:</strong> Per sports hub governance, date, time, venue, prices, and capacity cannot be altered once published to protect registered students. To change session schedule, cancel this session and publish a replacement.
+            <strong>Note on published sessions:</strong> Per sports hub governance, date, time, venue, prices, and capacity cannot be altered once published to protect registered students. To change session schedule, cancel this session and publish a replacement.
         </div>
     <?php endif; ?>
 
@@ -274,7 +274,7 @@ require_once __DIR__ . '/../includes/header.php';
         <?= csrf_field() ?>
 
         <div style="margin-bottom: 1.5rem;">
-            <label for="club_id" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Organising Club</label>
+            <label for="club_id" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Organising club</label>
             <select name="club_id" id="club_id" <?= $is_published ? 'disabled' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; background: #fff;">
                 <?php foreach ($clubs as $c): ?>
                     <?php $ready = $club_ready[(int) $c['id']]; ?>
@@ -286,7 +286,7 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
 
         <div style="margin-bottom: 1.5rem;">
-            <label for="title" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Session Title</label>
+            <label for="title" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Session title</label>
             <input type="text" id="title" name="title" value="<?= e($title_val) ?>" placeholder="e.g. Sunday Open Play & Social Smash" required <?= $is_published ? 'readonly' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
         </div>
 
@@ -301,10 +301,51 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
         </div>
 
+        <div class="editor-fields editor-fields-time">
+            <div>
+                <label for="session_date" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Date</label>
+                <input type="date" id="session_date" name="session_date" value="<?= e($date_val) ?>" required <?= $is_published ? 'readonly' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
+            </div>
+            <div>
+                <label for="start_time" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Start</label>
+                <input type="time" id="start_time" name="start_time" value="<?= e($start_val) ?>" required <?= $is_published ? 'readonly' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
+            </div>
+            <div>
+                <label for="end_time" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">End</label>
+                <input type="time" id="end_time" name="end_time" value="<?= e($end_val) ?>" required <?= $is_published ? 'readonly' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
+            </div>
+        </div>
+
+        <div class="editor-fields">
+            <div>
+                <label for="price" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Price (RM)</label>
+                <input type="number" step="0.50" min="0" id="price" name="price" value="<?= e((string)$price_val) ?>" required <?= $is_published ? 'readonly' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
+                <small style="display: block; margin-top: 0.3rem; color: #6e6e73; font-size: 0.8rem;">What non-members pay. 0 makes it free.</small>
+            </div>
+            <div>
+                <label for="member_price" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Member price (RM, optional)</label>
+                <input type="number" step="0.50" min="0" id="member_price" name="member_price" value="<?= e($member_price_val) ?>" placeholder="Same as the price" <?= $is_published ? 'readonly' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
+                <small style="display: block; margin-top: 0.3rem; color: #6e6e73; font-size: 0.8rem;">What club members pay. Leave empty if everyone pays the same, 0 makes it free for members.</small>
+            </div>
+        </div>
+
+        <div class="editor-fields">
+            <div>
+                <label for="capacity" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;"> Participant limit</label>
+                <input type="number" min="1" id="capacity" name="capacity" value="<?= e((string)$capacity_val) ?>" required <?= $is_published ? 'readonly' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
+            </div>
+        </div>
+
+
+        <div style="margin-bottom: 2rem;">
+            <label for="description" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Session description</label>
+            <textarea id="description" name="description" rows="5" required placeholder="Outline format, drills, who should attend, and what equipment is provided..." style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box; font-family: inherit; resize: none;"><?= e($desc_val) ?></textarea>
+        </div>
+
                 <!-- Session cover picture: keep the current one, pick a built-in one, or upload your own -->
         <div style="margin-bottom: 1.75rem;">
             <div class="editor-cover-header">
-                <label style="font-size: 0.88rem; font-weight: 600; color: #1d1d1f;">Session Cover Picture</label>
+                <label style="font-size: 0.88rem; font-weight: 600; color: #1d1d1f;">Session cover picture</label>
                 <span style="font-size: 0.8rem; color: #86868b;">Pick a picture, or upload your own</span>
             </div>
 
@@ -348,56 +389,15 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
         </div>
 
-        <div class="editor-fields editor-fields-time">
-            <div>
-                <label for="session_date" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Date</label>
-                <input type="date" id="session_date" name="session_date" value="<?= e($date_val) ?>" required <?= $is_published ? 'readonly' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
-            </div>
-            <div>
-                <label for="start_time" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Start</label>
-                <input type="time" id="start_time" name="start_time" value="<?= e($start_val) ?>" required <?= $is_published ? 'readonly' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
-            </div>
-            <div>
-                <label for="end_time" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">End</label>
-                <input type="time" id="end_time" name="end_time" value="<?= e($end_val) ?>" required <?= $is_published ? 'readonly' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
-            </div>
-        </div>
-
-        <div class="editor-fields">
-            <div>
-                <label for="price" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Price (RM, 0 for free)</label>
-                <input type="number" step="0.50" min="0" id="price" name="price" value="<?= e((string)$price_val) ?>" required <?= $is_published ? 'readonly' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
-                <small style="display: block; margin-top: 0.3rem; color: #6e6e73; font-size: 0.8rem;">What non-members pay.</small>
-            </div>
-            <div>
-                <label for="member_price" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Member price (RM, optional)</label>
-                <input type="number" step="0.50" min="0" id="member_price" name="member_price" value="<?= e($member_price_val) ?>" placeholder="Same as the price" <?= $is_published ? 'readonly' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
-                <small style="display: block; margin-top: 0.3rem; color: #6e6e73; font-size: 0.8rem;">What club members pay (committee, or an active membership). Leave empty if everyone pays the same; 0 makes it free for members.</small>
-            </div>
-        </div>
-
-        <div class="editor-fields">
-            <div>
-                <label for="capacity" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Capacity (Max participants)</label>
-                <input type="number" min="1" id="capacity" name="capacity" value="<?= e((string)$capacity_val) ?>" required <?= $is_published ? 'readonly' : '' ?> style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box;">
-            </div>
-        </div>
-
-
-        <div style="margin-bottom: 2rem;">
-            <label for="description" style="display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f;">Session Description</label>
-            <textarea id="description" name="description" rows="5" required placeholder="Outline format, drills, who should attend, and what equipment is provided..." style="width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box; font-family: inherit;"><?= e($desc_val) ?></textarea>
-        </div>
-
         <div class="editor-actions">
             <?php if (!$is_published): ?>
                 <button type="submit" name="action" value="draft" style="padding: 0.85rem 1.5rem; background: #f5f5f7; color: #1d1d1f; border: 1px solid #d2d2d7; border-radius: 980px; font-weight: 600; font-size: 0.95rem; cursor: pointer;">
-                    Save Draft
+                    Save draft
                 </button>
             <?php endif; ?>
 
             <button type="submit" name="action" value="<?= $is_published ? 'save' : 'publish' ?>" class="manager-btn manager-btn-primary">
-                <?= $is_published ? 'Update Description' : 'Publish Session' ?>
+                <?= $is_published ? 'Update description' : 'Publish session' ?>
             </button>
         </div>
     </form>

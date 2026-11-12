@@ -89,11 +89,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $length = format_membership_length((int) $membership['months_snapshot']);
 $headings = [
-    'awaiting_payment'  => 'Pay for your membership.',
-    'payment_rejected'  => 'Resubmit your receipt.',
-    'awaiting_approval' => 'Receipt submitted.',
-    'active'            => "You're a member.",
-    'expired'           => 'This membership has expired.',
+    'awaiting_payment'  => 'Pay for your membership',
+    'payment_rejected'  => 'Resubmit your receipt',
+    'awaiting_approval' => 'Receipt submitted',
+    'active'            => "You're a member",
+    'expired'           => 'This membership has expired',
 ];
 $next_step = membership_next_step($membership);
 // The expiry date means something different depending on the state.
@@ -109,7 +109,14 @@ require_once __DIR__ . '/includes/header.php';
 <div class="journey-page">
   <header class="journey-header">
     <nav class="journey-breadcrumb" aria-label="Breadcrumb">
-      <a href="<?= app_url('/club.php?id=' . $membership['club_id']) ?>"><?= e($membership['club_name']) ?></a> / Membership
+      <?php if ($is_owner): ?>
+        <a href="<?= app_url('/memberships.php') ?>">Memberships</a> /
+        <span class="breadcrumb-current"><?= e($membership['club_name']) ?></span>
+      <?php else: ?>
+        <a href="<?= app_url('/manager/sessions.php') ?>">Manager Workspace</a> /
+        <a href="<?= app_url('/manager/sessions.php?status=memberships') ?>">Membership Sign-ups</a> /
+        <span class="breadcrumb-current"><?= e($membership['member_name']) ?></span>
+      <?php endif; ?>
     </nav>
     <h1><?= e($headings[$state]) ?></h1>
     <p class="journey-subtitle"><?= e($membership['club_name']) ?> · <?= e($length) ?> membership</p>
@@ -150,19 +157,22 @@ require_once __DIR__ . '/includes/header.php';
                 <strong>Payment details</strong>
                 <p style="white-space:pre-line; margin-top: 6px;"><?= e($membership['payment_instructions_snapshot'] ?: 'Details unavailable. Contact the club before transferring.') ?></p>
               </div>
-              <p class="journey-help">These details were saved when you applied. Keep your transfer receipt: transferring alone does not tell the committee you paid.</p>
+              <p class="journey-help">After paying, keep your receipt and upload it below. Paying alone does not confirm your membership.</p>
             </div>
           </div>
 
           <h2>Upload your receipt</h2>
           <form method="POST" enctype="multipart/form-data">
             <?= csrf_field() ?>
-            <div class="journey-field">
+            <div class="journey-field upload-dropzone" id="receipt-dropzone">
               <label for="receipt">Receipt file</label>
-              <p class="journey-help">JPG, PNG, WebP or PDF · up to 5 MB</p>
-              <input type="file" id="receipt" name="receipt" accept="image/jpeg,image/png,image/webp,application/pdf" required>
+              <p class="journey-help" id="receipt-hint">JPG, PNG, WebP or PDF · Up to 5 MB. Choose a file or drop it here.</p>
+              <input type="file" id="receipt" name="receipt" accept="image/jpeg,image/png,image/webp,application/pdf" required aria-describedby="receipt-hint receipt-error">
+              <p id="receipt-error" class="field-error" aria-live="polite"></p>
             </div>
-            <button type="submit" class="journey-button primary">Submit receipt</button>
+            <div id="receipt-upload-preview" hidden class="journey-callout" aria-live="polite"><span class="preview-name"></span><span class="preview-size"></span></div>
+            <button type="submit" class="journey-button primary" data-pending-label="Submitting receipt…">Submit receipt</button>
+            <p class="journey-help">The committee checks your receipt before your membership starts.</p>
           </form>
         </section>
       <?php endif; ?>
@@ -175,7 +185,7 @@ require_once __DIR__ . '/includes/header.php';
         </section>
       <?php elseif (!$can_upload): ?>
         <section class="journey-card">
-          <h2>Membership details</h2>
+          <h2>Awaiting receipt</h2>
           <p><?= e($next_step) ?></p>
         </section>
       <?php endif; ?>
@@ -184,8 +194,10 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 
     <section class="journey-card">
-      <h2><?= $is_owner ? 'Your membership' : e($membership['member_name']) . "'s membership" ?></h2>
-      <?= get_status_badge($state) ?>
+      <div class="journey-card-header">
+        <h2><?= $is_owner ? 'Your membership' : e($membership['member_name']) . "'s membership" ?></h2>
+        <?= get_status_badge($state) ?>
+      </div>
       <dl class="journey-facts">
         <dt>Club</dt><dd><?= e($membership['club_name']) ?></dd>
         <dt>Price</dt><dd><?= format_price($membership['price_snapshot']) ?></dd>

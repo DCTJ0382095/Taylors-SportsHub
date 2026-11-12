@@ -2,9 +2,6 @@
    Payment & Registration Journey Styles (payment.css)
    ========================================================================== */
 
-@import url("journey.css");
-@import url("registration-actions.css");
-
 /* DuitNow QR Card Presentation - Clean & Minimal */
 .duitnow-qr-card {
   background: #ffffff;

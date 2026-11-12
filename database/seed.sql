@@ -71,12 +71,12 @@ INSERT INTO `clubs` (`id`, `name`, `slug`, `description`, `sport_type`, `contact
 -- ---------------------------------------------------------------------------
 -- 4. Committees
 -- ---------------------------------------------------------------------------
-INSERT INTO `club_managers` (`id`, `club_id`, `user_id`, `appointed_by`, `role`, `can_manage_sessions`, `can_manage_signups`, `can_edit_club`) VALUES
-(1, 1, 2, 1, 'president', 1, 1, 1),  -- Alex: president of Badminton (appointed by the admin)
-(2, 1, 3, 2, 'committee', 0, 1, 0),  -- Liam: Badminton, sign-ups and payments only (appointed by Alex)
-(3, 2, 4, 1, 'president', 1, 1, 1),  -- Chloe: president of Basketball
-(4, 3, 4, 1, 'president', 1, 1, 1),  -- Chloe: also president of Pickleball
-(5, 1, 6, 2, 'committee', 1, 0, 0);  -- Sara: Badminton, sessions only (appointed by Alex)
+INSERT INTO `club_managers` (`id`, `club_id`, `user_id`, `appointed_by`, `role`, `title`, `can_manage_sessions`, `can_manage_signups`, `can_edit_club`) VALUES
+(1, 1, 2, 1, 'president', NULL,        1, 1, 1),  -- Alex: president of Badminton (appointed by the admin)
+(2, 1, 3, 2, 'committee', 'Treasurer', 0, 1, 0),  -- Liam: Badminton, sign-ups and payments only (appointed by Alex)
+(3, 2, 4, 1, 'president', NULL,        1, 1, 1),  -- Chloe: president of Basketball
+(4, 3, 4, 1, 'president', NULL,        1, 1, 1),  -- Chloe: also president of Pickleball
+(5, 1, 6, 2, 'committee', 'Secretary', 1, 0, 0);  -- Sara: Badminton, sessions only (appointed by Alex)
 
 -- ---------------------------------------------------------------------------
 -- 5. Sessions: one of each kind

@@ -91,7 +91,7 @@ require_once __DIR__ . '/includes/header.php';
 <div class="profile-page-container">
     <div class="profile-header">
         <div class="profile-eyebrow">YOUR ACCOUNT</div>
-        <h1 class="profile-title">A little about you.</h1>
+        <h1 class="profile-title">A little about you</h1>
         <p class="profile-subtitle">
             Keep your details up to date and your campus account secure.
         </p>
@@ -134,7 +134,7 @@ require_once __DIR__ . '/includes/header.php';
                             <?= e($user['name']) ?>
                         </div>
                         <div style="font-size: 12.5px; color: var(--text-muted);">
-                            Verified Taylor's Student Account
+                            <?= $user['role'] === 'admin' ? "Verified Taylor's administrator account" : "Verified Taylor's student account" ?>
                         </div>
                     </div>
                 </div>
@@ -159,7 +159,7 @@ require_once __DIR__ . '/includes/header.php';
                         <label class="form-label" for="user_email">Taylor's email</label>
                         <input type="email" id="user_email" class="form-input" value="<?= e($user['email']) ?>" disabled>
                         <div class="profile-form-help">
-                            Your university student email is verified. Contact campus administration to modify.
+                            Your university email is verified. Contact campus administration to modify.
                         </div>
                     </div>
 
@@ -170,7 +170,7 @@ require_once __DIR__ . '/includes/header.php';
                         </div>
 
                         <div class="profile-form-group">
-                            <label class="form-label" for="faculty_select">School / faculty</label>
+                            <label class="form-label" for="faculty_select">School / Faculty</label>
                             <select id="faculty_select" name="faculty" class="form-select">
                                 <option value="">Select faculty</option>
                                 <?php foreach ($faculty_list as $fac): ?>
@@ -230,13 +230,16 @@ require_once __DIR__ . '/includes/header.php';
         <aside>
             <div class="profile-card">
                 <div class="profile-sidebar-user">
-                    <div class="avatar-large" style="margin-bottom: 12px;">
-                        <?= get_initials($user['name']) ?>
+                    <!-- Avatar on the left, account badge in the top-right corner -->
+                    <div class="profile-sidebar-top">
+                        <div class="avatar-large">
+                            <?= get_initials($user['name']) ?>
+                        </div>
+                        <span class="profile-role-badge">
+                            <?= $user['role'] === 'admin' ? 'Administrator' : 'Student' ?>
+                        </span>
                     </div>
                     <h3 style="font-size: 20px; font-weight: 800; margin: 0; color: var(--text-main);"><?= e($user['name']) ?></h3>
-                    <span class="profile-role-badge">
-                        <?= $user['role'] === 'admin' ? 'Verified Administrator' : 'Verified Student' ?>
-                    </span>
                     <div class="profile-user-faculty"><?= e($user['faculty'] ?? "Taylor's University") ?></div>
                     <div class="profile-user-member-since">
                         Member since <?= date('F Y', strtotime($user['created_at'])) ?>

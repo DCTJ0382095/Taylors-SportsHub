@@ -57,7 +57,7 @@ assert(!can_cancel_registration(array_merge($reg, ['status'=>'awaiting_approval'
 
 // Public rendering smoke checks; output stays buffered by the runner.
 $_SERVER['DOCUMENT_ROOT'] = dirname(__DIR__);
-foreach (['index.php'=>'Sunday Open Play &amp; Social Smash', 'sessions.php'=>'Find your next session.', 'session-detail.php'=>'Sunday Open Play &amp; Social Smash'] as $route=>$expected) {
+foreach (['index.php'=>'Sunday Open Play &amp; Social Smash', 'sessions.php'=>'Find your next session', 'session-detail.php'=>'Sunday Open Play &amp; Social Smash'] as $route=>$expected) {
     $_SERVER['SCRIPT_NAME'] = $_SERVER['PHP_SELF'] = '/' . $route;
     $_GET = $route === 'session-detail.php' ? ['id'=>1] : [];
     ob_start();

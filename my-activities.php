@@ -97,6 +97,7 @@ require_once __DIR__ . "/includes/header.php";
             <?php
                 $state = $m['state'];
                 [$status_text, $status_tone] = membership_status_label($state);
+                if ($state === 'active') $status_text = 'Confirmed';   // same word as a confirmed session booking
                 $logo_url = get_club_logo_url($m);
                 $club_url = app_url('/club.php?id=' . $m['club_id']);
                 // Waiting on payment while an old expiry date exists means this is a renewal.
@@ -120,7 +121,7 @@ require_once __DIR__ . "/includes/header.php";
                                 <span class="activity-kind">Club membership<?= $is_renewal ? ' · Renewal' : '' ?></span>
                                 <h2 class="activity-name"><a href="<?= $club_url ?>"><?= e($m['club_name']) ?></a></h2>
                             </div>
-                            <span class="member-status-pill tone-<?= $status_tone ?>"><span class="status-dot"></span> <?= $status_text ?></span>
+                            <span class="member-status-pill tone-<?= $status_tone ?>"><?= $status_text ?></span>
                         </div>
 
                         <div class="activity-facts-list">
@@ -184,7 +185,7 @@ require_once __DIR__ . "/includes/header.php";
                             <div style="display: flex; gap: 6px; align-items: center;">
                                 <?= get_status_badge($r['status']) ?>
                                 <?php if ($r['session_status'] === 'cancelled'): ?>
-                                    <span class="status-badge badge-danger">Session cancelled</span>
+                                    <span class="status-badge badge-danger">Session Cancelled</span>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -229,7 +230,7 @@ require_once __DIR__ . "/includes/header.php";
 
                         <?php if ($r['session_cancellation_reason']): ?>
                             <p style="font-size: 12.5px; color: #6e6e73; margin: 0 0 10px;">
-                                <strong>Organiser’s cancellation reason:</strong> <?= e($r['session_cancellation_reason']) ?>
+                                <strong>Committee’s cancellation reason:</strong> <?= e($r['session_cancellation_reason']) ?>
                             </p>
                         <?php endif; ?>
 

@@ -77,6 +77,10 @@ function initialize_workflow_schema(PDO $db): void {
         $db->exec("UPDATE club_managers
             SET role = 'president', can_manage_sessions = 1, can_manage_signups = 1, can_edit_club = 1");
     }
+    // Committee titles: what the president calls each committee member, e.g. "Secretary".
+    if (!$db->query("SHOW COLUMNS FROM club_managers LIKE 'title'")->fetch()) {
+        $db->exec("ALTER TABLE club_managers ADD COLUMN title VARCHAR(50) NULL AFTER role");
+    }
     // Club profile details that used to be hard-coded in club.php.
     if (!$db->query("SHOW COLUMNS FROM clubs LIKE 'contact_email'")->fetch()) {
         $db->exec("ALTER TABLE clubs
