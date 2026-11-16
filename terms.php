@@ -1,23 +1,27 @@
 <?php
+// Terms of use page. The content is static.
 $page_title = "Terms of Use";
 require_once __DIR__ . '/includes/header.php';
 ?>
 
-<div class="app-container">
-    <div class="legal-layout">
+<!-- The app container markup is rendered. --><div class="app-container">
+    <!-- The legal layout markup is rendered. --><div class="legal-layout">
+        <!-- The terms title, effective date and version are displayed. -->
         <header class="legal-header">
-            <div class="section-label">COMMUNITY STANDARDS & ATHLETICS CODE</div>
+            <!-- The section label markup is rendered. --><div class="section-label">COMMUNITY STANDARDS & ATHLETICS CODE</div>
             <h1 class="legal-title">Terms of Use</h1>
-            <div class="legal-meta">
+            <!-- The legal meta markup is rendered. --><div class="legal-meta">
                 Taylor's University Lakeside Campus · Effective Date: November 2026 · Version 1.0
             </div>
         </header>
 
+        <!-- The community agreement and numbered terms are displayed. -->
         <article class="legal-card">
-            <div class="legal-callout">
+            <!-- The legal callout markup is rendered. --><div class="legal-callout">
                 <strong>Campus sports community agreement:</strong> Taylor's SportsHub is designed to promote active lifestyles, sportsmanship, and student club activities. By using this portal, you agree to honor your session bookings, adhere to sports complex rules, and treat fellow athletes and organizers with mutual respect.
             </div>
 
+            <!-- Acceptance of the terms is described. -->
             <section class="legal-section">
                 <h2 class="legal-section-title">
                     <span class="legal-section-num">01.</span> Acceptance of terms
@@ -27,6 +31,7 @@ require_once __DIR__ . '/includes/header.php';
                 </p>
             </section>
 
+            <!-- Account eligibility is described. -->
             <section class="legal-section">
                 <h2 class="legal-section-title">
                     <span class="legal-section-num">02.</span> Eligibility & account authenticity
@@ -36,17 +41,19 @@ require_once __DIR__ . '/includes/header.php';
                 </p>
             </section>
 
+            <!-- Booking, payment and cancellation rules are described. -->
             <section class="legal-section">
                 <h2 class="legal-section-title">
                     <span class="legal-section-num">03.</span> Session bookings & payment proofs
                 </h2>
-                <ul class="legal-list">
-                    <li><strong>Capacity limits:</strong> Session capacities are strictly enforced to ensure fair court play and participant safety.</li>
-                    <li><strong>Payment deadlines:</strong> Paid session reservations require proof of transfer (DuitNow QR receipt) uploaded within the specified deadline. Failure to upload valid proof will result in automatic release of the reserved place.</li>
-                    <li><strong>Cancellations:</strong> Unpaid reservations may be cancelled immediately. Paid reservations request a refund pending organizer review in accordance with published club refund policies.</li>
+                <!-- The legal list markup is rendered. --><ul class="legal-list">
+                    <!-- The list entry markup is rendered. --><li><strong>Capacity limits:</strong> Session capacities are strictly enforced to ensure fair court play and participant safety.</li>
+                    <!-- The list entry markup is rendered. --><li><strong>Payment deadlines:</strong> Paid session reservations require proof of transfer (DuitNow QR receipt) uploaded within the specified deadline. Failure to upload valid proof will result in automatic release of the reserved place.</li>
+                    <!-- The list entry markup is rendered. --><li><strong>Cancellations:</strong> Unpaid reservations may be cancelled immediately. Paid reservations request a refund pending organizer review in accordance with published club refund policies.</li>
                 </ul>
             </section>
 
+            <!-- Sports-centre conduct and safety expectations are described. -->
             <section class="legal-section">
                 <h2 class="legal-section-title">
                     <span class="legal-section-num">04.</span> Sports centre safety & etiquette

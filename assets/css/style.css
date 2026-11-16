@@ -1,24 +1,22 @@
-/* ==========================================================================
-   Taylor's University Event Management Web App Stylesheet
-   MAIN DESIGN SYSTEM & GLOBAL FRAMEWORK (style.css)
-   ========================================================================== */
+/* Shared design tokens, page primitives and interactive components are styled. */
 
+/* Shared custom properties are defined at the document root. */
 :root {
   --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", -apple-system-subheadline, "SF Pro", system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-serif: "New York", Georgia, Cambria, "Times New Roman", Times, serif;
 
-  /* Surfaces & Backgrounds */
+  /* Surface and background colour tokens are defined. */
   --bg-page: #f5f5f7;
   --bg-surface-subtle: #fbfbfd;
   --bg-surface-card: #ffffff;
 
-  /* Apple-Calibrated Typography Colors */
+  /* Typography colour tokens are defined. */
   --text-main: #1d1d1f;
   --text-secondary: #424245;
   --text-muted: #6e6e73;
   --text-light: #86868b;
 
-  /* Taylor's Signature Crimson (Apple Vibrant Calibration) */
+  /* Taylor's crimson accent tokens are defined. */
   --color-primary: #c81e27;
   --color-primary-hover: #b01820;
   --color-primary-active: #941219;
@@ -26,7 +24,7 @@
   --color-primary-border: #fecdd3;
   --color-primary-glow: rgba(200, 30, 39, 0.14);
 
-  /* Status Badges - Apple Soft Tint Palette */
+  /* Soft status-badge colour tokens are defined. */
   --badge-open-bg: rgba(52, 199, 89, 0.12);
   --badge-open-text: #248a3d;
   --badge-open-border: rgba(52, 199, 89, 0.28);
@@ -51,11 +49,11 @@
   --badge-draft-text: #6e6e73;
   --badge-draft-border: rgba(142, 142, 147, 0.18);
 
-  /* Apple Hairline & Surface Borders */
+  /* Border colour tokens are defined. */
   --border-subtle: rgba(0, 0, 0, 0.04);
   --border-light: rgba(0, 0, 0, 0.08);
 
-  /* Apple Continuous Squircle Radii */
+  /* Corner-radius tokens are defined. */
   --radius-xs: 6px;
   --radius-sm: 10px;
   --radius-md: 14px;
@@ -63,7 +61,7 @@
   --radius-xl: 28px;
   --radius-full: 9999px;
 
-  /* Apple Diffused Ambient Shadows */
+  /* Shadow tokens are defined. */
   --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
   --shadow-sm: 0 2px 6px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
   --shadow-md: 0 6px 16px -2px rgba(0, 0, 0, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.03);
@@ -76,19 +74,20 @@
   --transition-normal: 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ==========================================================================
-   Reset & Base Styles
-   ========================================================================== */
+/* Browser defaults are reset, and base document styles are applied. */
+/* Dimensions and spacing properties are defined for *, *::before, *::after. */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
+/* Motion and transforms properties are defined for html. */
 html {
   scroll-behavior: smooth;
 }
 
+/* Layout, dimensions, typography and colours and surfaces properties are defined for body. */
 body {
   font-family: var(--font-family);
   background-color: var(--bg-page);
@@ -101,7 +100,8 @@ body {
   flex-direction: column;
 }
 
-/* Accessible Skip Link */
+/* The keyboard skip link is styled. */
+/* Positioning, spacing, typography, colours and surfaces and motion and transforms properties are defined for .skip-link. */
 .skip-link {
   position: absolute;
   top: -100px;
@@ -117,37 +117,44 @@ body {
   transition: top 0.2s ease;
 }
 
+/* Positioning properties are defined for .skip-link:focus. */
 .skip-link:focus {
   top: 16px;
 }
 
-/* Accessible Focus States */
+/* Visible focus indicators are applied to interactive controls. */
+/* Colours and surfaces properties are defined for :focus-visible. */
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
+/* Colours and surfaces and motion and transforms properties are defined for a. */
 a {
   color: inherit;
   text-decoration: none;
   transition: color var(--transition-fast);
 }
 
+/* Typography properties are defined for button, input, select, textarea. */
 button, input, select, textarea {
   font: inherit;
 }
 
+/* Interaction feedback properties are defined for button. */
 button {
   cursor: pointer;
 }
 
+/* Layout and dimensions properties are defined for img. */
 img {
   max-width: 100%;
   height: auto;
   display: block;
 }
 
-/* App Container */
+/* Shared application content widths and margins are defined. */
+/* Dimensions and spacing properties are defined for .app-container. */
 .app-container {
   max-width: var(--max-width);
   margin: 0 auto;
@@ -155,9 +162,8 @@ img {
   width: 100%;
 }
 
-/* ==========================================================================
-   Buttons & Interactive Elements
-   ========================================================================== */
+/* Shared buttons and interaction states are styled. */
+/* Layout, dimensions, spacing, typography, colours and surfaces, interaction feedback and motion and transforms properties are defined for .btn-primary. */
 .btn-primary {
   background-color: var(--color-primary);
   color: #ffffff !important;
@@ -179,17 +185,20 @@ img {
   font-optical-sizing: auto;
 }
 
+/* Colours and surfaces properties are defined for .btn-primary:hover. */
 .btn-primary:hover {
   background-color: var(--color-primary-hover);
   border-color: var(--color-primary-hover);
   box-shadow: 0 4px 14px rgba(200, 30, 39, 0.32);
 }
 
+/* Colours and surfaces and motion and transforms properties are defined for .btn-primary:active. */
 .btn-primary:active {
   background-color: var(--color-primary-active);
   transform: scale(0.97);
 }
 
+/* Layout, dimensions, spacing, typography, colours and surfaces, interaction feedback and motion and transforms properties are defined for .btn-secondary. */
 .btn-secondary {
   background-color: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(12px);
@@ -212,17 +221,20 @@ img {
   user-select: none;
 }
 
+/* Colours and surfaces properties are defined for .btn-secondary:hover. */
 .btn-secondary:hover {
   background-color: #ffffff;
   border-color: rgba(0, 0, 0, 0.2);
   box-shadow: var(--shadow-sm);
 }
 
+/* Colours and surfaces and motion and transforms properties are defined for .btn-secondary:active. */
 .btn-secondary:active {
   background-color: var(--bg-surface-subtle);
   transform: scale(0.97);
 }
 
+/* Layout, dimensions, spacing, typography, colours and surfaces and motion and transforms properties are defined for .btn-link. */
 .btn-link {
   font-size: 14px;
   font-weight: 600;
@@ -237,22 +249,24 @@ img {
   transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast), transform var(--transition-press);
 }
 
+/* Colours and surfaces properties are defined for .btn-link:hover. */
 .btn-link:hover {
   color: var(--color-primary);
   background-color: var(--color-primary-light);
 }
 
+/* Motion and transforms properties are defined for .btn-link:active. */
 .btn-link:active {
   transform: scale(0.97);
 }
 
-/* ==========================================================================
-   Header & Navbar (With Glassmorphic Backdrop & Mobile Drawer)
-   ========================================================================== */
+/* Shared navigation, account controls and mobile drawer layers are styled. */
+/* Dimensions properties are defined for .site-header. */
 .site-header {
   height: var(--header-height);
 }
 
+/* Layout, dimensions and spacing properties are defined for .site-header .header-inner. */
 .site-header .header-inner {
   display: flex;
   align-items: center;
@@ -263,6 +277,7 @@ img {
   padding: 0 24px;
 }
 
+/* Typography properties are defined for .brand-group. */
 .brand-group {
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -272,20 +287,24 @@ img {
 
 
 
+/* Positioning and spacing properties are defined for .nav-link. */
 .nav-link {
   position: relative;
   padding: 6px 0;
 }
 
+/* Colours and surfaces properties are defined for .nav-link:hover. */
 .nav-link:hover {
   color: var(--color-primary);
 }
 
+/* Typography and colours and surfaces properties are defined for .nav-link.active. */
 .nav-link.active {
   color: var(--color-primary);
   font-weight: 600;
 }
 
+/* Positioning, dimensions and colours and surfaces properties are defined for .nav-link.active::after. */
 .nav-link.active::after {
   content: '';
   position: absolute;
@@ -297,29 +316,34 @@ img {
   border-radius: var(--radius-full);
 }
 
+/* Layout properties are defined for .nav-actions. */
 .nav-actions {
   display: flex;
   align-items: center;
   gap: 16px;
 }
 
-/* User Menu Pill */
+/* The account menu trigger is styled as a pill. */
+/* Colours and surfaces properties are defined for .user-menu-pill. */
 .user-menu-pill {
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
 }
 
 
+/* Overflow handling properties are defined for .avatar-initials. */
 .avatar-initials {
   overflow: hidden;
 }
 
+/* Dimensions and image fitting properties are defined for .avatar-initials img. */
 .avatar-initials img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
+/* Dimensions, typography, colours and surfaces and overflow handling properties are defined for .user-name-text. */
 .user-name-text {
   font-size: 13.5px;
   font-weight: 600;
@@ -332,16 +356,20 @@ img {
 }
 
 
+/* Motion and transforms properties are defined for .user-dropdown. */
 .user-dropdown {
   transform-origin: top right;
   animation: dropdownIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Animation stages properties are defined for dropdownIn. */
 @keyframes dropdownIn {
+  /* The animation is interpolated through the from stage. */
   from {
     opacity: 0;
     transform: scale(0.95) translateY(-8px);
   }
+  /* The animation is interpolated through the to stage. */
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -352,31 +380,38 @@ img {
 
 
 
+/* Typography properties are defined for .dropdown-item. */
 .dropdown-item {
   letter-spacing: -0.01em;
 }
 
+/* Colours and surfaces properties are defined for .dropdown-item:hover. */
 .dropdown-item:hover {
   background-color: rgba(0, 0, 0, 0.04);
 }
 
+/* Motion and transforms properties are defined for .dropdown-item:active. */
 .dropdown-item:active {
   transform: scale(0.98);
 }
 
+/* Colours and surfaces properties are defined for .dropdown-item.text-danger. */
 .dropdown-item.text-danger {
   color: #d70015;
 }
 
+/* Colours and surfaces properties are defined for .dropdown-item.text-danger:hover. */
 .dropdown-item.text-danger:hover {
   background-color: rgba(255, 59, 48, 0.08);
 }
 
+/* Colours and surfaces properties are defined for .dropdown-divider. */
 .dropdown-divider {
   background-color: rgba(0, 0, 0, 0.06);
 }
 
-/* Mobile Hamburger Button */
+/* The mobile navigation trigger is styled. */
+/* Layout, dimensions, spacing, colours and surfaces and motion and transforms properties are defined for .mobile-menu-btn. */
 .mobile-menu-btn {
   display: none;
   flex-direction: column;
@@ -395,15 +430,18 @@ img {
   transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast), transform var(--transition-press);
 }
 
+/* Colours and surfaces properties are defined for .mobile-menu-btn:hover. */
 .mobile-menu-btn:hover {
   background-color: #ffffff;
   border-color: rgba(0, 0, 0, 0.18);
 }
 
+/* Motion and transforms properties are defined for .mobile-menu-btn:active. */
 .mobile-menu-btn:active {
   transform: scale(0.96);
 }
 
+/* Dimensions, colours and surfaces and motion and transforms properties are defined for .hamburger-bar. */
 .hamburger-bar {
   width: 18px;
   height: 2px;
@@ -412,7 +450,8 @@ img {
   transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast), transform var(--transition-fast);
 }
 
-/* Mobile Drawer Overlay */
+/* Mobile navigation and the backdrop are styled as overlay layers. */
+/* Positioning, colours and surfaces and motion and transforms properties are defined for .mobile-drawer-backdrop. */
 .mobile-drawer-backdrop {
   position: fixed;
   inset: 0;
@@ -425,11 +464,13 @@ img {
   transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Colours and surfaces properties are defined for .mobile-drawer-backdrop.open. */
 .mobile-drawer-backdrop.open {
   opacity: 1;
   visibility: visible;
 }
 
+/* Layout, positioning, dimensions, spacing, colours and surfaces and motion and transforms properties are defined for .mobile-drawer. */
 .mobile-drawer {
   position: fixed;
   top: 0;
@@ -450,10 +491,12 @@ img {
   padding: 24px;
 }
 
+/* Motion and transforms properties are defined for .mobile-drawer.open. */
 .mobile-drawer.open {
   transform: translateX(0);
 }
 
+/* Layout, spacing and colours and surfaces properties are defined for .mobile-drawer-header. */
 .mobile-drawer-header {
   display: flex;
   align-items: center;
@@ -463,6 +506,7 @@ img {
   border-bottom: 1px solid var(--border-subtle);
 }
 
+/* Layout, spacing and colours and surfaces properties are defined for .mobile-drawer-close. */
 .mobile-drawer-close {
   background: none;
   border: none;
@@ -474,11 +518,13 @@ img {
   justify-content: center;
 }
 
+/* Colours and surfaces properties are defined for .mobile-drawer-close:hover. */
 .mobile-drawer-close:hover {
   background-color: var(--bg-surface-subtle);
   color: var(--text-main);
 }
 
+/* Layout properties are defined for .mobile-drawer-nav. */
 .mobile-drawer-nav {
   display: flex;
   flex-direction: column;
@@ -486,6 +532,7 @@ img {
   flex-grow: 1;
 }
 
+/* Spacing, typography, colours and surfaces and motion and transforms properties are defined for .mobile-nav-link. */
 .mobile-nav-link {
   font-size: 16px;
   font-weight: 600;
@@ -495,11 +542,13 @@ img {
   transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast), transform var(--transition-fast);
 }
 
+/* Colours and surfaces properties are defined for .mobile-nav-link:hover, .mobile-nav-link.active. */
 .mobile-nav-link:hover, .mobile-nav-link.active {
   background-color: var(--color-primary-light);
   color: var(--color-primary);
 }
 
+/* Layout, spacing and colours and surfaces properties are defined for .mobile-drawer-footer, .mobile-drawer-auth. */
 .mobile-drawer-footer, .mobile-drawer-auth {
   margin-top: auto;
   display: flex;
@@ -509,9 +558,8 @@ img {
   border-top: 1px solid var(--border-subtle);
 }
 
-/* ==========================================================================
-   Toast Notification System (Apple Floating Glass Capsule)
-   ========================================================================== */
+/* Toast notifications are styled as floating status messages. */
+/* Layout, positioning and interaction feedback properties are defined for .toast-container. */
 .toast-container {
   position: fixed;
   bottom: 24px;
@@ -523,6 +571,7 @@ img {
   pointer-events: none;
 }
 
+/* Layout, dimensions, spacing, typography, colours and surfaces, interaction feedback and motion and transforms properties are defined for .toast-pill. */
 .toast-pill {
   pointer-events: auto;
   display: flex;
@@ -545,26 +594,29 @@ img {
   transition: background-color 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s cubic-bezier(0.16, 1, 0.3, 1), color 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Colours and surfaces and motion and transforms properties are defined for .toast-pill.visible. */
 .toast-pill.visible {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
 
+/* Colours and surfaces properties are defined for .toast-success. */
 .toast-success {
   border-left: 4px solid #34c759;
 }
 
+/* Colours and surfaces properties are defined for .toast-error. */
 .toast-error {
   border-left: 4px solid #d70015;
 }
 
+/* Colours and surfaces properties are defined for .toast-info. */
 .toast-info {
   border-left: 4px solid var(--color-primary);
 }
 
-/* ==========================================================================
-   Badges & Category Indicators (Apple Calibrated)
-   ========================================================================== */
+/* Shared badges and category indicators are styled. */
+/* Layout, spacing, typography, colours and surfaces and interaction feedback properties are defined for .badge. */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -579,6 +631,7 @@ img {
   user-select: none;
 }
 
+/* Layout, dimensions and colours and surfaces properties are defined for .badge::before. */
 .badge::before {
   content: '';
   width: 6px;
@@ -587,6 +640,7 @@ img {
   display: inline-block;
 }
 
+/* Dimensions, colours and surfaces, image fitting and motion and transforms properties are defined for .poster-uploaded-img. */
 .poster-uploaded-img {
   width: 100%;
   aspect-ratio: 16 / 10;
@@ -595,9 +649,8 @@ img {
   transition: transform var(--transition-normal);
 }
 
-/* ==========================================================================
-   Universal Event Cards & Grid (Apple Physical Tactility & Diffused Shadow)
-   ========================================================================== */
+/* Shared session cards and grids are styled. */
+/* Layout and spacing properties are defined for .section-header-row. */
 .section-header-row {
   display: flex;
   align-items: flex-end;
@@ -606,6 +659,7 @@ img {
   gap: 20px;
 }
 
+/* Typography and colours and surfaces properties are defined for .section-title. */
 .section-title {
   font-size: 32px;
   font-weight: 800;
@@ -614,6 +668,7 @@ img {
   line-height: 1.15;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .section-desc. */
 .section-desc {
   font-size: 15px;
   color: var(--text-secondary);
@@ -623,7 +678,9 @@ img {
 
 
 
+/* The enclosed styles are applied for (max-width: 640px). */
 @media (max-width: 640px) {
+  /* Layout properties are defined for .section-header-row. */
   .section-header-row {
     flex-direction: column;
     align-items: flex-start;
@@ -631,9 +688,8 @@ img {
   }
 }
 
-/* ==========================================================================
-   Floating Back To Top Button (Apple Frosted Glass Circle)
-   ========================================================================== */
+/* The floating return-to-top button is styled. */
+/* Layout, positioning, dimensions, colours and surfaces, interaction feedback and motion and transforms properties are defined for .back-to-top-btn. */
 .back-to-top-btn {
   position: fixed;
   bottom: 24px;
@@ -658,12 +714,14 @@ img {
   transition: background-color 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.28s cubic-bezier(0.16, 1, 0.3, 1), color 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1), transform var(--transition-press);
 }
 
+/* Colours and surfaces and motion and transforms properties are defined for .back-to-top-btn.visible. */
 .back-to-top-btn.visible {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
 }
 
+/* Colours and surfaces and motion and transforms properties are defined for .back-to-top-btn:hover. */
 .back-to-top-btn:hover {
   background-color: #ffffff;
   color: var(--color-primary);
@@ -672,13 +730,13 @@ img {
   transform: translateY(-2px);
 }
 
+/* Motion and transforms properties are defined for .back-to-top-btn:active. */
 .back-to-top-btn:active {
   transform: scale(0.94);
 }
 
-/* ==========================================================================
-   Footer
-   ========================================================================== */
+/* Shared footer content is styled. */
+/* Spacing and colours and surfaces properties are defined for .site-footer. */
 .site-footer {
   background: #ffffff;
   border-top: 1px solid var(--border-light);
@@ -686,6 +744,7 @@ img {
   margin-top: auto;
 }
 
+/* Layout and spacing properties are defined for .footer-top-grid. */
 .footer-top-grid {
   display: grid;
   grid-template-columns: 2fr 1fr 1fr;
@@ -693,6 +752,7 @@ img {
   margin-bottom: 48px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .footer-col-title. */
 .footer-col-title {
   font-size: 13.5px;
   font-weight: 700;
@@ -701,6 +761,7 @@ img {
   letter-spacing: -0.01em;
 }
 
+/* Layout properties are defined for .footer-links-list. */
 .footer-links-list {
   display: flex;
   flex-direction: column;
@@ -708,16 +769,19 @@ img {
   list-style: none;
 }
 
+/* Typography, colours and surfaces and motion and transforms properties are defined for .footer-link. */
 .footer-link {
   font-size: 13.5px;
   color: var(--text-secondary);
   transition: color var(--transition-fast);
 }
 
+/* Colours and surfaces properties are defined for .footer-link:hover. */
 .footer-link:hover {
   color: var(--color-primary);
 }
 
+/* Layout, spacing, typography and colours and surfaces properties are defined for .footer-bottom-bar. */
 .footer-bottom-bar {
   border-top: 1px solid var(--border-subtle);
   padding-top: 26px;
@@ -728,6 +792,7 @@ img {
   color: var(--text-muted);
 }
 
+/* Layout, spacing, typography and colours and surfaces properties are defined for .status-alert-box. */
 .status-alert-box {
   padding: 14px 18px;
   border-radius: var(--radius-md);
@@ -740,33 +805,36 @@ img {
   border: 1px solid transparent;
 }
 
+/* Colours and surfaces properties are defined for .status-alert-box.success. */
 .status-alert-box.success {
   background-color: var(--badge-open-bg);
   border-color: rgba(52, 199, 89, 0.28);
   color: #248a3d;
 }
 
+/* Colours and surfaces properties are defined for .status-alert-box.warning. */
 .status-alert-box.warning {
   background-color: var(--badge-waitlist-bg);
   border-color: rgba(255, 149, 0, 0.28);
   color: #b25000;
 }
 
+/* Colours and surfaces properties are defined for .status-alert-box.danger. */
 .status-alert-box.danger {
   background-color: var(--badge-full-bg);
   border-color: rgba(255, 59, 48, 0.25);
   color: #d70015;
 }
 
+/* Typography and colours and surfaces properties are defined for .form-label. */
 .form-label {
   font-size: 12.5px;
   font-weight: 700;
   color: var(--text-secondary);
   letter-spacing: -0.01em;
 }
-/* ==========================================================================
-   Universal Form Controls (Apple HIG Inset & Refined Focus)
-   ========================================================================== */
+/* Shared form controls and focus states are styled. */
+/* Dimensions, spacing, typography, colours and surfaces and motion and transforms properties are defined for .form-input, .form-select, .input-text-standard, textarea.form-input. */
 .form-input,
 .form-select,
 .input-text-standard,
@@ -787,6 +855,7 @@ textarea.form-input {
   appearance: none;
 }
 
+/* Spacing, colours and surfaces and interaction feedback properties are defined for .form-select. */
 .form-select {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236e6e73' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
@@ -795,6 +864,7 @@ textarea.form-input {
   cursor: pointer;
 }
 
+/* Colours and surfaces properties are defined for .form-input:focus, .form-select:focus, .input-text-standard:focus, textarea.form-input:focus. */
 .form-input:focus,
 .form-select:focus,
 .input-text-standard:focus,
@@ -805,34 +875,41 @@ textarea.form-input:focus {
   outline: none;
 }
 
+/* Colours and surfaces properties are defined for .form-input::placeholder, .input-text-standard::placeholder. */
 .form-input::placeholder,
 .input-text-standard::placeholder {
   color: var(--text-light);
 }
 
-/* ==========================================================================
-   Global Responsive Breakpoints
-   ========================================================================== */
+/* Global layouts are adapted at responsive breakpoints. */
+/* The enclosed styles are applied for (max-width: 992px). */
 @media (max-width: 992px) {
+  /* Layout properties are defined for .footer-top-grid. */
   .footer-top-grid {
     grid-template-columns: 1fr 1fr;
   }
 }
 
+/* The enclosed styles are applied for (max-width: 768px). */
 @media (max-width: 768px) {
+  /* Layout properties are defined for .nav-links. */
   .nav-links {
     display: none;
   }
+  /* Layout properties are defined for .mobile-menu-btn. */
   .mobile-menu-btn {
     display: flex;
   }
 }
 
+/* The enclosed styles are applied for (max-width: 640px). */
 @media (max-width: 640px) {
+  /* Layout properties are defined for .footer-top-grid. */
   .footer-top-grid {
     grid-template-columns: 1fr;
     gap: 32px;
   }
+  /* Layout properties are defined for .footer-bottom-bar. */
   .footer-bottom-bar {
     flex-direction: column;
     gap: 16px;
@@ -840,8 +917,10 @@ textarea.form-input:focus {
   }
 }
 
-/* Reduced Motion Preference */
+/* Animation and scrolling effects are reduced for the reduced-motion preference. */
+/* The enclosed styles are applied for (prefers-reduced-motion: reduce). */
 @media (prefers-reduced-motion: reduce) {
+  /* Motion and transforms properties are defined for *, *::before, *::after. */
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
@@ -850,17 +929,17 @@ textarea.form-input:focus {
   }
 }
 
-/* ==========================================================================
-   Apple Design & Web Interface Guidelines Enhancements
-   ========================================================================== */
+/* Additional interaction, focus and touch-target rules are applied. */
 
-/* 1. Direct Instant Press Feedback */
+/* Immediate pressed-state feedback is applied to interactive controls. */
+/* Motion and transforms properties are defined for button:active, .btn-primary:active, .btn-secondary:active, .nav-inbox-btn:active, .page-btn:active, .wayfinding-tile:active. */
 button:active, .btn-primary:active, .btn-secondary:active, .nav-inbox-btn:active, .page-btn:active, .wayfinding-tile:active {
   transform: scale(0.97) !important;
   transition: transform 100ms ease-out !important;
 }
 
-/* 2. Accessible Focus Rings (WCAG 2.1 AA) */
+/* Visible focus rings are applied to keyboard-focused controls. */
+/* Colours and surfaces properties are defined for a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, .user-pill:focus-visible, .nav-inbox-btn:focus-visible. */
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
@@ -872,8 +951,10 @@ textarea:focus-visible,
   outline-offset: 2px !important;
 }
 
-/* 3. Minimum 44px Touch Targets for Interactive Elements on Mobile */
+/* Minimum touch-target dimensions are applied at the mobile breakpoint. */
+/* The enclosed styles are applied for (max-width: 820px). */
 @media (max-width: 820px) {
+  /* Layout and dimensions properties are defined for .btn-primary, .btn-secondary, .user-pill, .nav-inbox-btn. */
   .btn-primary, .btn-secondary, .user-pill, .nav-inbox-btn {
     min-height: 44px;
     display: inline-flex;
@@ -882,9 +963,8 @@ textarea:focus-visible,
   }
 }
 
-/* ==========================================================================
-   Receipt Zoom Lightbox Modal (Apple Pro Inspect)
-   ========================================================================== */
+/* Receipt preview overlays and zoom controls are styled. */
+/* Layout, positioning, spacing, colours and surfaces and motion and transforms properties are defined for .receipt-lightbox-modal. */
 .receipt-lightbox-modal {
   position: fixed;
   inset: 0;
@@ -900,11 +980,13 @@ textarea:focus-visible,
   transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Layout and colours and surfaces properties are defined for .receipt-lightbox-modal.show. */
 .receipt-lightbox-modal.show {
   display: flex;
   opacity: 1;
 }
 
+/* Layout, dimensions, colours and surfaces, overflow handling and motion and transforms properties are defined for .receipt-lightbox-box. */
 .receipt-lightbox-box {
   background: rgba(255, 255, 255, 0.98);
   border-radius: 24px;
@@ -919,6 +1001,7 @@ textarea:focus-visible,
   animation: modalPop 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Layout, spacing and colours and surfaces properties are defined for .receipt-lightbox-header. */
 .receipt-lightbox-header {
   padding: 16px 24px;
   display: flex;
@@ -930,6 +1013,7 @@ textarea:focus-visible,
   gap: 12px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .receipt-lightbox-header h4. */
 .receipt-lightbox-header h4 {
   margin: 0;
   font-size: 1.05rem;
@@ -938,12 +1022,14 @@ textarea:focus-visible,
   letter-spacing: -0.015em;
 }
 
+/* Layout properties are defined for .receipt-lightbox-toolbar. */
 .receipt-lightbox-toolbar {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
+/* Layout, dimensions, typography, colours and surfaces, interaction feedback and motion and transforms properties are defined for .receipt-tool-btn. */
 .receipt-tool-btn {
   display: inline-flex;
   align-items: center;
@@ -960,15 +1046,18 @@ textarea:focus-visible,
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
 }
 
+/* Colours and surfaces properties are defined for .receipt-tool-btn:hover. */
 .receipt-tool-btn:hover {
   background: #e8e8ed;
   border-color: #b0b0b5;
 }
 
+/* Motion and transforms properties are defined for .receipt-tool-btn:active. */
 .receipt-tool-btn:active {
   transform: scale(0.92);
 }
 
+/* Layout, positioning, dimensions, spacing, colours and surfaces, overflow handling and interaction feedback properties are defined for .receipt-lightbox-viewport. */
 .receipt-lightbox-viewport {
   flex: 1;
   overflow: auto;
@@ -983,6 +1072,7 @@ textarea:focus-visible,
   user-select: none;
 }
 
+/* Dimensions, colours and surfaces, image fitting, interaction feedback and motion and transforms properties are defined for .receipt-lightbox-viewport img. */
 .receipt-lightbox-viewport img {
   max-width: 100%;
   max-height: 58vh;
@@ -994,10 +1084,12 @@ textarea:focus-visible,
   cursor: zoom-in;
 }
 
+/* Interaction feedback properties are defined for .receipt-lightbox-viewport img.zoomed. */
 .receipt-lightbox-viewport img.zoomed {
   cursor: zoom-out;
 }
 
+/* Layout, spacing, typography and colours and surfaces properties are defined for .receipt-lightbox-footer. */
 .receipt-lightbox-footer {
   padding: 14px 24px;
   background: #fafafa;
@@ -1011,9 +1103,8 @@ textarea:focus-visible,
   gap: 12px;
 }
 
-/* ==========================================================================
-   Image Picker for Manager Session Creation
-   ========================================================================== */
+/* Session cover-image choices are styled for the editor. */
+/* Layout and spacing properties are defined for .image-picker-grid. */
 .image-picker-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -1021,6 +1112,7 @@ textarea:focus-visible,
   margin-top: 8px;
 }
 
+/* Layout, positioning, colours and surfaces, overflow handling, interaction feedback and motion and transforms properties are defined for .image-picker-option. */
 .image-picker-option {
   position: relative;
   border: 2px solid #e5e5ea;
@@ -1033,12 +1125,14 @@ textarea:focus-visible,
   flex-direction: column;
 }
 
+/* Colours and surfaces and motion and transforms properties are defined for .image-picker-option:hover. */
 .image-picker-option:hover {
   border-color: #c8102e;
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(200, 16, 46, 0.12);
 }
 
+/* Positioning, dimensions and interaction feedback properties are defined for .image-picker-option input[type="radio"]. */
 .image-picker-option input[type="radio"] {
   position: absolute;
   top: 10px;
@@ -1050,12 +1144,14 @@ textarea:focus-visible,
   cursor: pointer;
 }
 
+/* Colours and surfaces properties are defined for .image-picker-option:has(input:checked). */
 .image-picker-option:has(input:checked) {
   border-color: #c8102e;
   background: #fff;
   box-shadow: 0 0 0 1px #c8102e, 0 8px 22px rgba(200, 16, 46, 0.16);
 }
 
+/* Layout, dimensions, colours and surfaces and image fitting properties are defined for .image-picker-thumb. */
 .image-picker-thumb {
   width: 100%;
   height: 120px;
@@ -1064,6 +1160,7 @@ textarea:focus-visible,
   background: #1d1d1f;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .image-picker-label. */
 .image-picker-label {
   padding: 10px 12px;
   font-size: 0.85rem;
@@ -1072,9 +1169,8 @@ textarea:focus-visible,
   line-height: 1.3;
 }
 
-/* ==========================================================================
-   Student Receipt Upload Dropzone & Format Preview
-   ========================================================================== */
+/* Receipt upload drop zones and selected-file details are styled. */
+/* Positioning, spacing, typography, colours and surfaces, interaction feedback and motion and transforms properties are defined for .upload-dropzone. */
 .upload-dropzone {
   border: 2px dashed #d2d2d7;
   border-radius: 16px;
@@ -1086,15 +1182,15 @@ textarea:focus-visible,
   cursor: pointer;
 }
 
+/* Colours and surfaces properties are defined for .upload-dropzone:hover, .upload-dropzone.drag-over. */
 .upload-dropzone:hover,
 .upload-dropzone.drag-over {
   border-color: #c8102e;
   background: #fff8f8;
 }
 
-/* ==========================================================================
-   Navigation Bar & User Pill Refinements (White base with hover)
-   ========================================================================== */
+/* Navigation links and account controls are refined with hover states. */
+/* Positioning, colours and surfaces and motion and transforms properties are defined for .site-header. */
 .site-header {
   position: sticky;
   top: 0;
@@ -1105,6 +1201,7 @@ textarea:focus-visible,
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   transition: background 0.2s ease;
 }
+/* Layout, dimensions and spacing properties are defined for .header-inner. */
 .header-inner {
   max-width: 1200px;
   margin: 0 auto;
@@ -1113,18 +1210,21 @@ textarea:focus-visible,
   align-items: center;
   justify-content: space-between;
 }
+/* Layout properties are defined for .brand-group. */
 .brand-group {
   display: flex;
   align-items: center;
   gap: 12px;
   text-decoration: none;
 }
+/* Layout, dimensions and image fitting properties are defined for .brand-logo-img. */
 .brand-logo-img {
   height: 38px;
   width: auto;
   object-fit: contain;
   display: block;
 }
+/* Layout, dimensions, typography and colours and surfaces properties are defined for .brand-logo-icon. */
 .brand-logo-icon {
   width: 36px;
   height: 36px;
@@ -1140,10 +1240,12 @@ textarea:focus-visible,
   line-height: 1;
   box-shadow: 0 2px 6px rgba(200, 30, 39, 0.25);
 }
+/* Layout properties are defined for .brand-text. */
 .brand-text {
   display: flex;
   flex-direction: column;
 }
+/* Typography and colours and surfaces properties are defined for .brand-title. */
 .brand-title {
   font-size: 17.5px;
   font-weight: 800;
@@ -1151,6 +1253,7 @@ textarea:focus-visible,
   line-height: 1.1;
   letter-spacing: -0.02em;
 }
+/* Spacing, typography and colours and surfaces properties are defined for .brand-subtitle. */
 .brand-subtitle {
   font-size: 9px;
   font-weight: 700;
@@ -1159,11 +1262,13 @@ textarea:focus-visible,
   text-transform: uppercase;
   margin-top: 2px;
 }
+/* Layout properties are defined for .nav-links. */
 .nav-links {
   display: flex;
   align-items: center;
   gap: 1.5rem;
 }
+/* Typography, colours and surfaces and motion and transforms properties are defined for .nav-link. */
 .nav-link {
   text-decoration: none;
   color: #424245;
@@ -1171,9 +1276,11 @@ textarea:focus-visible,
   font-weight: 500;
   transition: color 0.15s ease;
 }
+/* Colours and surfaces properties are defined for .nav-link:hover, .nav-link.active. */
 .nav-link:hover, .nav-link.active {
   color: #c8102e;
 }
+/* Layout, positioning, dimensions, colours and surfaces and motion and transforms properties are defined for .nav-inbox-btn. */
 .nav-inbox-btn {
   position: relative;
   display: inline-flex;
@@ -1189,18 +1296,22 @@ textarea:focus-visible,
   text-decoration: none;
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease, transform var(--transition-press);
 }
+/* Colours and surfaces properties are defined for .nav-inbox-btn:hover. */
 .nav-inbox-btn:hover {
   background: #ffffff;
   color: #c8102e;
   border-color: rgba(200, 16, 46, 0.25);
   box-shadow: 0 2px 8px rgba(200, 16, 46, 0.12);
 }
+/* Motion and transforms properties are defined for .nav-inbox-btn:active. */
 .nav-inbox-btn:active {
   transform: scale(0.96);
 }
+/* Positioning properties are defined for .user-account. */
 .user-account {
   position: relative;
 }
+/* Layout, positioning, spacing, typography, colours and surfaces, interaction feedback and motion and transforms properties are defined for .user-pill, .user-menu-pill. */
 .user-pill, .user-menu-pill {
   position: relative;
   display: inline-flex;
@@ -1218,38 +1329,47 @@ textarea:focus-visible,
   font-family: inherit;
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease, transform var(--transition-press);
 }
+/* Colours and surfaces properties are defined for .user-pill:hover, .user-menu-pill:hover, .user-pill:focus-visible, .user-menu-pill:focus-visible. */
 .user-pill:hover, .user-menu-pill:hover,
 .user-pill:focus-visible, .user-menu-pill:focus-visible {
   border-color: rgba(0, 0, 0, 0.16);
   box-shadow: var(--shadow-sm);
   background: #ffffff;
 }
+/* Motion and transforms properties are defined for .user-pill:active, .user-menu-pill:active. */
 .user-pill:active, .user-menu-pill:active {
   transform: scale(0.98);
 }
+/* Typography and colours and surfaces properties are defined for .user-dropdown-header. */
 .user-dropdown-header {
   font-size: 0.82rem;
   color: #86868b;
 }
+/* Layout and spacing properties are defined for .user-dropdown-header strong. */
 .user-dropdown-header strong {
   display: block;
   margin-bottom: 0.1rem;
 }
+/* Dimensions, colours and surfaces and motion and transforms properties are defined for .dropdown-arrow. */
 .dropdown-arrow {
   width: 14px;
   height: 14px;
   color: #86868b;
   transition: transform var(--transition-fast);
 }
+/* Motion and transforms properties are defined for .user-pill[aria-expanded="true"] .dropdown-arrow, .user-menu-pill[aria-expanded="true"] .dropdown-arrow. */
 .user-pill[aria-expanded="true"] .dropdown-arrow,
 .user-menu-pill[aria-expanded="true"] .dropdown-arrow {
   transform: rotate(180deg);
 }
+/* The enclosed styles are applied for (max-width: 820px). */
 @media (max-width: 820px) {
+  /* Layout properties are defined for .nav-links. */
   .nav-links { display: none; }
 }
 
-/* Manager workspace header pill button */
+/* The manager workspace link is styled as a header pill. */
+/* Layout, dimensions, spacing, typography, colours and surfaces and motion and transforms properties are defined for .btn-manage-club. */
 .btn-manage-club {
   display: inline-flex;
   align-items: center;
@@ -1266,16 +1386,19 @@ textarea:focus-visible,
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease, transform var(--transition-press, 120ms ease);
   min-height: 38px;
 }
+/* Colours and surfaces properties are defined for .btn-manage-club:hover. */
 .btn-manage-club:hover {
   background: #ffffff;
   color: #c8102e;
   border-color: rgba(200, 16, 46, 0.25);
   box-shadow: 0 2px 8px rgba(200, 16, 46, 0.12);
 }
+/* Motion and transforms properties are defined for .btn-manage-club:active. */
 .btn-manage-club:active {
   transform: scale(0.96);
 }
 
+/* Layout, positioning, dimensions, spacing, colours and surfaces, interaction feedback and motion and transforms properties are defined for .user-menu-pill. */
 .user-menu-pill {
   display: inline-flex;
   align-items: center;
@@ -1291,15 +1414,18 @@ textarea:focus-visible,
   user-select: none;
   min-height: 40px;
 }
+/* Colours and surfaces properties are defined for .user-menu-pill:hover, .user-menu-pill:focus-visible. */
 .user-menu-pill:hover, .user-menu-pill:focus-visible {
   border-color: rgba(0, 0, 0, 0.16);
   box-shadow: var(--shadow-sm, 0 2px 6px rgba(0,0,0,0.06));
   background: #ffffff;
 }
+/* Motion and transforms properties are defined for .user-menu-pill:active. */
 .user-menu-pill:active {
   transform: scale(0.98);
 }
 
+/* Layout, dimensions, typography and colours and surfaces properties are defined for .avatar-initials. */
 .avatar-initials {
   width: 32px;
   height: 32px;
@@ -1314,10 +1440,12 @@ textarea:focus-visible,
   flex-shrink: 0;
 }
 
+/* Motion and transforms properties are defined for .user-menu-pill[aria-expanded="true"] .dropdown-arrow. */
 .user-menu-pill[aria-expanded="true"] .dropdown-arrow {
   transform: rotate(180deg);
 }
 
+/* Layout, positioning, dimensions, spacing and colours and surfaces properties are defined for .user-dropdown. */
 .user-dropdown {
   position: absolute;
   top: calc(100% + 10px);
@@ -1332,10 +1460,12 @@ textarea:focus-visible,
   padding: 8px;
   z-index: 1001;
 }
+/* Layout properties are defined for .user-dropdown.show. */
 .user-dropdown.show {
   display: flex !important;
 }
 
+/* Layout, spacing and colours and surfaces properties are defined for .user-dropdown-header. */
 .user-dropdown-header {
   padding: 10px 14px;
   display: flex;
@@ -1343,12 +1473,14 @@ textarea:focus-visible,
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   margin-bottom: 6px;
 }
+/* Typography and colours and surfaces properties are defined for .user-dropdown-header strong. */
 .user-dropdown-header strong {
   font-size: 13.5px;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--text-main, #1d1d1f);
 }
+/* Typography, colours and surfaces and overflow handling properties are defined for .user-dropdown-header span. */
 .user-dropdown-header span {
   font-size: 11.5px;
   color: var(--text-muted, #86868b);
@@ -1357,6 +1489,7 @@ textarea:focus-visible,
   white-space: nowrap;
 }
 
+/* Layout, spacing, typography, colours and surfaces and motion and transforms properties are defined for .dropdown-item. */
 .dropdown-item {
   padding: 9px 14px;
   font-size: 13.5px;
@@ -1369,21 +1502,25 @@ textarea:focus-visible,
   gap: 10px;
   transition: background var(--transition-fast, 150ms ease), color var(--transition-fast, 150ms ease);
 }
+/* Colours and surfaces properties are defined for .dropdown-item:hover. */
 .dropdown-item:hover {
   background: rgba(0, 0, 0, 0.04);
   color: var(--color-primary, #c8102e);
 }
+/* Colours and surfaces properties are defined for .dropdown-item.text-danger:hover. */
 .dropdown-item.text-danger:hover {
   background: #fee2e2;
   color: #b91c1c;
 }
+/* Dimensions, spacing and colours and surfaces properties are defined for .dropdown-divider. */
 .dropdown-divider {
   height: 1px;
   background: rgba(0, 0, 0, 0.06);
   margin: 6px 0;
 }
 
-/* Global Hero Search Button */
+/* The shared hero search action is styled. */
+/* Layout, dimensions, spacing, typography, colours and surfaces, interaction feedback and motion and transforms properties are defined for .hero-search-btn, .btn-filter-search. */
 .hero-search-btn, .btn-filter-search {
   display: inline-flex;
   align-items: center;
@@ -1406,39 +1543,51 @@ textarea:focus-visible,
   transition: background-color var(--transition-fast, 150ms ease), border-color var(--transition-fast, 150ms ease), color var(--transition-fast, 150ms ease), box-shadow var(--transition-fast, 150ms ease), opacity var(--transition-fast, 150ms ease), transform var(--transition-press, 120ms ease);
 }
 
+/* Colours and surfaces properties are defined for .hero-search-btn:hover, .btn-filter-search:hover. */
 .hero-search-btn:hover, .btn-filter-search:hover {
   background: linear-gradient(135deg, #d3232d 0%, #aa1620 100%);
   box-shadow: 0 5px 16px rgba(200, 30, 39, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.25);
   color: #ffffff;
 }
 
+/* Motion and transforms properties are defined for .hero-search-btn:hover .hero-btn-arrow, .btn-filter-search:hover .hero-btn-arrow. */
 .hero-search-btn:hover .hero-btn-arrow, .btn-filter-search:hover .hero-btn-arrow {
   transform: translateX(3px);
 }
 
+/* Colours and surfaces and motion and transforms properties are defined for .hero-search-btn:active, .btn-filter-search:active. */
 .hero-search-btn:active, .btn-filter-search:active {
   transform: scale(0.97);
   box-shadow: 0 2px 6px rgba(200, 30, 39, 0.3);
 }
 
+/* Colours and surfaces properties are defined for .hero-search-btn:focus-visible, .btn-filter-search:focus-visible. */
 .hero-search-btn:focus-visible, .btn-filter-search:focus-visible {
   outline: 2px solid var(--color-primary, #c8102e);
   outline-offset: 2px;
 }
 
+/* Motion and transforms properties are defined for .hero-btn-arrow. */
 .hero-btn-arrow {
   transition: transform var(--transition-fast, 150ms ease);
 }
 
-/* Account links remain available in the mobile navigation drawer. */
+/* Account links are retained in the mobile navigation drawer. */
+/* The enclosed styles are applied for (max-width: 820px). */
 @media (max-width: 820px) {
+  /* Layout properties are defined for .user-account. */
   .user-account { display: none; }
 }
-/* Membership status pill: grey, green, amber, blue or red.
-   Used on the club page, My memberships and My Activities, so it lives here in the shared stylesheet. */
+/* Shared membership status colours are applied across club, membership and activity pages. */
+/* Layout, spacing, typography and colours and surfaces properties are defined for .member-status-pill. */
 .member-status-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 600; padding: 3px 10px; border-radius: 980px; border: 1px solid #e5e5ea; color: #6e6e73; background: #f5f5f7; }
+/* Dimensions and colours and surfaces properties are defined for .member-status-pill .status-dot. */
 .member-status-pill .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+/* Colours and surfaces properties are defined for .member-status-pill.tone-green. */
 .member-status-pill.tone-green { color: #176633; background: #eaf6ee; border-color: #bfe3cb; }
+/* Colours and surfaces properties are defined for .member-status-pill.tone-amber. */
 .member-status-pill.tone-amber { color: #805000; background: #fff5da; border-color: #f3dca0; }
+/* Colours and surfaces properties are defined for .member-status-pill.tone-blue. */
 .member-status-pill.tone-blue  { color: #064f92; background: #eaf3ff; border-color: #bcd6f5; }
+/* Colours and surfaces properties are defined for .member-status-pill.tone-red. */
 .member-status-pill.tone-red   { color: #b20820; background: #fff0f2; border-color: #f3bec7; }

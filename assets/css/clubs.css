@@ -1,17 +1,18 @@
-/* ==========================================================================
-   Clubs Explore Page Styles (clubs.css)
-   ========================================================================== */
+/* Club directory cards and responsive layouts are styled. */
 
+/* Dimensions and spacing properties are defined for .clubs-page-container. */
 .clubs-page-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px 24px 64px;
 }
 
+/* Spacing properties are defined for .clubs-header. */
 .clubs-header {
   margin-bottom: 32px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .clubs-eyebrow. */
 .clubs-eyebrow {
   font-size: 11.5px;
   font-weight: 700;
@@ -21,6 +22,7 @@
   margin-bottom: 8px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .clubs-title. */
 .clubs-title {
   font-size: 40px;
   font-weight: 800;
@@ -30,6 +32,7 @@
   margin: 0 0 8px;
 }
 
+/* Dimensions, spacing, typography and colours and surfaces properties are defined for .clubs-subtitle. */
 .clubs-subtitle {
   font-size: 15.5px;
   color: var(--text-secondary, #424245);
@@ -38,12 +41,14 @@
   line-height: 1.5;
 }
 
+/* Layout properties are defined for .clubs-grid. */
 .clubs-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
   gap: 28px;
 }
 
+/* Layout, colours and surfaces, overflow handling, interaction feedback and motion and transforms properties are defined for .club-card-link. */
 .club-card-link {
   display: flex;
   flex-direction: column;
@@ -58,16 +63,19 @@
   cursor: pointer;
 }
 
+/* Colours and surfaces and motion and transforms properties are defined for .club-card-link:hover. */
 .club-card-link:hover {
   transform: translateY(-4px);
   box-shadow: 0 14px 34px -4px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.05);
   border-color: rgba(200, 16, 46, 0.25);
 }
 
+/* Motion and transforms properties are defined for .club-card-link:active. */
 .club-card-link:active {
   transform: scale(0.99);
 }
 
+/* Positioning, dimensions, colours and surfaces and overflow handling properties are defined for .club-card-media. */
 .club-card-media {
   position: relative;
   width: 100%;
@@ -76,6 +84,7 @@
   background: #141824;
 }
 
+/* Layout, dimensions, image fitting and motion and transforms properties are defined for .club-card-media img. */
 .club-card-media img {
   width: 100%;
   height: 100%;
@@ -84,10 +93,12 @@
   transition: transform 0.4s ease;
 }
 
+/* Motion and transforms properties are defined for .club-card-link:hover .club-card-media img. */
 .club-card-link:hover .club-card-media img {
   transform: scale(1.03);
 }
 
+/* Positioning, spacing, typography and colours and surfaces properties are defined for .club-card-badge. */
 .club-card-badge {
   position: absolute;
   bottom: 12px;
@@ -104,6 +115,7 @@
   border-radius: 980px;
 }
 
+/* Layout and spacing properties are defined for .club-card-body. */
 .club-card-body {
   padding: 1.75rem;
   display: flex;
@@ -112,6 +124,7 @@
   justify-content: space-between;
 }
 
+/* Layout and spacing properties are defined for .club-card-header. */
 .club-card-header {
   display: flex;
   justify-content: space-between;
@@ -120,6 +133,7 @@
   margin-bottom: 0.75rem;
 }
 
+/* Spacing, typography, colours and surfaces and motion and transforms properties are defined for .club-card-name. */
 .club-card-name {
   font-size: 1.35rem;
   font-weight: 700;
@@ -129,10 +143,12 @@
   transition: color 0.15s ease;
 }
 
+/* Colours and surfaces properties are defined for .club-card-link:hover .club-card-name. */
 .club-card-link:hover .club-card-name {
   color: var(--color-primary, #c8102e);
 }
 
+/* Typography and colours and surfaces properties are defined for .club-card-count. */
 .club-card-count {
   font-size: 0.85rem;
   font-weight: 500;
@@ -140,7 +156,8 @@
   white-space: nowrap;
 }
 
-/* Long descriptions stop after 3 lines and end in "..." */
+/* Long club descriptions are limited to three lines with overflow hidden. */
+/* Layout, spacing, typography, colours and surfaces and overflow handling properties are defined for .club-card-desc. */
 .club-card-desc {
   color: var(--text-secondary, #424245);
   font-size: 0.95rem;
@@ -153,6 +170,7 @@
   overflow: hidden;
 }
 
+/* Layout, spacing, typography and colours and surfaces properties are defined for .club-card-footer. */
 .club-card-footer {
   border-top: 1px solid rgba(0, 0, 0, 0.06);
   padding-top: 1rem;
@@ -164,6 +182,7 @@
   color: var(--color-primary, #c8102e);
 }
 
+/* Layout and motion and transforms properties are defined for .club-card-footer-arrow. */
 .club-card-footer-arrow {
   display: inline-flex;
   align-items: center;
@@ -171,6 +190,7 @@
   transition: transform 0.15s ease;
 }
 
+/* Motion and transforms properties are defined for .club-card-link:hover .club-card-footer-arrow. */
 .club-card-link:hover .club-card-footer-arrow {
   transform: translateX(4px);
 }

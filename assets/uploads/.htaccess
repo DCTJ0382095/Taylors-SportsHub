@@ -1,1 +1,3 @@
+# Direct web access to receipt and refund uploads is denied.
+# Evidence is served through protected endpoints after access checks.
 Require all denied

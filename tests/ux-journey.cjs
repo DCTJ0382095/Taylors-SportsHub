@@ -1,5 +1,5 @@
-// NODE_PATH must expose playwright and @axe-core/playwright (test tools only).
-// Run: node tests/ux-journey.cjs [--probe]
+// Playwright and the axe browser integration are loaded from the configured module path.
+// The journey suite is executed with Node, and optional baseline checks are selected through --probe.
 const {chromium} = require('playwright');
 const {AxeBuilder} = require('@axe-core/playwright');
 const {execFileSync} = require('node:child_process');
@@ -7,26 +7,32 @@ const fs = require('node:fs');
 const path = require('node:path');
 const assert = require('node:assert/strict');
 const base = process.env.SPORTSHUB_URL?.replace(/\/+$/, '');
+// Journey execution is refused without an application URL.
 if (!base) throw new Error('Set SPORTSHUB_URL to your running application URL.');
 const out = path.join(__dirname,'../docs/ux-evidence');
 const fixture = (...args) => execFileSync(process.env.PHP_BINARY || 'php',[path.join(__dirname,'ux-fixtures.php'),...args],{encoding:'utf8'}).trim();
+// The current synthetic registration is decoded from fixture output.
 const read = () => JSON.parse(fixture('read'));
 let png;
 (async()=>{
+    // Journey evidence directories and synthetic fixtures are prepared.
  fs.mkdirSync(out,{recursive:true});
  const f=JSON.parse(fixture('create'));
  let browser;
  try {
+     // The browser journey is executed with protected cleanup.
  browser=await chromium.launch({channel:process.env.BROWSER_CHANNEL || 'chrome',headless:true});
  const specimenContext=await browser.newContext({viewport:{width:620,height:300}});
  const specimen=await specimenContext.newPage();
  await specimen.setContent('<div style="font:18px/1.6 system-ui;padding:24px;background:#f5f5f7"><h1 style="font-size:26px;color:#b20820">SYNTHETIC RECEIPT</h1><p>Test artwork · Not proof of settlement</p><p>Amount: RM 15.00<br>Reference: DEMO-UX-ONLY<br>No real transfer occurred</p></div>');
  png=await specimen.screenshot(); await specimenContext.close();
  const checks=[],errors=[],audits=[];
- const check=(label,value)=>{assert.ok(value,label);checks.push(label);};
+ const check=(label,value)=>{ /* Each asserted journey outcome is recorded after successful validation. */ assert.ok(value,label);checks.push(label);};
  let student,manager,outsider;
  const login=async(role)=>{
+     // A synthetic account is authenticated in an isolated browser context.
   const context=await browser.newContext({viewport:{width:1440,height:1000}});
+  // A page is created and browser errors are collected.
   const page=await context.newPage(); page.on('pageerror',e=>errors.push(e.message));
   await page.goto(base+'/login.php');
   await page.locator('[name=email]').fill(f.users[role].email);
@@ -35,20 +41,25 @@ let png;
   return page;
  };
  const post=async(page,url,data={},file)=>{
+     // Journey requests are submitted with CSRF and optional synthetic receipt evidence.
   const token=await page.locator('[name=csrf_token]').first().inputValue();
   if (url.startsWith('/manager/record-refund.php') && await page.locator('[name=submission_key]').count()) {
+      // The current refund submission key is retained in the request.
       data = {submission_key:await page.locator('[name=submission_key]').inputValue(),...data};
   }
   if(url.startsWith('/manager/review-receipt.php') && await page.locator('[name=receipt_id]').count()) {
+      // The current displayed receipt ID is retained in review requests.
    data={receipt_id:await page.locator('[name=receipt_id]').inputValue(),...data};
   }
   const response=await page.request.post(base+url,file ? {multipart:{csrf_token:token,...data,receipt:{name:'synthetic.png',mimeType:'image/png',buffer:png}}} : {form:{csrf_token:token,...data}});
   return response;
  };
- const go=async(page,url)=>{await page.goto(base+url);};
- const clickSubmit=async(page,selector)=>{await Promise.all([page.waitForNavigation(),page.locator(selector).click()]);};
+ const go=async(page,url)=>{ /* The browser page is navigated to the requested application path. */ await page.goto(base+url);};
+ const clickSubmit=async(page,selector)=>{ /* Form submission is awaited together with the resulting navigation. */ await Promise.all([page.waitForNavigation(),page.locator(selector).click()]);};
  const capture=async(page,name)=>{
+     // Screenshots, overflow checks and accessibility audits are captured for a journey state.
   for(const width of [1440,390]) {
+      // Each journey state is captured at desktop and mobile widths.
    await page.setViewportSize({width,height:1000});
    await page.screenshot({path:path.join(out,`after-${name}-${width}.png`),fullPage:true});
    check(`${name} ${width}px no page overflow`,await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
@@ -64,6 +75,7 @@ let png;
   fixture('bank-change');
   await go(student,`/payment.php?id=${rid}&msg=invalid_file_type`);
   if(process.argv.includes('--probe')) {
+      // Baseline upload and payment-presentation probes are reported without the full journey.
    const probes={
     'Keyboard-accessible native upload':await student.locator('input[type=file]').evaluate(el=>getComputedStyle(el).display!=='none'),
     'Inline upload recovery':await student.locator('[role=alert]').count()>0,
@@ -118,7 +130,7 @@ let png;
   await go(student,`/payment.php?id=${rid}`); await capture(student,'refund-pending');
   await go(manager,`/manager/record-refund.php?id=${rid}`);
   await capture(manager,'record-refund');
-  const refund=async(amount)=>{await post(manager,`/manager/record-refund.php?id=${rid}`,{amount,reason:'Synthetic external transfer recorded'});};
+  const refund=async(amount)=>{ /* An external synthetic refund is submitted with the current form credentials. */ await post(manager,`/manager/record-refund.php?id=${rid}`,{amount,reason:'Synthetic external transfer recorded'});};
   await refund('5.00');
   await refund('5.00');
   check('Partial refund keeps hold',read().status==='cancellation_pending'&&Number(read().refunded)===5);
@@ -130,7 +142,7 @@ let png;
   check('Stale approval cannot resurrect cancelled registration',read().status==='cancelled');
   await go(manager,`/manager/record-refund.php?id=${rid}`); await refund('1');
   check('Completed refund cannot be recorded twice',Number(read().refunded)===15);
-  // A new synthetic unpaid hold for boundary checks; no seed data modified.
+  // The synthetic registration is reset to an unpaid state for deadline boundary checks.
   fixture('set','awaiting_payment'); fixture('expire');
   await go(student,`/payment.php?id=${rid}`); check('Deadline expiry releases hold',read().status==='expired');
   check('Expired page has recovery link',await student.locator('main a[href*="session-detail"]').count()>0);
@@ -149,9 +161,10 @@ let png;
   await clickSubmit(student,'form[action$="reserve.php"] button');
   check('Free join confirms with no payment form',await student.locator('main').innerText().then(t=>t.includes('Confirmed')));
   await go(student,'/my-activities.php'); await capture(student,'activities');
-  // Cancellation during settlement review must not be mistaken for an approved payment.
+  // Cancellation during receipt review is checked without treating the pending receipt as an approved payment.
   await go(student,`/session-detail.php?id=${f.sessions.review}`);
   await clickSubmit(student,'form[action$="reserve.php"] button');
+  // The synthetic review registration is decoded from fixture output.
   const reviewRead=()=>JSON.parse(fixture('review-read'));
   const reviewId=reviewRead().id;
   await go(manager,`/manager/close-signup.php?id=${f.sessions.review}`);
@@ -165,7 +178,7 @@ let png;
   check('Manager sees cancellation settlement choice',await manager.locator('main').innerText().then(t=>t.includes('Payment received — queue refund')));
   await clickSubmit(manager,'button[value=approve]');
   check('Verified payment on cancelled review queues refund',reviewRead().status==='cancellation_pending');
-  // Timely evidence may still be reviewed after start; new uploads cannot.
+  // Previously submitted evidence is checked for review after session start, while new uploads are blocked.
   fixture('review-start');
   await go(student,`/payment.php?id=${reviewId}`);
   check('Post-start paid cancellation stays pending',reviewRead().status==='cancellation_pending');
@@ -179,7 +192,7 @@ let png;
   await clickSubmit(manager,'button[value=reject]');
   await go(student,`/payment.php?id=${reviewId}`);
   check('Post-start rejection expires without upload option',reviewRead().status==='expired'&&await student.locator('#receipt').count()===0);
-  // Competing final-place HTTP requests use independent PHP sessions.
+  // Competing final-place requests are submitted through independent PHP sessions.
   fixture('race-capacity');
   await go(student,`/session-detail.php?id=${f.sessions.race}`);
   await go(outsider,`/session-detail.php?id=${f.sessions.race}`);
@@ -193,7 +206,7 @@ let png;
   check('Account button opens menu by keyboard',await student.locator('#account-menu').isVisible());
   await student.keyboard.press('Escape');
   check('Account menu Escape closes and restores focus',await student.locator('.user-account .user-pill').evaluate(el=>document.activeElement===el&&el.getAttribute('aria-expanded')==='false'));
-  // Keyboard checks with an actual browser input sequence.
+  // Mobile focus behavior is checked with browser keyboard input.
   await student.setViewportSize({width:390,height:844});
   await student.locator('.mobile-menu-btn').focus(); await student.keyboard.press('Enter');
   check('Drawer receives keyboard focus',await student.locator('.mobile-drawer-close').evaluate(el=>el===document.activeElement));
@@ -210,7 +223,8 @@ let png;
   check('Axe finds no violations across captured journey states',audits.every(a=>a.violations.length===0));
   console.log(JSON.stringify({passed:checks.length,axeViolations:audits.reduce((n,a)=>n+a.violations.length,0),checks,audits,errors},null,2));
  } finally {
-  try { if(browser) await browser.close(); }
-  finally { console.log(fixture('cleanup')); }
+     // Browser and synthetic-fixture cleanup is attempted after success or failure.
+  try { /* An opened browser is closed before fixture removal. */  if(browser) await browser.close(); }
+  finally { /* Synthetic fixtures are removed even after browser cleanup failure. */  console.log(fixture('cleanup')); }
  }
-})().catch(e=>{console.error(e);process.exitCode=1;});
+})().catch(e=>{ /* Unhandled journey errors are reported and a failing process exit code is assigned. */ console.error(e);process.exitCode=1;});

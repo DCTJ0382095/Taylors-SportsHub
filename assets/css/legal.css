@@ -1,19 +1,20 @@
-/* ==========================================================================
-   Legal Pages Styles - Privacy Policy & Terms of Use (legal.css)
-   ========================================================================== */
+/* Privacy-policy and terms-of-use pages are styled. */
 
+/* Dimensions and spacing properties are defined for .legal-layout. */
 .legal-layout {
   padding: 24px 24px 64px;
   max-width: 880px;
   margin: 0 auto;
 }
 
+/* Spacing and colours and surfaces properties are defined for .legal-header. */
 .legal-header {
   border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   padding-bottom: 24px;
   margin-bottom: 36px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .legal-title. */
 .legal-title {
   font-size: 40px;
   font-weight: 800;
@@ -23,12 +24,14 @@
   line-height: 1.15;
 }
 
+/* Typography and colours and surfaces properties are defined for .legal-meta. */
 .legal-meta {
   font-size: 14px;
   letter-spacing: -0.01em;
   color: var(--text-muted, #86868b);
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .legal-card. */
 .legal-card {
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.06);
@@ -38,14 +41,17 @@
   line-height: 1.7;
 }
 
+/* Spacing properties are defined for .legal-section. */
 .legal-section {
   margin-bottom: 36px;
 }
 
+/* Spacing properties are defined for .legal-section:last-child. */
 .legal-section:last-child {
   margin-bottom: 0;
 }
 
+/* Layout, spacing, typography and colours and surfaces properties are defined for .legal-section-title. */
 .legal-section-title {
   font-size: 20px;
   font-weight: 800;
@@ -57,17 +63,20 @@
   gap: 10px;
 }
 
+/* Typography and colours and surfaces properties are defined for .legal-section-num. */
 .legal-section-num {
   color: var(--color-primary, #c8102e);
   font-size: 15px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .legal-text. */
 .legal-text {
   font-size: 15px;
   color: var(--text-secondary, #424245);
   margin-bottom: 14px;
 }
 
+/* Layout, spacing, typography and colours and surfaces properties are defined for .legal-list. */
 .legal-list {
   padding-left: 20px;
   margin-bottom: 14px;
@@ -78,6 +87,7 @@
   color: var(--text-secondary, #424245);
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .legal-callout. */
 .legal-callout {
   background: #fdf2f4;
   border-left: 3px solid var(--color-primary, #c8102e);
@@ -88,11 +98,14 @@
   margin: 20px 0;
 }
 
-/* Responsive */
+/* Legal-page spacing is adapted to narrower viewports. */
+/* The enclosed styles are applied for (max-width: 640px). */
 @media (max-width: 640px) {
+  /* Spacing properties are defined for .legal-card. */
   .legal-card {
     padding: 24px 20px;
   }
+  /* Typography properties are defined for .legal-title. */
   .legal-title {
     font-size: 30px;
   }

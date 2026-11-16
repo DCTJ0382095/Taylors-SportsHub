@@ -1,12 +1,19 @@
-/* Shared rails and optical alignment; narrow reading/form layouts stay centred. */
+/* Shared page alignment is defined, and narrow reading and form layouts are centred. */
+/* Shared custom properties are defined at the document root. */
 :root { --page-gutter: 24px; }
 
+/* Layout properties are defined for .brand-group. */
 .brand-group { flex-shrink: 0; }
+/* Layout properties are defined for .brand-logo-img, .brand-text. */
 .brand-logo-img, .brand-text { flex-shrink: 0; }
+/* Typography properties are defined for .brand-title, .brand-subtitle. */
 .brand-title, .brand-subtitle { white-space: nowrap; }
+/* Layout properties are defined for .site-header .header-inner. */
 .site-header .header-inner { gap: 20px; }
+/* Typography properties are defined for .nav-actions > a. */
 .nav-actions > a { white-space: nowrap; }
 
+/* Dimensions and spacing properties are defined for :is(.sessions-container, .clubs-page-container, .club-page-container, .session-detail-page, .manager-container, .participants-container, .activities-page, .profile-page-container, .journey-page:not(.narrow)). */
 :is(.sessions-container, .clubs-page-container, .club-page-container,
     .session-detail-page, .manager-container, .participants-container,
     .activities-page, .profile-page-container, .journey-page:not(.narrow)) {
@@ -15,78 +22,122 @@
   margin-inline: auto;
   padding-inline: var(--page-gutter);
 }
+/* Spacing properties are defined for :is(.manager-container, .participants-container, .journey-page). */
 :is(.manager-container, .participants-container, .journey-page) { padding-top: 24px; }
+/* Dimensions and spacing properties are defined for :is(.legal-layout, .journey-page.narrow). */
 :is(.legal-layout, .journey-page.narrow) {
   width: 100%;
   padding-inline: var(--page-gutter);
 }
 
+/* Spacing properties are defined for .error-header. */
 .error-header { padding-inline: var(--page-gutter); }
+/* Dimensions and spacing properties are defined for .error-header .brand-group. */
 .error-header .brand-group {
   max-width: calc(var(--max-width, 1220px) - 2 * var(--page-gutter));
   margin-inline: auto;
 }
 
+/* Layout properties are defined for :is(.btn-primary, .btn-secondary, .btn-link, .manager-btn, .journey-button, .btn-reserve) svg. */
 :is(.btn-primary, .btn-secondary, .btn-link, .manager-btn,
     .journey-button, .btn-reserve) svg { display: block; flex-shrink: 0; }
+/* Typography properties are defined for :is(.fact-value, .journey-facts dd). */
 :is(.fact-value, .journey-facts dd) { font-variant-numeric: tabular-nums; }
+/* Layout properties are defined for .fact-row. */
 .fact-row { align-items: flex-start; gap: 16px; }
+/* Layout properties are defined for .fact-label. */
 .fact-label { flex-shrink: 0; }
+/* Dimensions and overflow handling properties are defined for .fact-value. */
 .fact-value { min-width: 0; overflow-wrap: anywhere; }
+/* Layout properties are defined for .filter-results-bar. */
 .filter-results-bar { flex-wrap: wrap; gap: 12px; }
+/* Layout properties are defined for .sort-group. */
 .sort-group { flex-wrap: wrap; gap: 8px; }
+/* Typography properties are defined for .sort-group > span. */
 .sort-group > span { white-space: nowrap; }
+/* Layout properties are defined for .club-card-header. */
 .club-card-header { align-items: flex-start; }
+/* Dimensions properties are defined for .manager-card-main. */
 .manager-card-main { min-width: 0; }
 
+/* The enclosed styles are applied for (max-width: 1100px). */
 @media (max-width: 1100px) {
+  /* Layout properties are defined for .site-header .nav-links. */
   .site-header .nav-links { display: none; }
+  /* Layout properties are defined for .site-header .mobile-menu-btn. */
   .site-header .mobile-menu-btn { display: inline-flex; }
 }
 
+/* The enclosed styles are applied for (max-width: 820px). */
 @media (max-width: 820px) {
+  /* Layout properties are defined for .site-header .header-inner. */
   .site-header .header-inner { gap: 12px; }
+  /* Layout properties are defined for .site-header .nav-actions. */
   .site-header .nav-actions { gap: 8px; }
+  /* Layout properties are defined for .site-header .btn-manage-club. */
   .site-header .btn-manage-club { display: none; }
+  /* Spacing properties are defined for .site-header .nav-actions > .btn-link. */
   .site-header .nav-actions > .btn-link { padding-inline: 8px; }
+  /* Spacing properties are defined for .site-header .nav-actions > .btn-primary. */
   .site-header .nav-actions > .btn-primary { padding-inline: 14px; }
 }
 
+/* The enclosed styles are applied for (max-width: 600px). */
 @media (max-width: 600px) {
+  /* Layout properties are defined for .session-cards-grid, .club-cards-grid, .sessions-grid, .clubs-grid. */
   .session-cards-grid, .club-cards-grid, .sessions-grid, .clubs-grid {
     grid-template-columns: minmax(0, 1fr);
   }
+  /* Dimensions properties are defined for .filter-results-bar > div, .sort-group. */
   .filter-results-bar > div, .sort-group { width: 100%; }
+  /* Layout and dimensions properties are defined for .sort-group > form. */
   .sort-group > form { flex: 1; min-width: 0; }
+  /* Dimensions properties are defined for .sort-select. */
   .sort-select { width: 100%; }
+  /* Layout properties are defined for .club-identity-actions. */
   .club-identity-actions { flex-wrap: wrap; }
+  /* Typography properties are defined for .club-card-header > :last-child. */
   .club-card-header > :last-child { text-align: right; }
+  /* Layout properties are defined for .manager-metrics-grid, .participants-metrics-grid. */
   .manager-metrics-grid, .participants-metrics-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  /* Layout properties are defined for .journey-columns. */
   .journey-columns { grid-template-columns: minmax(0, 1fr); }
+  /* Layout properties are defined for .journey-actions. */
   .journey-actions { flex-wrap: wrap; }
+  /* Layout and typography properties are defined for .journey-actions > *. */
   .journey-actions > * { flex-basis: 100%; white-space: normal; }
 }
 
+/* The enclosed styles are applied for (max-width: 360px). */
 @media (max-width: 360px) {
+  /* Layout properties are defined for .site-header .brand-group. */
   .site-header .brand-group { gap: 8px; }
+  /* Dimensions properties are defined for .site-header .brand-logo-img. */
   .site-header .brand-logo-img { height: 32px; }
+  /* Typography properties are defined for .site-header .brand-title. */
   .site-header .brand-title { font-size: 16px; }
+  /* Typography properties are defined for .site-header .brand-subtitle. */
   .site-header .brand-subtitle { font-size: 8px; }
+  /* Layout properties are defined for .site-header .header-inner. */
   .site-header .header-inner { gap: 8px; }
+  /* Layout properties are defined for .site-header .nav-actions. */
   .site-header .nav-actions { gap: 4px; }
 }
 
-/* Memberships button: a pill with its label on wide screens, just the round icon on phones */
+/* Membership navigation is displayed as a labelled pill on wide screens and a circular icon on phones. */
+/* The enclosed styles are applied for (max-width: 820px). */
 @media (max-width: 820px) {
+  /* Layout, dimensions and spacing properties are defined for .site-header .nav-memberships-btn. */
   .site-header .nav-memberships-btn { display: inline-flex; width: 38px; padding: 0; justify-content: center; }
+  /* Layout properties are defined for .site-header .nav-memberships-btn span. */
   .site-header .nav-memberships-btn span { display: none; }
 }
 
 
-/* Status pills (Confirmed, Awaiting Payment, ...): same shape, size and colours on every page,
-   matching the pill next to "Session Details" */
+/* Consistent status-pill shapes, sizes and colours are applied across pages. */
+/* Layout, spacing, typography and colours and surfaces properties are defined for .status-badge, .manager-card .status-badge, .member-status-pill. */
 .status-badge,
 .manager-card .status-badge,
 .member-status-pill {
@@ -100,9 +151,15 @@
   letter-spacing: 0.01em;
   white-space: nowrap;
 }
+/* Colours and surfaces properties are defined for .badge-confirmed. */
 .badge-confirmed { color: #176633; background: #eaf6ee; }
+/* Colours and surfaces properties are defined for .badge-warning. */
 .badge-warning { color: #805000; background: #fff5da; }
+/* Colours and surfaces properties are defined for .badge-info. */
 .badge-info { color: #064f92; background: #eaf3ff; }
+/* Colours and surfaces properties are defined for .badge-danger. */
 .badge-danger { color: #b20820; background: #fff0f2; }
+/* Colours and surfaces properties are defined for .badge-muted. */
 .badge-muted { color: #555560; background: #eeeef2; }
+/* Colours and surfaces properties are defined for .member-status-pill.tone-grey. */
 .member-status-pill.tone-grey { color: #555560; background: #eeeef2; }

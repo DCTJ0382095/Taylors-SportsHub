@@ -1,6 +1,8 @@
-# Relative target works at the document root or in any project subfolder.
+# Missing file and directory requests are routed to the relative 404 handler.
+# The rewrite configuration is applied when mod_rewrite is available.
 <IfModule mod_rewrite.c>
     RewriteEngine On
+    # Only paths without a matching file or directory are rewritten.
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^ 404.php [END]

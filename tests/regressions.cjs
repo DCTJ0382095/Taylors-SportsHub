@@ -1,4 +1,4 @@
-// NODE_PATH: existing Playwright test tools. Uses disposable UX fixtures only.
+// Playwright is loaded from the configured module path. Synthetic fixture records are used for the browser checks.
 const {chromium} = require('playwright');
 const {execFileSync} = require('node:child_process');
 const fs = require('node:fs');
@@ -6,19 +6,24 @@ const path = require('node:path');
 const assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '..');
 const base = process.env.SPORTSHUB_URL?.replace(/\/+$/, '');
+// Suite execution is refused without an application URL.
 if (!base) throw new Error('Set SPORTSHUB_URL to your running application URL.');
 const php = process.env.PHP_BINARY || 'php';
 const fixture = (...args) => execFileSync(php, [path.join(__dirname, 'ux-fixtures.php'), ...args], {encoding:'utf8'}).trim();
+// Parameterized fixture queries are executed through a PHP subprocess and decoded from JSON.
 const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
     'require "config/db.php"; $q=get_db_connection()->prepare($argv[1]); $q->execute(json_decode($argv[2],true)); echo json_encode($q->columnCount() ? $q->fetchAll() : []);',
     query, JSON.stringify(params)], {cwd:root, encoding:'utf8'}));
 (async () => {
+    // Synthetic fixtures are created before the browser regression suite is executed.
     const f = JSON.parse(fixture('create'));
     let browser;
     let failures = 0;
     try {
+        // Browser checks are executed with cleanup protected by a finally block.
         browser = await chromium.launch({channel:process.env.BROWSER_CHANNEL || 'chrome', headless:true});
         const login = async role => {
+            // A fresh browser page is authenticated with the selected synthetic account.
             const page = await browser.newPage();
             await page.goto(base+'/login.php');
             await page.locator('[name=email]').fill(f.users[role].email);
@@ -28,20 +33,25 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
         };
         const student = await login('student'), manager = await login('manager'), outsider = await login('outsider');
         const post = async (page, url, data, receipt) => {
+            // Form requests are submitted with the current CSRF token and optional receipt evidence.
             const csrf_token = await page.locator('[name=csrf_token]').first().inputValue();
             if (url.startsWith('/manager/record-refund.php') && await page.locator('[name=submission_key]').count()) {
+                // The current refund submission key is included when available.
                 data = {submission_key:await page.locator('[name=submission_key]').inputValue(),...data};
             }
             if (url.startsWith('/manager/review-receipt.php') && await page.locator('[name=receipt_id]').count()) {
+                // The displayed receipt ID is included for receipt-review submissions.
                 data = {receipt_id:await page.locator('[name=receipt_id]').inputValue(),...data};
             }
             return page.request.post(base+url, receipt ? {multipart:{csrf_token,...data,receipt:{name:'synthetic.png',mimeType:'image/png',buffer:receipt}}} : {form:{csrf_token,...data}});
         };
         const check = async (name, run) => {
-            try { await run(); console.log('PASS '+name); }
-            catch (e) { failures++; console.error('FAIL '+name+': '+e.message); }
+            // Each named regression is executed and reported independently.
+            try { /* A successful regression is recorded after the check is awaited. */  await run(); console.log('PASS '+name); }
+            catch (e) { /* Failures are counted and reported without skipping the remaining checks. */  failures++; console.error('FAIL '+name+': '+e.message); }
         };
         await check('staff email rejected by actual signup handler', async () => {
+            // Staff-domain signup rejection is checked through the real registration endpoint.
             const page = await browser.newPage();
             await page.goto(base+'/register.php');
             const response = await post(page, '/register.php', {name:'Staff test',email:'admin@taylors.edu.my',password:'Password123!',confirm_password:'Password123!',terms:'1'});
@@ -49,9 +59,11 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
             await page.close();
         });
         await check('published/closed/cancelled terms stay fixed; draft editable', async () => {
+            // Published terms are checked for immutability, and draft editing is exercised.
             const sid = f.sessions.free;
             const original = sql('SELECT * FROM sessions WHERE id=?',[sid])[0];
             for (const status of ['published','closed','cancelled']) {
+                // Forged term changes are submitted for each non-draft status.
                 sql('UPDATE sessions SET status=? WHERE id=?',[status,sid]);
                 await manager.goto(base+`/manager/session-edit.php?id=${sid}`);
                 await post(manager, `/manager/session-edit.php?id=${sid}`, {
@@ -70,6 +82,7 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
             assert.equal(sql('SELECT title FROM sessions WHERE id=?',[sid])[0].title,'Draft edited');
         });
         await check('receipt replacements retain review history and scoped evidence', async () => {
+            // Receipt replacement, stale review rejection and scoped historical evidence are checked.
             await student.goto(base+`/session-detail.php?id=${f.sessions.paid}`);
             await post(student,'/reserve.php',{session_id:f.sessions.paid});
             const reg = JSON.parse(fixture('read'));
@@ -90,6 +103,7 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
             assert.equal(receipts[0].rejection_reason,'First reference unreadable');
             assert.equal(receipts[1].decision,'approved');
             for (const r of receipts) {
+                // Reviewer attribution and owner, manager and outsider evidence access are checked for each receipt.
                 assert.equal(r.reviewed_by,f.users.manager.id);
                 assert.ok(r.reviewed_at);
                 const url=base+`/evidence.php?registration_id=${reg.id}&receipt_id=${r.id}`;
@@ -101,15 +115,17 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
             const mismatch=base+`/evidence.php?registration_id=${reg.id}&receipt_id=2147483647`;
             assert.equal((await student.request.get(mismatch)).status(),404);
             for (const page of [student,manager]) {
+                // Receipt history is checked in owner and manager views.
                 await page.goto(base+(page===student?`/payment.php?id=${reg.id}`:`/manager/review-receipt.php?id=${reg.id}`));
                 assert.match(await page.locator('main').innerText(),/First reference unreadable/);
                 assert.equal(await page.locator('a[href*="receipt_id="]').count(),2);
             }
-            // Retried decision cannot overwrite the earlier reviewer decision.
+            // The recorded reviewer decision is checked for preservation after a repeated submission.
             await post(manager,`/manager/review-receipt.php?id=${reg.id}`,{decision:'reject',rejection_reason:'Stale retry'});
             assert.equal(sql('SELECT decision FROM payment_receipts WHERE id=?',[receipts[1].id])[0].decision,'approved');
         });
         await check('active receipt lightbox retains zoom, Escape and focus return', async () => {
+            // Receipt zoom, Escape dismissal and focus restoration are checked.
             await manager.goto(base+`/manager/participants.php?session_id=${f.sessions.paid}`);
             const trigger = manager.locator('[data-receipt-zoom]').first();
             await trigger.click();
@@ -121,8 +137,10 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
             assert.equal(await trigger.evaluate(el=>el===document.activeElement),true);
         });
         await check('cover selection follows native radio state without JavaScript', async () => {
+            // Native cover-radio selection is checked with JavaScript disabled.
             const context = await browser.newContext({javaScriptEnabled:false});
             try {
+                // Cover selection is exercised in an isolated browser context.
                 await context.addCookies(await manager.context().cookies());
                 const page = await context.newPage();
                 await page.goto(base+`/manager/session-edit.php?id=${f.sessions.free}`);
@@ -132,9 +150,10 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
                 await page.screenshot({animations:'disabled'});
                 assert.equal(await cards.nth(1).locator('input').isChecked(),true);
                 assert.equal(await cards.first().locator('input').isChecked(),false);
-            } finally { await context.close(); }
+            } finally { /* The isolated browser context is closed after the check. */  await context.close(); }
         });
         await check('account menu supports native Enter/Space, Escape, Tab and link navigation', async () => {
+            // Account navigation is checked with Enter, Space, Tab and Escape.
             await student.goto(base+'/my-activities.php');
             const toggle=student.locator('.user-menu-pill');
             await toggle.focus(); await student.keyboard.press('Enter');
@@ -150,6 +169,7 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
             await student.waitForURL('**/profile.php');
         });
         await check('mobile navigation exposes logout and a touch-sized filter reset', async () => {
+            // Mobile logout visibility and filter-reset touch dimensions are checked.
             await student.setViewportSize({width:1440,height:1000});
             await student.goto(base+'/sessions.php');
             await student.setViewportSize({width:390,height:844});
@@ -160,10 +180,14 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
             await student.keyboard.press('Escape');
         });
         await check('public and manager pages reflow across viewport sizes', async () => {
+            // Public and manager layouts are checked for horizontal overflow at several widths.
             const page = await browser.newPage();
+            // Document width is checked against the browser viewport.
             const noOverflow = async (p,label) => assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),label);
             try {
+                // Responsive checks are executed with the temporary page protected by cleanup.
                 for (const width of [320,390,768,1024,1440]) {
+                    // Home, session and manager pages are checked at each viewport width.
                     await page.setViewportSize({width,height:1000});
                     await page.goto(base+'/index.php');
                     await noOverflow(page,`home at ${width}`);
@@ -173,6 +197,7 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
                     await manager.goto(base+`/manager/session-edit.php?id=${f.sessions.free}`);
                     await noOverflow(manager,`editor at ${width}`);
                     for (const selector of ['#session_date','#start_time','#end_time']) {
+                        // Native date and time inputs are checked for viewport containment.
                         const bounds = await manager.locator(selector).boundingBox();
                         assert.ok(bounds.x>=0 && bounds.x+bounds.width<=width,selector+' fits');
                     }
@@ -188,15 +213,19 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
                 await manager.waitForFunction(()=>document.querySelector('.mobile-menu-btn').getAttribute('aria-expanded')==='false');
                 const reg = JSON.parse(fixture('read'));
                 for (const route of ['review-receipt','record-refund']) {
+                    // Review and refund pages are checked for overflow.
                     await manager.goto(base+`/manager/${route}.php?id=${reg.id}`);
                     await noOverflow(manager,route);
                 }
-            } finally { await page.close(); }
+            } finally { /* The temporary responsive-check page is closed. */  await page.close(); }
         });
         await check('standalone error pages resolve their styles under the installation path', async () => {
+            // Standalone error status codes, branding and stylesheet paths are checked.
             const page = await browser.newPage();
             try {
+                // Error-page checks are executed with temporary-page cleanup.
                 for (const code of [403,404,500]) {
+                    // Each supported error code is checked for the correct response and loaded assets.
                     const response = await page.goto(base+`/${code}.php`);
                     assert.equal(response.status(),code);
                     const logo = page.locator('.error-header .brand-logo-img');
@@ -204,6 +233,7 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
                     assert.equal(await logo.evaluate(el=>el.complete&&el.naturalWidth>0),true);
                     assert.equal(new URL(await logo.getAttribute('src'),base).pathname,new URL(base).pathname+'/assets/images/logo/logo.webp');
                     assert.equal(await page.locator('.error-header .brand-subtitle').innerText(),'SPORTS HUB');
+                    // Linked stylesheet URLs are collected from the rendered page.
                     const styles = await page.locator('link[rel=stylesheet]').evaluateAll(links=>links.map(link=>link.href));
                     for (const url of styles) assert.equal((await page.request.get(url)).status(),200,`missing stylesheet for ${code}`);
                 }
@@ -212,15 +242,18 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
                 assert.equal(await page.locator('h1').innerText(),'Page not found');
                 const logo=page.locator('.error-header .brand-logo-img');
                 assert.equal(await logo.evaluate(el=>el.complete&&el.naturalWidth>0),true);
-            } finally { await page.close(); }
+            } finally { /* The temporary error-page browser page is closed. */  await page.close(); }
         });
         await check('invalid CSRF blocks reservation and session changes', async () => {
+            // Invalid CSRF tokens are checked to prevent reservation and session mutations.
             await student.goto(base+`/session-detail.php?id=${f.sessions.review}`);
             for (const csrf_token of ['', 'invalid']) {
+                // Missing and invalid tokens are tested against booking and manager actions.
                 await post(student,'/reserve.php',{session_id:f.sessions.review,csrf_token});
                 assert.equal(sql('SELECT id FROM registrations WHERE session_id=?',[f.sessions.review]).length,0);
                 const original=sql('SELECT * FROM sessions WHERE id=?',[f.sessions.review])[0];
                 for (const route of ['close-signup','cancel-session','session-edit']) {
+                    // Each session-mutating endpoint is checked for unchanged state after invalid CSRF.
                     await manager.goto(base+`/manager/${route}.php?id=${f.sessions.review}`);
                     await post(manager,`/manager/${route}.php?id=${f.sessions.review}`,{csrf_token,cancellation_reason:'Forbidden change',title:'Forbidden edit',description:'Forbidden description change',action:'publish'});
                     assert.deepEqual(sql('SELECT * FROM sessions WHERE id=?',[f.sessions.review])[0],original,route);
@@ -228,6 +261,7 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
             }
         });
         await check('server rejects invalid uploads and CSRF without creating evidence', async () => {
+            // Server-side receipt validation is checked before a valid upload is submitted.
             await student.goto(base+`/session-detail.php?id=${f.sessions.review}`);
             await post(student,'/reserve.php',{session_id:f.sessions.review});
             const reg=sql('SELECT * FROM registrations WHERE session_id=? AND user_id=?',[f.sessions.review,f.users.student.id])[0];
@@ -240,6 +274,7 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
             const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aK9sAAAAASUVORK5CYII=','base64');
             const before=sql('SELECT * FROM registrations WHERE id=?',[reg.id])[0];
             for (const token of ['', 'invalid']) {
+                // Missing and invalid receipt-upload tokens are checked for unchanged registration state.
                 await post(student,'/upload-receipt.php',{registration_id:reg.id,csrf_token:token},png);
                 assert.deepEqual(sql('SELECT * FROM registrations WHERE id=?',[reg.id])[0],before);
             }
@@ -247,6 +282,7 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
                 {name:'forged.png',mimeType:'image/png',buffer:Buffer.from('plain text pretending to be PNG')},
                 {name:'oversize.png',mimeType:'image/png',buffer:Buffer.concat([png,Buffer.alloc(5*1024*1024)])},
             ]) {
+                // Forged file types and oversized evidence are checked for rejection without stored receipts.
                 const response=await student.request.post(base+'/upload-receipt.php',{multipart:{csrf_token,registration_id:String(reg.id),receipt}});
                 assert.ok(response.status()<500);
                 assert.deepEqual(sql('SELECT * FROM registrations WHERE id=?',[reg.id])[0],before);
@@ -256,10 +292,12 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
             assert.equal(sql('SELECT status FROM registrations WHERE id=?',[reg.id])[0].status,'awaiting_approval');
         });
         await check('review CSRF and wrong-club manager cannot mutate registrations or sessions', async () => {
+            // Receipt-review tokens and wrong-club permissions are checked against unauthorized mutations.
             const reg=sql('SELECT * FROM registrations WHERE session_id=? AND user_id=?',[f.sessions.review,f.users.student.id])[0];
             await manager.goto(base+`/manager/review-receipt.php?id=${reg.id}`);
             const receipts=sql('SELECT * FROM payment_receipts WHERE registration_id=?',[reg.id]);
             for (const csrf_token of ['', 'invalid']) {
+                // Missing and invalid review tokens are checked for unchanged registration and receipt records.
                 await post(manager,`/manager/review-receipt.php?id=${reg.id}`,{decision:'approve',csrf_token});
                 assert.deepEqual(sql('SELECT * FROM registrations WHERE id=?',[reg.id])[0],reg);
                 assert.deepEqual(sql('SELECT * FROM payment_receipts WHERE registration_id=?',[reg.id]),receipts);
@@ -270,10 +308,12 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
             assert.deepEqual(sql('SELECT * FROM payment_receipts WHERE registration_id=?',[reg.id]),receipts);
             await outsider.goto(base+'/my-activities.php');
             for (const route of ['review-receipt','record-refund']) {
+                // Wrong-club access is rejected for review and refund endpoints.
                 assert.equal((await post(outsider,`/manager/${route}.php?id=${reg.id}`,{decision:'approve',amount:'1',reason:'Forbidden'})).status(),403);
             }
             const session=sql('SELECT * FROM sessions WHERE id=?',[f.sessions.review])[0];
             for (const route of ['cancel-session','close-signup','session-edit']) {
+                // Wrong-club access is rejected for session management endpoints.
                 assert.equal((await post(outsider,`/manager/${route}.php?id=${f.sessions.review}`,{cancellation_reason:'Forbidden',action:'publish'})).status(),403);
             }
             assert.deepEqual(sql('SELECT * FROM sessions WHERE id=?',[f.sessions.review])[0],session);
@@ -282,10 +322,12 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
             assert.equal(sql('SELECT status FROM registrations WHERE id=?',[reg.id])[0].status,'confirmed');
         });
         await check('cancellation and refund validation preserve state until valid transfer', async () => {
+            // Cancellation and refund validation are checked before a valid external transfer is recorded.
             const reg=sql('SELECT * FROM registrations WHERE session_id=? AND user_id=?',[f.sessions.review,f.users.student.id])[0];
             const bank={recipient_bank_name:'DEMO',recipient_account_name:'SYNTHETIC',recipient_account_number:'NOT-REAL'};
             await student.goto(base+`/cancel-registration.php?id=${reg.id}`);
             for (const csrf_token of ['', 'invalid']) {
+                // Missing and invalid cancellation tokens are checked for unchanged registration state.
                 await post(student,`/cancel-registration.php?id=${reg.id}`,{...bank,csrf_token});
                 assert.deepEqual(sql('SELECT * FROM registrations WHERE id=?',[reg.id])[0],reg);
             }
@@ -294,14 +336,17 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
             assert.equal(pending.status,'cancellation_pending');
             await manager.goto(base+`/manager/record-refund.php?id=${reg.id}`);
             const unchanged=()=>{
+                // The pending registration and empty refund history are checked for preservation.
                 assert.deepEqual(sql('SELECT * FROM registrations WHERE id=?',[reg.id])[0],pending);
                 assert.equal(sql('SELECT id FROM refund_records WHERE registration_id=?',[reg.id]).length,0);
             };
             for (const csrf_token of ['', 'invalid']) {
+                // Missing and invalid refund tokens are checked for unchanged records.
                 await post(manager,`/manager/record-refund.php?id=${reg.id}`,{amount:'15',reason:'Synthetic',csrf_token});
                 unchanged();
             }
             for (const amount of ['0','-1','15.001','15.01','1e1','nonsense']) {
+                // Invalid and excessive refund amounts are checked for rejection.
                 await post(manager,`/manager/record-refund.php?id=${reg.id}`,{amount,reason:'Synthetic'});
                 unchanged();
             }
@@ -319,6 +364,7 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
             assert.equal(sql('SELECT id FROM payment_receipts WHERE registration_id=?',[reg.id]).length,1);
         });
         await check('manager cannot approve own receipt or record own refund', async () => {
+            // Self-review and self-refund restrictions are checked through HTTP requests.
             await manager.goto(base+`/session-detail.php?id=${f.sessions.race}`);
             await post(manager,'/reserve.php',{session_id:f.sessions.race});
             const reg=sql('SELECT * FROM registrations WHERE session_id=? AND user_id=?',[f.sessions.race,f.users.manager.id])[0];
@@ -331,9 +377,10 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
             assert.match(await response.text(),/Another authorised manager/);
             assert.equal(sql('SELECT status FROM registrations WHERE id=?',[reg.id])[0].status,'awaiting_approval');
             assert.deepEqual(sql('SELECT * FROM payment_receipts WHERE id=?',[receipt.id])[0],receipt);
-            // Temporary peer appointment exercises valid approval/refund through HTTP too.
+            // A temporary peer appointment is used to exercise authorized approval and refund requests.
             sql("INSERT INTO club_managers (club_id,user_id,appointed_by,role) VALUES (?,?,?,'president')",[f.club,f.users.student.id,f.users.manager.id]);
             try {
+                // A temporary peer manager is used to approve payment and record a refund.
                 await student.goto(base+`/manager/review-receipt.php?id=${reg.id}`);
                 await post(student,`/manager/review-receipt.php?id=${reg.id}`,{decision:'approve'});
                 assert.equal(sql('SELECT status FROM registrations WHERE id=?',[reg.id])[0].status,'confirmed');
@@ -349,10 +396,12 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
                 await post(student,`/manager/record-refund.php?id=${reg.id}`,{amount:'15',reason:'Peer recorded synthetic transfer'});
                 assert.equal(sql('SELECT status FROM registrations WHERE id=?',[reg.id])[0].status,'cancelled');
             } finally {
+                // The temporary peer appointment is removed after the check.
                 sql('DELETE FROM club_managers WHERE club_id=? AND user_id=?',[f.club,f.users.student.id]);
             }
         });
         await check('committee cancellation queues paid refunds and releases unpaid/free places', async () => {
+            // Committee cancellation is checked for paid refund queues and unpaid or free place release.
             await outsider.goto(base+`/session-detail.php?id=${f.sessions.paid}`);
             await post(outsider,'/reserve.php',{session_id:f.sessions.paid});
             const paid=JSON.parse(fixture('read'));
@@ -376,8 +425,10 @@ const sql = (query, params=[]) => JSON.parse(execFileSync(php, ['-r',
             assert.equal(sql('SELECT status FROM registrations WHERE id=?',[joined.id])[0].status,'cancelled');
         });
     } finally {
-        try { if (browser) await browser.close(); }
-        finally { console.log(fixture('cleanup')); }
+        // Browser and fixture cleanup is attempted after suite completion or failure.
+        try { /* An opened browser is closed before fixture cleanup. */  if (browser) await browser.close(); }
+        finally { /* Synthetic fixtures are removed even after browser cleanup failure. */  console.log(fixture('cleanup')); }
     }
+    // A failing process exit code is assigned when any regression failed.
     if (failures) process.exitCode=1;
-})().catch(e=>{console.error(e);process.exitCode=1;});
+})().catch(e=>{ /* Unhandled suite errors are reported and a failing process exit code is assigned. */ console.error(e);process.exitCode=1;});

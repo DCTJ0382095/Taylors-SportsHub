@@ -1,47 +1,79 @@
-/* ==========================================================================
-   My memberships page (memberships.css)
-   ========================================================================== */
+/* Club membership overview cards are styled. */
 
+/* Dimensions and spacing properties are defined for .memberships-page. */
 .memberships-page { max-width: 1100px; margin: 0 auto; padding: 24px 24px 64px; }
+/* Spacing properties are defined for .memberships-header. */
 .memberships-header { margin-bottom: 24px; }
+/* Spacing, typography and colours and surfaces properties are defined for .memberships-eyebrow. */
 .memberships-eyebrow { font-size: 11px; font-weight: 700; color: #c8102e; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px; }
+/* Spacing, typography and colours and surfaces properties are defined for .memberships-title. */
 .memberships-title { font-size: 40px; font-weight: 800; letter-spacing: -0.03em; color: #1d1d1f; line-height: 1.1; margin: 0 0 8px; }
+/* Spacing, typography and colours and surfaces properties are defined for .memberships-subtitle. */
 .memberships-subtitle { font-size: 15.5px; color: #424245; margin: 0; }
 
-/* One card per club: as many per row as fit, each at least 300px wide */
+/* Membership cards are arranged in an automatically sized grid. */
+/* Layout properties are defined for .memberships-grid. */
 .memberships-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+/* Layout, spacing and colours and surfaces properties are defined for .membership-tile. */
 .membership-tile { background: #fff; border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03); }
 
+/* Layout properties are defined for .membership-tile-top. */
 .membership-tile-top { display: flex; align-items: center; gap: 14px; }
+/* Layout, dimensions, colours and surfaces and overflow handling properties are defined for .membership-tile-logo. */
 .membership-tile-logo { width: 56px; height: 56px; flex-shrink: 0; border-radius: 16px; overflow: hidden; background: linear-gradient(135deg, #374151 0%, #111827 100%); display: flex; align-items: center; justify-content: center; text-decoration: none; }
+/* Dimensions and image fitting properties are defined for .membership-tile-logo img. */
 .membership-tile-logo img { width: 100%; height: 100%; object-fit: cover; }
+/* Typography and colours and surfaces properties are defined for .membership-tile-logo span. */
 .membership-tile-logo span { color: #fff; font-weight: 800; font-size: 20px; }
+/* Layout and dimensions properties are defined for .membership-tile-heading. */
 .membership-tile-heading { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+/* Spacing and typography properties are defined for .membership-tile-heading h2. */
 .membership-tile-heading h2 { font-size: 16px; font-weight: 700; margin: 0; line-height: 1.3; }
+/* Colours and surfaces properties are defined for .membership-tile-heading h2 a. */
 .membership-tile-heading h2 a { color: #1d1d1f; text-decoration: none; }
+/* Colours and surfaces properties are defined for .membership-tile-heading h2 a:hover. */
 .membership-tile-heading h2 a:hover { color: #c8102e; }
 
+/* Layout, spacing and typography properties are defined for .membership-tile-facts. */
 .membership-tile-facts { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; font-size: 13.5px; }
+/* Colours and surfaces properties are defined for .membership-tile-facts dt. */
 .membership-tile-facts dt { color: #6e6e73; }
+/* Spacing, typography and colours and surfaces properties are defined for .membership-tile-facts dd. */
 .membership-tile-facts dd { margin: 0; color: #1d1d1f; font-weight: 500; }
 
-/* The buttons sit at the bottom of every card, even when cards have different amounts of text */
+/* Membership action buttons are aligned at the bottom of each card. */
+/* Layout and spacing properties are defined for .membership-tile-actions. */
 .membership-tile-actions { display: flex; align-items: center; gap: 12px; margin-top: auto; }
+/* Layout and spacing properties are defined for .membership-tile-actions form. */
 .membership-tile-actions form { margin: 0; flex: 1; }
+/* Layout, dimensions, spacing, typography, colours and surfaces and interaction feedback properties are defined for .membership-tile-btn. */
 .membership-tile-btn { display: block; flex: 1; box-sizing: border-box; text-align: center; padding: 10px 14px; border-radius: 980px; border: 1px solid #d2d2d7; background: #fff; color: #1d1d1f; font: inherit; font-size: 14px; font-weight: 600; text-decoration: none; cursor: pointer; }
+/* Dimensions properties are defined for .membership-tile-actions form .membership-tile-btn. */
 .membership-tile-actions form .membership-tile-btn { width: 100%; }
+/* Colours and surfaces properties are defined for .membership-tile-btn.primary. */
 .membership-tile-btn.primary { background: #c8102e; border-color: #c8102e; color: #fff; }
+/* Colours and surfaces properties are defined for .membership-tile-btn.primary:hover. */
 .membership-tile-btn.primary:hover { background: #b00d27; }
+/* Colours and surfaces and interaction feedback properties are defined for .membership-tile-btn:disabled. */
 .membership-tile-btn:disabled { background: #e5e5ea; border-color: #e5e5ea; color: #8e8e93; cursor: not-allowed; }
+/* Typography and colours and surfaces properties are defined for .membership-tile-link. */
 .membership-tile-link { font-size: 13.5px; font-weight: 600; color: #c8102e; text-decoration: none; white-space: nowrap; }
+/* Presentation properties are defined for .membership-tile-link:hover. */
 .membership-tile-link:hover { text-decoration: underline; }
 
+/* Spacing, typography and colours and surfaces properties are defined for .memberships-empty. */
 .memberships-empty { background: #fff; border: 1px solid rgba(0, 0, 0, 0.08); border-radius: 16px; padding: 48px 24px; text-align: center; }
+/* Spacing and typography properties are defined for .memberships-empty h2. */
 .memberships-empty h2 { font-size: 20px; margin: 0 0 6px; }
+/* Spacing, typography and colours and surfaces properties are defined for .memberships-empty p. */
 .memberships-empty p { color: #6e6e73; font-size: 14px; margin: 0 0 20px; }
+/* Layout and spacing properties are defined for .memberships-empty .membership-tile-btn. */
 .memberships-empty .membership-tile-btn { display: inline-block; padding: 10px 22px; }
 
+/* The enclosed styles are applied for (max-width: 640px). */
 @media (max-width: 640px) {
+    /* Spacing properties are defined for .memberships-page. */
     .memberships-page { padding: 16px 16px 48px; }
+    /* Typography properties are defined for .memberships-title. */
     .memberships-title { font-size: 30px; }
 }

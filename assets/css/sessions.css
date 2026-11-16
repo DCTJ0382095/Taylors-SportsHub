@@ -1,17 +1,18 @@
-/* ==========================================================================
-   Sessions Explore Page Styles (sessions.css)
-   ========================================================================== */
+/* Session discovery filters, cards and pagination are styled. */
 
+/* Dimensions and spacing properties are defined for .sessions-container. */
 .sessions-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px 1.5rem 64px;
 }
 
+/* Spacing properties are defined for .sessions-header. */
 .sessions-header {
   margin-bottom: 28px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .sessions-eyebrow. */
 .sessions-eyebrow {
   font-size: 11.5px;
   font-weight: 700;
@@ -21,6 +22,7 @@
   margin-bottom: 8px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .sessions-title. */
 .sessions-title {
   font-size: 40px;
   font-weight: 800;
@@ -30,6 +32,7 @@
   line-height: 1.1;
 }
 
+/* Dimensions, spacing, typography and colours and surfaces properties are defined for .sessions-subtitle. */
 .sessions-subtitle {
   font-size: 15.5px;
   color: var(--text-secondary, #424245);
@@ -38,7 +41,8 @@
   line-height: 1.5;
 }
 
-/* Search & Filter Bar (Apple Frosted Glass Panel matching 26TUEventManagement) */
+/* Search and filter controls are styled within a translucent panel. */
+/* Spacing and colours and surfaces properties are defined for .filter-container. */
 .filter-container {
   background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(20px) saturate(180%);
@@ -50,12 +54,14 @@
   box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
+/* Layout and spacing properties are defined for .search-field-main. */
 .search-field-main {
   display: flex;
   gap: 12px;
   margin-bottom: 20px;
 }
 
+/* Layout and positioning properties are defined for .search-input-wrap. */
 .search-input-wrap {
   flex-grow: 1;
   position: relative;
@@ -63,10 +69,12 @@
   align-items: center;
 }
 
+/* Spacing properties are defined for .search-input-wrap .input-text-standard. */
 .search-input-wrap .input-text-standard {
   padding-left: 46px;
 }
 
+/* Positioning, dimensions, colours and surfaces and interaction feedback properties are defined for .search-icon-inside. */
 .search-icon-inside {
   position: absolute;
   left: 16px;
@@ -76,6 +84,7 @@
   pointer-events: none;
 }
 
+/* Layout, dimensions, spacing, typography, colours and surfaces, interaction feedback and motion and transforms properties are defined for .btn-filter-search. */
 .btn-filter-search {
   padding: 10px 24px;
   font-size: 14.5px;
@@ -94,15 +103,18 @@
   transition: background 0.15s ease, transform var(--transition-press);
 }
 
+/* Colours and surfaces properties are defined for .btn-filter-search:hover. */
 .btn-filter-search:hover {
   background: #a60d26;
   box-shadow: 0 4px 14px rgba(200, 16, 46, 0.35);
 }
 
+/* Motion and transforms properties are defined for .btn-filter-search:active. */
 .btn-filter-search:active {
   transform: scale(0.97);
 }
 
+/* Layout properties are defined for .filter-row. */
 .filter-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr) auto;
@@ -110,17 +122,20 @@
   align-items: flex-end;
 }
 
+/* Layout properties are defined for .filter-group. */
 .filter-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
+/* Layout properties are defined for .filter-reset-wrap. */
 .filter-reset-wrap {
   display: flex;
   align-items: center;
 }
 
+/* Typography and colours and surfaces properties are defined for .sessions-filter-link. */
 .sessions-filter-link {
   font-size: 13px;
   font-weight: 600;
@@ -128,6 +143,7 @@
   text-decoration: none;
 }
 
+/* Layout and spacing properties are defined for .empty-state-actions. */
 .empty-state-actions {
   display: flex;
   gap: 12px;
@@ -137,6 +153,7 @@
   margin-top: 20px;
 }
 
+/* Layout, spacing, typography, colours and surfaces and motion and transforms properties are defined for .empty-state-btn. */
 .empty-state-btn {
   display: inline-flex;
   align-items: center;
@@ -149,27 +166,32 @@
   transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease, transform var(--transition-press);
 }
 
+/* Colours and surfaces properties are defined for .empty-state-btn-secondary. */
 .empty-state-btn-secondary {
   background: #f5f5f7;
   color: #1d1d1f;
   border: 1px solid #d2d2d7;
 }
 
+/* Colours and surfaces properties are defined for .empty-state-btn-secondary:hover. */
 .empty-state-btn-secondary:hover {
   background: #e8e8ed;
 }
 
+/* Colours and surfaces properties are defined for .empty-state-btn-primary. */
 .empty-state-btn-primary {
   background: var(--color-primary, #c8102e);
   color: #ffffff;
   box-shadow: 0 2px 8px rgba(200, 16, 46, 0.22);
 }
 
+/* Colours and surfaces properties are defined for .empty-state-btn-primary:hover. */
 .empty-state-btn-primary:hover {
   background: #a60d26;
 }
 
-/* Results Bar */
+/* Result counts and sorting controls are aligned. */
+/* Layout, spacing, typography and colours and surfaces properties are defined for .filter-results-bar. */
 .filter-results-bar {
   display: flex;
   align-items: center;
@@ -180,12 +202,14 @@
   color: var(--text-secondary, #424245);
 }
 
+/* Layout properties are defined for .sort-group. */
 .sort-group {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
+/* Spacing, typography, colours and surfaces and interaction feedback properties are defined for .sort-select. */
 .sort-select {
   padding: 6px 32px 6px 12px;
   font-size: 13px;
@@ -201,7 +225,8 @@
   cursor: pointer;
 }
 
-/* Whole-Card Clickable Session Cards (Referencing 26TUEventManagement) */
+/* Session cards are styled as full-card navigation targets. */
+/* Layout and spacing properties are defined for .sessions-grid. */
 .sessions-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -209,6 +234,7 @@
   margin-bottom: 48px;
 }
 
+/* Layout, colours and surfaces, overflow handling, interaction feedback and motion and transforms properties are defined for .session-card-link. */
 .session-card-link {
   display: flex;
   flex-direction: column;
@@ -223,16 +249,19 @@
   cursor: pointer;
 }
 
+/* Colours and surfaces and motion and transforms properties are defined for .session-card-link:hover. */
 .session-card-link:hover {
   transform: translateY(-4px);
   box-shadow: 0 14px 34px -4px rgba(0, 0, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.05);
   border-color: rgba(200, 16, 46, 0.25);
 }
 
+/* Motion and transforms properties are defined for .session-card-link:active. */
 .session-card-link:active {
   transform: scale(0.99);
 }
 
+/* Positioning, dimensions, colours and surfaces and overflow handling properties are defined for .session-card-media. */
 .session-card-media {
   position: relative;
   width: 100%;
@@ -241,6 +270,7 @@
   background: #141824;
 }
 
+/* Layout, dimensions, image fitting and motion and transforms properties are defined for .session-card-media img. */
 .session-card-media img {
   width: 100%;
   height: 100%;
@@ -249,10 +279,12 @@
   transition: transform 0.4s ease;
 }
 
+/* Motion and transforms properties are defined for .session-card-link:hover .session-card-media img. */
 .session-card-link:hover .session-card-media img {
   transform: scale(1.03);
 }
 
+/* Layout and positioning properties are defined for .session-badge-overlay. */
 .session-badge-overlay {
   position: absolute;
   top: 12px;
@@ -263,6 +295,7 @@
   align-items: center;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .badge-sport. */
 .badge-sport {
   font-size: 11px;
   font-weight: 700;
@@ -276,6 +309,7 @@
   border-radius: 980px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .badge-price. */
 .badge-price {
   font-size: 12px;
   font-weight: 700;
@@ -286,6 +320,7 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
+/* Layout and spacing properties are defined for .session-card-body. */
 .session-card-body {
   padding: 1.5rem;
   display: flex;
@@ -294,6 +329,7 @@
   justify-content: space-between;
 }
 
+/* Spacing, typography, colours and surfaces and motion and transforms properties are defined for .session-card-title. */
 .session-card-title {
   font-size: 1.25rem;
   font-weight: 700;
@@ -304,16 +340,19 @@
   transition: color 0.15s ease;
 }
 
+/* Colours and surfaces properties are defined for .session-card-link:hover .session-card-title. */
 .session-card-link:hover .session-card-title {
   color: var(--color-primary, #c8102e);
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .session-card-host. */
 .session-card-host {
   font-size: 0.88rem;
   color: var(--text-muted, #86868b);
   margin-bottom: 0.85rem;
 }
 
+/* Layout, spacing, typography and colours and surfaces properties are defined for .session-card-meta-list. */
 .session-card-meta-list {
   font-size: 0.88rem;
   color: var(--text-secondary, #424245);
@@ -323,12 +362,14 @@
   margin-bottom: 1.25rem;
 }
 
+/* Layout properties are defined for .session-meta-item. */
 .session-meta-item {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
+/* Layout, dimensions and colours and surfaces properties are defined for .session-meta-icon. */
 .session-meta-icon {
   width: 15px;
   height: 15px;
@@ -336,6 +377,7 @@
   flex-shrink: 0;
 }
 
+/* Layout, spacing, typography and colours and surfaces properties are defined for .session-card-footer. */
 .session-card-footer {
   display: flex;
   justify-content: space-between;
@@ -345,12 +387,16 @@
   font-size: 0.88rem;
 }
 
+/* Typography properties are defined for .seats-status. */
 .seats-status {
   font-weight: 600;
 }
+/* Colours and surfaces properties are defined for .seats-status.open. */
 .seats-status.open { color: #248a3d; }
+/* Colours and surfaces properties are defined for .seats-status.full. */
 .seats-status.full { color: #d70015; }
 
+/* Layout, typography, colours and surfaces and motion and transforms properties are defined for .card-action-indicator. */
 .card-action-indicator {
   font-size: 13.5px;
   font-weight: 600;
@@ -361,11 +407,13 @@
   transition: transform 0.15s ease;
 }
 
+/* Motion and transforms properties are defined for .session-card-link:hover .card-action-indicator. */
 .session-card-link:hover .card-action-indicator {
   transform: translateX(3px);
 }
 
-/* Empty State */
+/* Empty session search results are styled. */
+/* Spacing, typography and colours and surfaces properties are defined for .empty-state-box. */
 .empty-state-box {
   background: #ffffff;
   border-radius: 20px;
@@ -375,6 +423,7 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 }
 
+/* Dimensions, spacing and colours and surfaces properties are defined for .empty-state-icon. */
 .empty-state-icon {
   width: 48px;
   height: 48px;
@@ -382,6 +431,7 @@
   margin-bottom: 1rem;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .empty-state-title. */
 .empty-state-title {
   font-size: 1.35rem;
   font-weight: 700;
@@ -390,6 +440,7 @@
   letter-spacing: -0.02em;
 }
 
+/* Dimensions, spacing, typography and colours and surfaces properties are defined for .empty-state-desc. */
 .empty-state-desc {
   color: #6e6e73;
   font-size: 0.95rem;
@@ -400,30 +451,39 @@
   line-height: 1.5;
 }
 
-/* Responsive */
+/* Session discovery layouts are adapted to narrower viewports. */
+/* The enclosed styles are applied for (max-width: 860px). */
 @media (max-width: 860px) {
+  /* Layout properties are defined for .filter-row. */
   .filter-row {
     grid-template-columns: 1fr;
   }
+  /* Layout properties are defined for .sessions-grid. */
   .sessions-grid {
     grid-template-columns: 1fr;
   }
 }
 
+/* The enclosed styles are applied for (max-width: 768px). */
 @media (max-width: 768px) {
+  /* Layout properties are defined for .search-field-main. */
   .search-field-main {
     flex-direction: column;
   }
 }
 
-/* Member price badge on session cards, next to the normal price */
+/* Member-price badges are displayed beside normal session prices. */
+/* Layout properties are defined for .price-badges. */
 .price-badges { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+/* Colours and surfaces properties are defined for .badge-member-price. */
 .badge-member-price { background: #c8102e; color: #ffffff; }
 
-/* Reset filters and Most popular: no pink highlight when hovered */
+/* Neutral hover styling is applied to filter reset and popularity sorting controls. */
+/* Colours and surfaces properties are defined for .sessions-filter-link:hover. */
 .sessions-filter-link:hover { background-color: transparent; }
 
-/* Long venue names stay on one line and end in "..." */
+/* Long venue names are truncated to one line with an ellipsis. */
+/* Dimensions, typography and overflow handling properties are defined for .session-meta-venue. */
 .session-meta-venue {
   min-width: 0;
   white-space: nowrap;

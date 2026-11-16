@@ -1,37 +1,40 @@
-/* ==========================================================================
-   Club Profile Styles (club.css)
-   Pixel-perfect alignment to Figma UIUX Designs (03-club-profile.png)
-   ========================================================================== */
+/* Club profile layout, membership information and responsive presentation are styled. */
 
+/* Dimensions and spacing properties are defined for .club-page-container. */
 .club-page-container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 24px 24px 64px;
 }
 
-/* Breadcrumb */
+/* Breadcrumb navigation is styled. */
+/* Spacing, typography and colours and surfaces properties are defined for .club-breadcrumb. */
 .club-breadcrumb {
   font-size: 13px;
   color: var(--text-muted, #86868b);
   margin-bottom: 20px;
 }
 
+/* Colours and surfaces and motion and transforms properties are defined for .club-breadcrumb a. */
 .club-breadcrumb a {
   color: var(--text-secondary, #424245);
   text-decoration: none;
   transition: color 0.15s ease;
 }
 
+/* Colours and surfaces properties are defined for .club-breadcrumb a:hover. */
 .club-breadcrumb a:hover {
   color: var(--color-primary, #c8102e);
 }
 
+/* Typography and colours and surfaces properties are defined for .club-breadcrumb .breadcrumb-current. */
 .club-breadcrumb .breadcrumb-current {
   color: var(--text-main, #1d1d1f);
   font-weight: 500;
 }
 
-/* Wide Photography Banner */
+/* The wide club banner image is sized and positioned. */
+/* Positioning, dimensions, colours and surfaces and overflow handling properties are defined for .club-banner-frame. */
 .club-banner-frame {
   position: relative;
   width: 100%;
@@ -44,6 +47,7 @@
   border-bottom: none;
 }
 
+/* Layout, dimensions and image fitting properties are defined for .club-banner-frame img. */
 .club-banner-frame img {
   width: 100%;
   height: 100%;
@@ -51,7 +55,8 @@
   display: block;
 }
 
-/* Identity Bar / Header Card */
+/* Club identity and header content are styled. */
+/* Layout, spacing and colours and surfaces properties are defined for .club-identity-card. */
 .club-identity-card {
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.08);
@@ -66,6 +71,7 @@
   margin-bottom: 32px;
 }
 
+/* Layout and dimensions properties are defined for .club-identity-left. */
 .club-identity-left {
   display: flex;
   align-items: center;
@@ -73,6 +79,7 @@
   min-width: 0;
 }
 
+/* Layout, dimensions, typography and colours and surfaces properties are defined for .club-squircle-badge. */
 .club-squircle-badge {
   width: 68px;
   height: 68px;
@@ -88,10 +95,12 @@
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
+/* Dimensions properties are defined for .club-identity-details. */
 .club-identity-details {
   min-width: 0;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .club-profile-title. */
 .club-profile-title {
   font-size: 28px;
   font-weight: 800;
@@ -101,6 +110,7 @@
   line-height: 1.2;
 }
 
+/* Layout properties are defined for .club-profile-meta-row. */
 .club-profile-meta-row {
   display: flex;
   align-items: center;
@@ -108,11 +118,13 @@
   gap: 8px;
 }
 
+/* Typography and colours and surfaces properties are defined for .club-meta-text. */
 .club-meta-text {
   font-size: 13.5px;
   color: var(--text-secondary, #6e6e73);
 }
 
+/* Layout properties are defined for .club-identity-actions. */
 .club-identity-actions {
   display: flex;
   align-items: center;
@@ -120,6 +132,7 @@
   flex-shrink: 0;
 }
 
+/* Layout, spacing, typography, colours and surfaces, interaction feedback and motion and transforms properties are defined for .btn-club-apply. */
 .btn-club-apply {
   display: inline-flex;
   align-items: center;
@@ -136,15 +149,18 @@
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease, transform var(--transition-press);
 }
 
+/* Colours and surfaces properties are defined for .btn-club-apply:hover. */
 .btn-club-apply:hover {
   background: #b00d27;
   box-shadow: 0 4px 14px rgba(200, 16, 46, 0.35);
 }
 
+/* Motion and transforms properties are defined for .btn-club-apply:active. */
 .btn-club-apply:active {
   transform: scale(0.97);
 }
 
+/* Layout, spacing, typography, colours and surfaces, interaction feedback and motion and transforms properties are defined for .btn-club-share. */
 .btn-club-share {
   display: inline-flex;
   align-items: center;
@@ -161,16 +177,19 @@
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease, transform var(--transition-press);
 }
 
+/* Colours and surfaces properties are defined for .btn-club-share:hover. */
 .btn-club-share:hover {
   background: #f5f5f7;
   border-color: rgba(0, 0, 0, 0.2);
 }
 
+/* Motion and transforms properties are defined for .btn-club-share:active. */
 .btn-club-share:active {
   transform: scale(0.97);
 }
 
-/* Two-Column Grid */
+/* Main content and sidebar cards are arranged in two columns. */
+/* Layout properties are defined for .club-profile-grid. */
 .club-profile-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 340px;
@@ -178,10 +197,12 @@
   align-items: start;
 }
 
+/* Dimensions properties are defined for .club-grid-main. */
 .club-grid-main {
   min-width: 0;
 }
 
+/* Spacing and colours and surfaces properties are defined for .club-content-card. */
 .club-content-card {
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.08);
@@ -191,6 +212,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .club-card-heading. */
 .club-card-heading {
   font-size: 20px;
   font-weight: 750;
@@ -199,6 +221,7 @@
   margin: 0 0 16px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .club-about-text. */
 .club-about-text {
   font-size: 14.5px;
   color: var(--text-secondary, #424245);
@@ -206,7 +229,8 @@
   margin: 0;
 }
 
-/* Card Header Split */
+/* Card titles and secondary header actions are aligned. */
+/* Layout and spacing properties are defined for .club-card-header-split. */
 .club-card-header-split {
   display: flex;
   align-items: center;
@@ -214,22 +238,26 @@
   margin-bottom: 16px;
 }
 
+/* Spacing properties are defined for .club-card-header-split .club-card-heading. */
 .club-card-header-split .club-card-heading {
   margin-bottom: 0;
 }
 
+/* Typography and colours and surfaces properties are defined for .club-sessions-count-badge. */
 .club-sessions-count-badge {
   font-size: 13px;
   color: var(--text-muted, #86868b);
   font-weight: 500;
 }
 
-/* Sessions List */
+/* Upcoming club sessions are styled as a list. */
+/* Layout properties are defined for .club-sessions-list. */
 .club-sessions-list {
   display: flex;
   flex-direction: column;
 }
 
+/* Layout, spacing, colours and surfaces and motion and transforms properties are defined for .club-session-row-item. */
 .club-session-row-item {
   display: flex;
   align-items: center;
@@ -242,14 +270,17 @@
   transition: background 0.12s ease;
 }
 
+/* Colours and surfaces properties are defined for .club-session-row-item:last-child. */
 .club-session-row-item:last-child {
   border-bottom: none;
 }
 
+/* Colours and surfaces properties are defined for .club-session-row-item:hover. */
 .club-session-row-item:hover {
   background: #fbfbfd;
 }
 
+/* Layout, dimensions and colours and surfaces properties are defined for .club-session-date-tile. */
 .club-session-date-tile {
   width: 52px;
   height: 52px;
@@ -263,6 +294,7 @@
   flex-shrink: 0;
 }
 
+/* Typography and colours and surfaces properties are defined for .club-session-date-tile .date-day. */
 .club-session-date-tile .date-day {
   font-size: 19px;
   font-weight: 800;
@@ -270,6 +302,7 @@
   line-height: 1;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .club-session-date-tile .date-month. */
 .club-session-date-tile .date-month {
   font-size: 10px;
   font-weight: 700;
@@ -278,11 +311,13 @@
   margin-top: 2px;
 }
 
+/* Layout and dimensions properties are defined for .club-session-info-col. */
 .club-session-info-col {
   flex: 1;
   min-width: 0;
 }
 
+/* Layout and spacing properties are defined for .club-session-title-line. */
 .club-session-title-line {
   display: flex;
   align-items: center;
@@ -291,6 +326,7 @@
   margin-bottom: 4px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .club-session-title. */
 .club-session-title {
   font-size: 15px;
   font-weight: 700;
@@ -299,11 +335,13 @@
   letter-spacing: -0.01em;
 }
 
+/* Typography and colours and surfaces properties are defined for .club-session-subline. */
 .club-session-subline {
   font-size: 13px;
   color: var(--text-muted, #86868b);
 }
 
+/* Layout properties are defined for .club-session-price-action. */
 .club-session-price-action {
   display: flex;
   align-items: center;
@@ -311,6 +349,7 @@
   flex-shrink: 0;
 }
 
+/* Typography and colours and surfaces properties are defined for .club-session-price. */
 .club-session-price {
   font-size: 14px;
   font-weight: 600;
@@ -318,29 +357,34 @@
   text-align: right;
 }
 
+/* Colours and surfaces and motion and transforms properties are defined for .club-session-arrow. */
 .club-session-arrow {
   color: #86868b;
   transition: transform var(--transition-fast);
 }
 
+/* Colours and surfaces and motion and transforms properties are defined for .club-session-row-item:hover .club-session-arrow. */
 .club-session-row-item:hover .club-session-arrow {
   transform: translateX(3px);
   color: #c8102e;
 }
 
-/* Committee */
+/* Committee member details are styled. */
+/* Layout properties are defined for .club-committee-grid. */
 .club-committee-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
 }
 
+/* Layout properties are defined for .committee-member-item. */
 .committee-member-item {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
+/* Layout, dimensions, typography and colours and surfaces properties are defined for .committee-avatar. */
 .committee-avatar {
   width: 42px;
   height: 42px;
@@ -353,22 +397,26 @@
   flex-shrink: 0;
 }
 
+/* Typography and colours and surfaces properties are defined for .committee-name. */
 .committee-name {
   font-size: 14px;
   font-weight: 700;
   color: var(--text-main, #1d1d1f);
 }
 
+/* Typography and colours and surfaces properties are defined for .committee-role. */
 .committee-role {
   font-size: 12.5px;
   color: var(--text-muted, #86868b);
 }
 
-/* Right Sidebar: Membership & Club Info */
+/* Membership and club information are styled in the sidebar. */
+/* Dimensions properties are defined for .club-grid-sidebar. */
 .club-grid-sidebar {
   min-width: 0;
 }
 
+/* Spacing and colours and surfaces properties are defined for .club-sidebar-card. */
 .club-sidebar-card {
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.08);
@@ -378,6 +426,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .sidebar-card-label. */
 .sidebar-card-label {
   font-size: 11px;
   font-weight: 700;
@@ -387,6 +436,7 @@
   margin-bottom: 12px;
 }
 
+/* Layout and spacing properties are defined for .membership-price-row. */
 .membership-price-row {
   display: flex;
   align-items: baseline;
@@ -394,6 +444,7 @@
   margin-bottom: 18px;
 }
 
+/* Typography and colours and surfaces properties are defined for .membership-currency-amount. */
 .membership-currency-amount {
   font-size: 32px;
   font-weight: 800;
@@ -402,12 +453,14 @@
   line-height: 1;
 }
 
+/* Typography and colours and surfaces properties are defined for .membership-period. */
 .membership-period {
   font-size: 14px;
   color: var(--text-muted, #86868b);
   font-weight: 500;
 }
 
+/* Layout and spacing properties are defined for .membership-perks-list. */
 .membership-perks-list {
   list-style: none;
   padding: 0;
@@ -417,6 +470,7 @@
   gap: 12px;
 }
 
+/* Layout, typography and colours and surfaces properties are defined for .membership-perks-list li. */
 .membership-perks-list li {
   display: flex;
   align-items: flex-start;
@@ -426,12 +480,14 @@
   line-height: 1.45;
 }
 
+/* Layout, spacing and colours and surfaces properties are defined for .perk-check-icon. */
 .perk-check-icon {
   color: #10b981;
   flex-shrink: 0;
   margin-top: 2px;
 }
 
+/* Layout, spacing and colours and surfaces properties are defined for .membership-status-row. */
 .membership-status-row {
   display: flex;
   align-items: center;
@@ -441,11 +497,13 @@
   margin-bottom: 18px;
 }
 
+/* Typography and colours and surfaces properties are defined for .membership-status-row .status-label. */
 .membership-status-row .status-label {
   font-size: 13.5px;
   color: var(--text-secondary, #424245);
 }
 
+/* Dimensions, spacing, typography, colours and surfaces, interaction feedback and motion and transforms properties are defined for .btn-sidebar-apply. */
 .btn-sidebar-apply {
   width: 100%;
   padding: 12px 16px;
@@ -460,22 +518,26 @@
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease, transform var(--transition-press);
 }
 
+/* Colours and surfaces properties are defined for .btn-sidebar-apply:hover. */
 .btn-sidebar-apply:hover {
   background: #b00d27;
   box-shadow: 0 4px 14px rgba(200, 16, 46, 0.35);
 }
 
+/* Motion and transforms properties are defined for .btn-sidebar-apply:active. */
 .btn-sidebar-apply:active {
   transform: scale(0.98);
 }
 
-/* Club Info */
+/* Club information rows are styled. */
+/* Layout properties are defined for .club-info-rows. */
 .club-info-rows {
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
 
+/* Layout, typography and colours and surfaces properties are defined for .club-info-row. */
 .club-info-row {
   display: flex;
   align-items: center;
@@ -484,84 +546,113 @@
   color: var(--text-secondary, #424245);
 }
 
+/* Layout and colours and surfaces properties are defined for .club-info-row .info-icon. */
 .club-info-row .info-icon {
   color: #86868b;
   flex-shrink: 0;
 }
 
+/* Colours and surfaces properties are defined for .club-info-row .info-link. */
 .club-info-row .info-link {
   color: var(--text-secondary, #424245);
   text-decoration: none;
 }
 
+/* Colours and surfaces properties are defined for .club-info-row .info-link:hover. */
 .club-info-row .info-link:hover {
   color: var(--color-primary, #c8102e);
   text-decoration: underline;
 }
 
-/* Empty State */
+/* Empty club content is styled. */
+/* Spacing, typography and colours and surfaces properties are defined for .club-empty-sessions. */
 .club-empty-sessions {
   text-align: center;
   padding: 36px 20px;
   color: var(--text-muted, #86868b);
 }
 
+/* Layout and spacing properties are defined for .club-empty-sessions svg. */
 .club-empty-sessions svg {
   margin: 0 auto 10px;
   display: block;
 }
 
+/* Spacing and typography properties are defined for .club-empty-sessions p. */
 .club-empty-sessions p {
   margin: 0 0 16px;
   font-size: 14px;
 }
 
-/* Responsive */
+/* Club profile layouts are adapted to narrower viewports. */
+/* The enclosed styles are applied for (max-width: 900px). */
 @media (max-width: 900px) {
+  /* Layout properties are defined for .club-profile-grid. */
   .club-profile-grid {
     grid-template-columns: 1fr;
   }
+  /* Layout properties are defined for .club-identity-card. */
   .club-identity-card {
     flex-direction: column;
     align-items: flex-start;
   }
+  /* Layout and dimensions properties are defined for .club-identity-actions. */
   .club-identity-actions {
     width: 100%;
     justify-content: flex-start;
   }
 }
 
+/* The enclosed styles are applied for (max-width: 600px). */
 @media (max-width: 600px) {
+  /* Spacing properties are defined for .club-page-container. */
   .club-page-container {
     padding: 16px 16px 48px;
   }
+  /* Layout properties are defined for .club-identity-left. */
   .club-identity-left {
     flex-direction: column;
     align-items: flex-start;
   }
+  /* Layout properties are defined for .club-committee-grid. */
   .club-committee-grid {
     grid-template-columns: 1fr;
   }
 }
 
-/* Uploaded club logo inside the badge square */
+/* Uploaded club logos are fitted within the badge area. */
+/* Spacing, colours and surfaces and overflow handling properties are defined for .club-squircle-badge--image. */
 .club-squircle-badge--image { background: #ffffff; overflow: hidden; padding: 0; }
+/* Layout, dimensions and image fitting properties are defined for .club-squircle-badge--image img. */
 .club-squircle-badge--image img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-/* ---------- Membership card (real data) ---------- */
+/* Membership pricing, benefits and actions are styled. */
+/* Layout properties are defined for .membership-card-top. */
 .membership-card-top { display: flex; align-items: baseline; justify-content: space-between; }
-/* Club name with the committee's Edit button beside it */
+/* The club name and authorized Edit action are aligned. */
+/* Layout and spacing properties are defined for .club-title-row. */
 .club-title-row { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; margin-bottom: 6px; }
+/* Spacing properties are defined for .club-title-row .club-profile-title. */
 .club-title-row .club-profile-title { margin: 0; }
+/* Typography and colours and surfaces properties are defined for .club-edit-btn. */
 .club-edit-btn { font-size: 13px; font-weight: 600; color: #c8102e; text-decoration: none; }
+/* Presentation properties are defined for .club-edit-btn:hover. */
 .club-edit-btn:hover { text-decoration: underline; }
+/* Spacing, typography and colours and surfaces properties are defined for .membership-note. */
 .membership-note { font-size: 13.5px; color: #6e6e73; line-height: 1.45; margin: 0 0 16px; }
+/* Spacing properties are defined for .membership-card form. */
 .membership-card form { margin: 0; }
+/* Presentation properties are defined for a.btn-club-apply. */
 a.btn-club-apply { text-decoration: none; }
+/* Layout, dimensions and typography properties are defined for a.btn-sidebar-apply. */
 a.btn-sidebar-apply { display: block; text-align: center; text-decoration: none; box-sizing: border-box; }
+/* Colours and surfaces, interaction feedback and motion and transforms properties are defined for .btn-sidebar-apply:disabled. */
 .btn-sidebar-apply:disabled { background: #e5e5ea; color: #8e8e93; box-shadow: none; cursor: not-allowed; transform: none; }
 
-/* Messages after Apply / Renew (e.g. "You're already a member of this club.") */
+/* Membership application and renewal feedback is styled. */
+/* Spacing, typography and colours and surfaces properties are defined for .membership-card .journey-notice. */
 .membership-card .journey-notice { padding: 10px 14px; border-radius: 12px; margin: 0 0 16px; font-size: 13.5px; line-height: 1.45; border: 1px solid #d9d9e1; background: #f5f5f8; }
+/* Colours and surfaces properties are defined for .membership-card .notice-error. */
 .membership-card .notice-error { color: #b20820; background: #fff0f2; border-color: #f3bec7; }
+/* Colours and surfaces properties are defined for .membership-card .notice-success. */
 .membership-card .notice-success { color: #175f31; background: #edf7f0; border-color: #bbd7c4; }

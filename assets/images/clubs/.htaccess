@@ -1,4 +1,5 @@
-# Club images are uploaded by users. Never run anything in this folder as PHP.
+# Direct requests for the listed PHP-like file extensions are denied.
+# Uploaded club images are served without exposing the listed executable extensions.
 <FilesMatch "\.(?i:php|phtml|phar)$">
     Require all denied
 </FilesMatch>

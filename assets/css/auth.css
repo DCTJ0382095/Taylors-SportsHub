@@ -1,13 +1,12 @@
-/* ==========================================================================
-   Authentication Pages Styles (auth.css)
-   Taylor's SportsHub - Apple-calibrated Authentication Experience
-   ========================================================================== */
+/* Authentication page layout, form controls and responsive states are styled. */
 
-/* Overall Page Layout */
+/* Authentication content is arranged within the page layout. */
+/* Colours and surfaces properties are defined for body. */
 body {
   background-color: var(--bg-surface-subtle, #fbfbfd);
 }
 
+/* Layout, dimensions and spacing properties are defined for .auth-split-layout. */
 .auth-split-layout {
   display: grid;
   grid-template-columns: 1.05fr 0.95fr;
@@ -17,15 +16,15 @@ body {
   padding: 48px 0;
 }
 
-/* ==========================================================================
-   Left Hero Column
-   ========================================================================== */
+/* The authentication hero column is styled. */
+/* Layout properties are defined for .auth-hero-col. */
 .auth-hero-col {
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
+/* Layout, spacing, typography and colours and surfaces properties are defined for .section-label. */
 .section-label {
   font-size: 11.5px;
   font-weight: 700;
@@ -36,6 +35,7 @@ body {
   display: inline-block;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .auth-hero-col h1, .auth-hero-title. */
 .auth-hero-col h1,
 .auth-hero-title {
   font-size: 46px;
@@ -47,6 +47,7 @@ body {
   font-optical-sizing: auto;
 }
 
+/* Dimensions, spacing, typography and colours and surfaces properties are defined for .auth-hero-col p, .auth-hero-desc. */
 .auth-hero-col p,
 .auth-hero-desc {
   font-size: 16px;
@@ -56,6 +57,7 @@ body {
   line-height: 1.55;
 }
 
+/* Dimensions, spacing, colours and surfaces and overflow handling properties are defined for .auth-hero-poster. */
 .auth-hero-poster {
   max-width: 420px;
   border-radius: var(--radius-md, 14px);
@@ -65,6 +67,7 @@ body {
   background: #141824;
 }
 
+/* Layout, dimensions, colours and surfaces and image fitting properties are defined for .poster-uploaded-img. */
 .poster-uploaded-img {
   width: 100%;
   aspect-ratio: 16 / 10;
@@ -73,15 +76,15 @@ body {
   border-radius: var(--radius-md, 14px);
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .auth-hero-tagline. */
 .auth-hero-tagline {
   font-size: 12.5px;
   color: var(--text-muted, #6e6e73);
   margin-top: 4px;
 }
 
-/* ==========================================================================
-   Right Form Card
-   ========================================================================== */
+/* The authentication form card is styled. */
+/* Dimensions, spacing and colours and surfaces properties are defined for .auth-form-card. */
 .auth-form-card {
   background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(24px) saturate(180%);
@@ -93,6 +96,7 @@ body {
   box-sizing: border-box;
 }
 
+/* Layout, spacing, typography and colours and surfaces properties are defined for .auth-card-eyebrow. */
 .auth-card-eyebrow {
   font-size: 11px;
   font-weight: 700;
@@ -103,6 +107,7 @@ body {
   display: block;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .auth-card-title. */
 .auth-card-title {
   font-size: 32px;
   font-weight: 800;
@@ -113,6 +118,7 @@ body {
   line-height: 1.2;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .auth-card-sub. */
 .auth-card-sub {
   font-size: 15px;
   letter-spacing: -0.01em;
@@ -121,13 +127,13 @@ body {
   line-height: 1.45;
 }
 
-/* ==========================================================================
-   Form Controls & Labels
-   ========================================================================== */
+/* Form labels and editable controls are styled. */
+/* Spacing properties are defined for .form-field. */
 .form-field {
   margin-bottom: 22px;
 }
 
+/* Layout, spacing, typography and colours and surfaces properties are defined for .form-label, .auth-label. */
 .form-label,
 .auth-label {
   font-size: 13.5px;
@@ -137,12 +143,14 @@ body {
   color: var(--text-main, #1d1d1f);
 }
 
+/* Typography and colours and surfaces properties are defined for .auth-label-opt. */
 .auth-label-opt {
   font-size: 12px;
   color: #86868b;
   font-weight: 400;
 }
 
+/* Dimensions, spacing, typography, colours and surfaces and motion and transforms properties are defined for .form-input. */
 .form-input {
   width: 100%;
   min-height: 44px;
@@ -159,6 +167,7 @@ body {
   transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease, transform 0.18s ease;
 }
 
+/* Colours and surfaces properties are defined for .form-input:focus. */
 .form-input:focus {
   background-color: #ffffff;
   border-color: var(--color-primary, #c8102e);
@@ -166,11 +175,13 @@ body {
   outline: none;
 }
 
+/* Colours and surfaces properties are defined for .input-error. */
 .input-error {
   border-color: #d70015 !important;
   box-shadow: 0 0 0 3.5px rgba(215, 0, 21, 0.14) !important;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .field-error-msg. */
 .field-error-msg {
   font-size: 12.5px;
   font-weight: 500;
@@ -179,13 +190,15 @@ body {
   margin-top: 6px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .field-help-msg. */
 .field-help-msg {
   font-size: 12px;
   color: var(--text-muted, #6e6e73);
   margin-top: 4px;
 }
 
-/* Checkbox Row & Links */
+/* Checkboxes and secondary form links are aligned. */
+/* Layout, spacing and typography properties are defined for .auth-checkbox-row. */
 .auth-checkbox-row {
   display: flex;
   align-items: center;
@@ -194,6 +207,7 @@ body {
   font-size: 13px;
 }
 
+/* Layout, typography, colours and surfaces and interaction feedback properties are defined for .auth-checkbox-label. */
 .auth-checkbox-label {
   display: flex;
   align-items: flex-start;
@@ -204,12 +218,14 @@ body {
   font-size: 13px;
 }
 
+/* Spacing and interaction feedback properties are defined for .auth-checkbox. */
 .auth-checkbox {
   accent-color: var(--color-primary, #c8102e);
   cursor: pointer;
   margin-top: 2px;
 }
 
+/* Typography and colours and surfaces properties are defined for .auth-forgot-link. */
 .auth-forgot-link {
   color: var(--color-primary, #c8102e);
   font-weight: 600;
@@ -217,11 +233,13 @@ body {
   font-size: 13px;
 }
 
+/* Presentation properties are defined for .auth-forgot-link:hover. */
 .auth-forgot-link:hover {
   text-decoration: underline;
 }
 
-/* Action Buttons */
+/* Authentication action buttons are styled. */
+/* Layout, dimensions, spacing, typography, colours and surfaces, interaction feedback and motion and transforms properties are defined for .btn-primary.btn-auth-submit. */
 .btn-primary.btn-auth-submit {
   width: 100%;
   padding: 12px 20px;
@@ -243,16 +261,19 @@ body {
   transition: background 0.18s ease, transform var(--transition-press, 120ms ease);
 }
 
+/* Colours and surfaces properties are defined for .btn-primary.btn-auth-submit:hover. */
 .btn-primary.btn-auth-submit:hover {
   background: #a60d26;
   color: #ffffff;
 }
 
+/* Motion and transforms properties are defined for .btn-primary.btn-auth-submit:active. */
 .btn-primary.btn-auth-submit:active {
   transform: scale(0.98);
 }
 
-/* Switch & Disclaimer Prompts */
+/* Account-switching links and disclaimer text are styled. */
+/* Spacing, typography and colours and surfaces properties are defined for .auth-switch-prompt. */
 .auth-switch-prompt {
   text-align: center;
   font-size: 13.5px;
@@ -261,16 +282,19 @@ body {
   border-top: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
 }
 
+/* Typography and colours and surfaces properties are defined for .auth-switch-link. */
 .auth-switch-link {
   color: var(--color-primary, #c8102e);
   font-weight: 600;
   text-decoration: none;
 }
 
+/* Presentation properties are defined for .auth-switch-link:hover. */
 .auth-switch-link:hover {
   text-decoration: underline;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .auth-disclaimer. */
 .auth-disclaimer {
   font-size: 11.5px;
   color: var(--text-muted, #6e6e73);
@@ -279,9 +303,8 @@ body {
   line-height: 1.4;
 }
 
-/* ==========================================================================
-   Status Alerts & Validation States
-   ========================================================================== */
+/* Status alerts and field-validation messages are styled. */
+/* Layout, spacing, typography and colours and surfaces properties are defined for .status-alert-box. */
 .status-alert-box {
   display: flex;
   align-items: flex-start;
@@ -293,23 +316,27 @@ body {
   margin-bottom: 24px;
 }
 
+/* Colours and surfaces properties are defined for .status-alert-box.danger. */
 .status-alert-box.danger {
   background: #fff2f2;
   border: 1px solid #fecdd3;
   color: #991b1b;
 }
 
+/* Colours and surfaces properties are defined for .status-alert-box.success. */
 .status-alert-box.success {
   background: #ecfdf5;
   border: 1px solid #a7f3d0;
   color: #065f46;
 }
 
+/* Spacing and typography properties are defined for .auth-status-title. */
 .auth-status-title {
   font-weight: 700;
   margin-bottom: 2px;
 }
 
+/* Layout, dimensions, spacing and colours and surfaces properties are defined for .auth-success-circle. */
 .auth-success-circle {
   width: 48px;
   height: 48px;
@@ -322,6 +349,7 @@ body {
   margin-bottom: 20px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .auth-success-desc. */
 .auth-success-desc {
   font-size: 14px;
   color: var(--text-secondary, #424245);
@@ -329,6 +357,7 @@ body {
   line-height: 1.5;
 }
 
+/* Layout and spacing properties are defined for .auth-action-col. */
 .auth-action-col {
   margin-top: 24px;
   display: flex;
@@ -336,21 +365,23 @@ body {
   gap: 14px;
 }
 
-/* ==========================================================================
-   Responsive Breakpoints
-   ========================================================================== */
+/* Authentication layouts are adapted to narrower viewports. */
+/* The enclosed styles are applied for (max-width: 992px). */
 @media (max-width: 992px) {
+  /* Layout and spacing properties are defined for .auth-split-layout. */
   .auth-split-layout {
     grid-template-columns: 1fr;
     gap: 40px;
     padding: 24px 0 40px;
   }
 
+  /* Typography properties are defined for .auth-hero-col h1, .auth-hero-title. */
   .auth-hero-col h1,
   .auth-hero-title {
     font-size: 36px;
   }
 
+  /* Spacing properties are defined for .auth-form-card. */
   .auth-form-card {
     padding: 32px 24px;
   }

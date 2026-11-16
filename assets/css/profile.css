@@ -1,18 +1,18 @@
-/* ==========================================================================
-   Profile Page Styles (profile.css)
-   Matching 26TUEventManagement Apple-inspired layout
-   ========================================================================== */
+/* Profile details, account controls and summary cards are styled. */
 
+/* Dimensions and spacing properties are defined for .profile-page-container. */
 .profile-page-container {
   max-width: 1100px;
   margin: 0 auto;
   padding: 24px 24px 64px;
 }
 
+/* Spacing properties are defined for .profile-header. */
 .profile-header {
   margin-bottom: 24px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .profile-eyebrow. */
 .profile-eyebrow {
   font-size: 11px;
   font-weight: 700;
@@ -22,6 +22,7 @@
   margin-bottom: 8px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .profile-title. */
 .profile-title {
   font-size: 38px;
   font-weight: 800;
@@ -31,12 +32,14 @@
   line-height: 1.15;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .profile-subtitle. */
 .profile-subtitle {
   font-size: 15px;
   color: var(--text-secondary, #424245);
   margin: 0;
 }
 
+/* Layout and spacing properties are defined for .profile-grid-layout. */
 .profile-grid-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 340px;
@@ -45,6 +48,7 @@
   margin-top: 24px;
 }
 
+/* Spacing and colours and surfaces properties are defined for .profile-card. */
 .profile-card {
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.08);
@@ -54,6 +58,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .profile-card-title. */
 .profile-card-title {
   font-size: 20px;
   font-weight: 750;
@@ -62,12 +67,14 @@
   margin: 0 0 16px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .profile-card-desc. */
 .profile-card-desc {
   font-size: 13.5px;
   color: var(--text-secondary, #424245);
   margin: -8px 0 20px;
 }
 
+/* Layout and spacing properties are defined for .avatar-upload-row. */
 .avatar-upload-row {
   display: flex;
   align-items: center;
@@ -75,6 +82,7 @@
   margin-bottom: 24px;
 }
 
+/* Layout, dimensions, typography and colours and surfaces properties are defined for .avatar-large. */
 .avatar-large {
   width: 68px;
   height: 68px;
@@ -90,17 +98,20 @@
   box-shadow: var(--shadow-xs);
 }
 
-/* Two fields side by side. Each field already has 16px below it, so the row adds no extra space */
+/* Paired profile fields are arranged without additional row spacing. */
+/* Layout properties are defined for .profile-form-grid-2. */
 .profile-form-grid-2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
   column-gap: 16px;
 }
 
+/* Spacing properties are defined for .profile-form-group. */
 .profile-form-group {
   margin-bottom: 16px;
 }
 
+/* Layout, spacing, typography and colours and surfaces properties are defined for .profile-form-group .form-label. */
 .profile-form-group .form-label {
   display: block;
   font-size: 13px;
@@ -109,6 +120,7 @@
   margin-bottom: 6px;
 }
 
+/* Dimensions, spacing, typography, colours and surfaces and motion and transforms properties are defined for .profile-form-group .form-input, .profile-form-group .form-select. */
 .profile-form-group .form-input,
 .profile-form-group .form-select {
   width: 100%;
@@ -123,6 +135,7 @@
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
+/* Colours and surfaces properties are defined for .profile-form-group .form-input:focus, .profile-form-group .form-select:focus. */
 .profile-form-group .form-input:focus,
 .profile-form-group .form-select:focus {
   outline: none;
@@ -130,6 +143,7 @@
   box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.12);
 }
 
+/* Colours and surfaces and interaction feedback properties are defined for .profile-form-group .form-input:disabled. */
 .profile-form-group .form-input:disabled {
   background: #f5f5f7;
   color: var(--text-muted, #86868b);
@@ -137,12 +151,14 @@
   border-color: #e5e5ea;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .profile-form-help. */
 .profile-form-help {
   font-size: 12px;
   color: var(--text-muted, #86868b);
   margin-top: 4px;
 }
 
+/* Layout and spacing properties are defined for .profile-form-actions. */
 .profile-form-actions {
   display: flex;
   align-items: center;
@@ -150,6 +166,7 @@
   margin-top: 24px;
 }
 
+/* Layout and spacing properties are defined for .profile-sidebar-user. */
 .profile-sidebar-user {
   display: flex;
   flex-direction: column;
@@ -157,7 +174,8 @@
   margin-bottom: 20px;
 }
 
-/* Avatar on the left, badge pinned to the top-right corner of the card */
+/* The avatar is aligned left, and the account badge is pinned to the upper right. */
+/* Layout and spacing properties are defined for .profile-sidebar-top. */
 .profile-sidebar-top {
   align-self: stretch;
   display: flex;
@@ -167,6 +185,7 @@
   margin-bottom: 12px;
 }
 
+/* Layout, spacing, typography and colours and surfaces properties are defined for .profile-role-badge. */
 .profile-role-badge {
   display: inline-block;
   background: #fee2e2;
@@ -178,24 +197,28 @@
   white-space: nowrap;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .profile-user-faculty. */
 .profile-user-faculty {
   font-size: 13px;
   color: var(--text-secondary, #424245);
   margin-top: 4px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .profile-user-member-since. */
 .profile-user-member-since {
   font-size: 12px;
   color: var(--text-muted, #86868b);
   margin-top: 2px;
 }
 
+/* Spacing and colours and surfaces properties are defined for .profile-divider. */
 .profile-divider {
   border: none;
   border-top: 1px solid rgba(0, 0, 0, 0.08);
   margin: 16px 0;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .profile-stats-title. */
 .profile-stats-title {
   font-size: 14px;
   font-weight: 700;
@@ -203,6 +226,7 @@
   margin-bottom: 14px;
 }
 
+/* Layout, spacing and typography properties are defined for .profile-stats-list. */
 .profile-stats-list {
   display: flex;
   flex-direction: column;
@@ -211,22 +235,26 @@
   margin-bottom: 20px;
 }
 
+/* Layout properties are defined for .profile-stat-row. */
 .profile-stat-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
+/* Colours and surfaces properties are defined for .profile-stat-row .stat-label. */
 .profile-stat-row .stat-label {
   color: var(--text-secondary, #424245);
 }
 
+/* Typography and colours and surfaces properties are defined for .profile-stat-row .stat-val. */
 .profile-stat-row .stat-val {
   font-size: 16px;
   font-weight: 700;
   color: var(--text-main, #1d1d1f);
 }
 
+/* Layout and spacing properties are defined for .profile-privacy-box. */
 .profile-privacy-box {
   display: flex;
   align-items: center;
@@ -234,16 +262,19 @@
   margin-bottom: 8px;
 }
 
+/* Colours and surfaces properties are defined for .profile-privacy-box svg. */
 .profile-privacy-box svg {
   color: #c8102e;
 }
 
+/* Typography and colours and surfaces properties are defined for .profile-privacy-box span. */
 .profile-privacy-box span {
   font-weight: 700;
   font-size: 14px;
   color: var(--text-main, #1d1d1f);
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .profile-privacy-desc. */
 .profile-privacy-desc {
   font-size: 12.5px;
   color: var(--text-secondary, #424245);
@@ -251,6 +282,7 @@
   margin: 0 0 12px;
 }
 
+/* Typography and colours and surfaces properties are defined for .profile-privacy-link. */
 .profile-privacy-link {
   font-size: 12px;
   color: var(--color-primary, #c8102e);
@@ -258,11 +290,13 @@
   text-decoration: none;
 }
 
+/* Presentation properties are defined for .profile-privacy-link:hover. */
 .profile-privacy-link:hover {
   text-decoration: underline;
 }
 
-/* Status alerts */
+/* Profile status messages are styled. */
+/* Layout, spacing, typography and colours and surfaces properties are defined for .status-alert-box. */
 .status-alert-box {
   display: flex;
   align-items: center;
@@ -273,26 +307,32 @@
   margin-bottom: 20px;
 }
 
+/* Colours and surfaces properties are defined for .status-alert-box.success. */
 .status-alert-box.success {
   background: #ecfdf5;
   border: 1px solid #a7f3d0;
   color: #065f46;
 }
 
+/* Colours and surfaces properties are defined for .status-alert-box.danger. */
 .status-alert-box.danger {
   background: #fef2f2;
   border: 1px solid #fecaca;
   color: #991b1b;
 }
 
-/* Responsive */
+/* Profile layouts are adapted to narrower viewports. */
+/* The enclosed styles are applied for (max-width: 860px). */
 @media (max-width: 860px) {
+  /* Layout properties are defined for .profile-grid-layout. */
   .profile-grid-layout {
     grid-template-columns: 1fr;
   }
+  /* Layout properties are defined for .profile-form-grid-2. */
   .profile-form-grid-2 {
     grid-template-columns: 1fr;
   }
+  /* Layout properties are defined for .profile-form-actions. */
   .profile-form-actions {
     flex-direction: column;
     align-items: stretch;

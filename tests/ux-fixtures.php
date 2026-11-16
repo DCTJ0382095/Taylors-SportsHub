@@ -1,5 +1,6 @@
 <?php
-// CLI-only disposable fixtures for both browser suites. Never edits seeded users/sessions.
+// Synthetic browser-test records are created and removed through this CLI fixture helper after the
+// configured database connection is initialized.
 if (PHP_SAPI !== "cli") {
     http_response_code(404);
     exit();
@@ -8,13 +9,17 @@ require_once __DIR__ . "/../includes/helpers.php";
 $db = get_db_connection();
 $action = $argv[1] ?? "";
 $state_file = sys_get_temp_dir() . "/sportshub-ux-fixture.json";
+// Synthetic browser-test fixtures are created for the create action.
 if ($action === "create") {
+    // Duplicate fixture creation is refused while a fixture state file is present.
     if (file_exists($state_file)) {
         throw new RuntimeException("Clean up previous UX fixtures first.");
     }
     $db->beginTransaction();
+    // Synthetic accounts, clubs and sessions are inserted transactionally.
     try {
         $users = [];
+        // Each synthetic account role is created for browser testing.
         foreach (["student", "manager", "outsider"] as $role) {
             $email = "ux-" . $role . "-" . bin2hex(random_bytes(4)) . "@sd.taylors.edu.my";
             $q = $db->prepare("INSERT INTO users (name,email,password_hash) VALUES (?,?,?)");
@@ -41,6 +46,7 @@ if ($action === "create") {
             $users["manager"]["id"],
         ]);
         $sessions = [];
+        // Paid, free, review and capacity-race sessions are created.
         foreach (["paid" => 15, "free" => 0, "review" => 15, "race" => 15] as $name => $price) {
             $q = $db->prepare(
                 "INSERT INTO sessions (club_id,title,description,sport_type,venue,session_date,start_time,end_time,price,capacity,status,created_by) VALUES (?,?,?,'Badminton','Synthetic Court',DATE_ADD(CURDATE(),INTERVAL 7 DAY),'18:00:00','20:00:00',?,2,'published',?)",
@@ -60,32 +66,36 @@ if ($action === "create") {
             "other_club" => $other_club,
             "sessions" => $sessions,
         ];
-        // Persist cleanup IDs before commit so a failed write cannot orphan fixtures.
+        // Cleanup IDs are persisted before the transaction is committed.
         if (file_put_contents($state_file, json_encode($fixture), LOCK_EX) === false) {
             throw new RuntimeException('Could not save UX fixture state');
         }
         $db->commit();
         echo json_encode($fixture);
-    } catch (Throwable $e) {
+    } /* Failed fixture creation is rolled back and cleanup metadata is removed. */ catch (Throwable $e) {
+        // An active fixture transaction is rolled back after failure.
         if ($db->inTransaction()) {
             $db->rollBack();
         }
+        // Failed fixture metadata is removed when present.
         if (file_exists($state_file)) unlink($state_file);
         throw $e;
     }
-} else {
+} /* Existing fixture metadata is loaded for subsequent test actions. */ else {
     $f = json_decode(file_get_contents($state_file), true, 512, JSON_THROW_ON_ERROR);
     $sid = $f["sessions"]["paid"];
     $uid = $f["users"]["student"]["id"];
+    // The synthetic registration is returned for inspection.
     if ($action === "read") {
         $q = $db->prepare(
             "SELECT r.*, (SELECT COALESCE(SUM(amount),0) FROM refund_records WHERE registration_id=r.id) AS refunded FROM registrations r WHERE session_id=? AND user_id=?",
         );
         $q->execute([$sid, $uid]);
         echo json_encode($q->fetch());
-    } elseif ($action === "set") {
-        // Fixed, test-only state controls; no arbitrary SQL accepted.
+    } /* A predefined synthetic registration state is applied. */ elseif ($action === "set") {
+        // Fixture state changes are restricted to predefined test actions.
         $state = $argv[2] ?? "";
+        // Unsupported fixture states are rejected.
         if (
             !in_array(
                 $state,
@@ -98,55 +108,60 @@ if ($action === "create") {
         $db->prepare(
             "UPDATE registrations SET status=?, payment_deadline=DATE_ADD(NOW(),INTERVAL 1 HOUR) WHERE session_id=? AND user_id=?",
         )->execute([$state, $sid, $uid]);
-    } elseif ($action === "expire") {
+    } /* The synthetic payment deadline is moved into the past. */ elseif ($action === "expire") {
         $db->prepare(
             "UPDATE registrations SET payment_deadline=DATE_SUB(NOW(),INTERVAL 1 SECOND) WHERE session_id=? AND user_id=?",
         )->execute([$sid, $uid]);
-    } elseif ($action === "bank-change") {
+    } /* Synthetic club bank details are changed for snapshot checks. */ elseif ($action === "bank-change") {
         $db->prepare("UPDATE clubs SET account_number='CHANGED-AFTER-RESERVATION' WHERE id=?")->execute([$f["club"]]);
-    } elseif ($action === "review-read") {
+    } /* The synthetic review registration is returned for inspection. */ elseif ($action === "review-read") {
         $q = $db->prepare("SELECT * FROM registrations WHERE session_id=? AND user_id=?");
         $q->execute([$f["sessions"]["review"], $uid]);
         echo json_encode($q->fetch());
-    } elseif ($action === "session-state") {
+    } /* The synthetic session status is returned for inspection. */ elseif ($action === "session-state") {
         $q=$db->prepare('SELECT status FROM sessions WHERE id=?');$q->execute([$sid]);echo $q->fetchColumn();
-    } elseif ($action === "review-reset") {
-        // Separate synthetic submission for each independent review scenario.
-        // Never rewrite a prior receipt's recorded decision to reset a test.
+    } /* A fresh synthetic receipt is created for another review scenario. */ elseif ($action === "review-reset") {
+        // A new synthetic receipt submission is created for each review scenario, so previous recorded
+        // decisions are preserved.
         $q = $db->prepare('SELECT * FROM registrations WHERE session_id=? AND user_id=?');
         $q->execute([$f['sessions']['review'], $uid]);
         $reg = $q->fetch();
         $receipt_path = 'assets/uploads/receipts/receipt_' . $reg['id'] . '_' . bin2hex(random_bytes(8)) . '.png';
+        // Failed synthetic receipt copying is reported before database changes.
         if (!copy(__DIR__ . '/../' . $reg['receipt_path'], __DIR__ . '/../' . $receipt_path)) {
             throw new RuntimeException('Could not create synthetic receipt fixture.');
         }
         $db->beginTransaction();
+        // The new synthetic receipt and pending registration state are saved together.
         try {
             $db->prepare('INSERT INTO payment_receipts (registration_id,receipt_path,submitted_at) VALUES (?,?,?)')->execute([$reg['id'], $receipt_path, $reg['receipt_uploaded_at']]);
             $db->prepare("UPDATE registrations SET status='awaiting_approval',receipt_path=?,rejection_reason=NULL,cancellation_requested_at=NULL,cancellation_reason=NULL WHERE id=?")->execute([$receipt_path, $reg['id']]);
             $db->commit();
-        } catch (Throwable $e) {
+        } /* Failed review-fixture updates are rolled back and the copied receipt is removed. */ catch (Throwable $e) {
+            // An active review-fixture transaction is rolled back after failure.
             if ($db->inTransaction()) $db->rollBack();
             unlink(__DIR__ . '/../' . $receipt_path);
             throw $e;
         }
-    } elseif ($action === "review-start") {
+    } /* The review session is moved into the past for deadline checks. */ elseif ($action === "review-start") {
         $db->prepare(
             "UPDATE sessions SET session_date=DATE(DATE_SUB(NOW(),INTERVAL 1 MINUTE)),start_time=TIME(DATE_SUB(NOW(),INTERVAL 1 MINUTE)),end_time=TIME(DATE_ADD(NOW(),INTERVAL 1 HOUR)) WHERE id=?",
         )->execute([$f["sessions"]["review"]]);
-    } elseif ($action === "race-capacity") {
+    } /* Synthetic capacity is restricted to one place for concurrent booking checks. */ elseif ($action === "race-capacity") {
         $db->prepare("UPDATE sessions SET capacity=1 WHERE id=?")->execute([$f["sessions"]["race"]]);
-    } elseif ($action === "race-read") {
+    } /* Synthetic race-session registrations are returned for inspection. */ elseif ($action === "race-read") {
         $q = $db->prepare(
             "SELECT COUNT(*) FROM registrations WHERE session_id=? AND status IN ('awaiting_payment','awaiting_approval','payment_rejected','confirmed','cancellation_pending')",
         );
         $q->execute([$f["sessions"]["race"]]);
         echo $q->fetchColumn();
-    } elseif ($action === "cleanup") {
+    } /* Synthetic fixture files and database records are removed. */ elseif ($action === "cleanup") {
         $ids = array_column($f["users"], "id");
         $q = $db->prepare("SELECT id FROM registrations WHERE user_id IN (?,?,?)");
         $q->execute($ids);
+        // Each synthetic registration is processed for uploaded receipt cleanup.
         foreach ($q->fetchAll(PDO::FETCH_COLUMN) as $registration_id) {
+            // Each matching synthetic receipt upload is removed.
             foreach (glob(__DIR__ . "/../assets/uploads/receipts/receipt_" . (int) $registration_id . "_*") as $p) {
                 unlink($p);
             }
@@ -155,7 +170,9 @@ if ($action === "create") {
             "SELECT proof_path FROM refund_records WHERE registration_id IN (SELECT id FROM registrations WHERE user_id IN (?,?,?))",
         );
         $q->execute($ids);
+        // Each recorded synthetic refund proof path is processed for cleanup.
         foreach ($q->fetchAll(PDO::FETCH_COLUMN) as $p) {
+            // Generated refund proof files are removed within the expected upload prefix.
             if ($p && str_starts_with($p, "assets/uploads/refunds/refund_")) {
                 @unlink(__DIR__ . "/../" . $p);
             }

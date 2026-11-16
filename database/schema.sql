@@ -1,8 +1,9 @@
--- Taylor's University SportsHub Database Schema
+-- The Taylor's SportsHub database is created with Unicode support.
 CREATE DATABASE IF NOT EXISTS `tu_sportshub` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- The target database is selected.
 USE `tu_sportshub`;
 
--- Users table
+-- Account identities, authentication and profile details are stored.
 CREATE TABLE IF NOT EXISTS `users` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `name` VARCHAR(100) NOT NULL,
@@ -17,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Clubs table
+-- Club identity, membership terms and payment details are stored.
 CREATE TABLE IF NOT EXISTS `clubs` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `name` VARCHAR(150) NOT NULL UNIQUE,
@@ -43,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `clubs` (
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Club Managers appointment table
+-- Committee appointments, titles and permissions are stored.
 CREATE TABLE IF NOT EXISTS `club_managers` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `club_id` INT NOT NULL,
@@ -61,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `club_managers` (
   CONSTRAINT `fk_cm_appointer` FOREIGN KEY (`appointed_by`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Sports Sessions table
+-- Sports session schedules, prices and publication states are stored.
 CREATE TABLE IF NOT EXISTS `sessions` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `club_id` INT NOT NULL,
@@ -85,7 +86,7 @@ CREATE TABLE IF NOT EXISTS `sessions` (
   CONSTRAINT `fk_session_creator` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Registrations table (with payment & capacity tracking)
+-- Reservations, payment snapshots and cancellation details are stored.
 CREATE TABLE IF NOT EXISTS `registrations` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `session_id` INT NOT NULL,
@@ -109,7 +110,7 @@ CREATE TABLE IF NOT EXISTS `registrations` (
   CONSTRAINT `fk_reg_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Refund records table (logging external refunds)
+-- Externally completed refunds and optional proof are recorded.
 CREATE TABLE IF NOT EXISTS `refund_records` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `registration_id` INT NOT NULL,
@@ -124,8 +125,8 @@ CREATE TABLE IF NOT EXISTS `refund_records` (
   CONSTRAINT `fk_refund_recorder` FOREIGN KEY (`recorded_by`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Every receipt a student has sent for a session booking, and what the committee decided.
--- Keep this the same as database/receipt-history.sql, which adds it to older databases.
+-- Session receipt submissions and review decisions are retained.
+-- The receipt-history structure is shared with the upgrade migration.
 CREATE TABLE IF NOT EXISTS `payment_receipts` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `registration_id` INT NOT NULL,
@@ -140,9 +141,9 @@ CREATE TABLE IF NOT EXISTS `payment_receipts` (
   CONSTRAINT `fk_receipt_reviewer` FOREIGN KEY (`reviewed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Club memberships: one row per student per club.
--- When a student renews, the same row is reused, so nobody can hold two memberships of one club.
--- "Expired" is not stored: a membership is expired when status is 'active' and expires_at is in the past.
+-- One membership row is permitted per student and club.
+-- The existing membership row is reused for renewal.
+-- Expired state is derived from approved status and the recorded expiry date.
 CREATE TABLE IF NOT EXISTS `club_memberships` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `club_id` INT NOT NULL,
@@ -166,8 +167,8 @@ CREATE TABLE IF NOT EXISTS `club_memberships` (
   CONSTRAINT `fk_member_reviewer` FOREIGN KEY (`reviewed_by`) REFERENCES `users` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Every receipt a student has sent for a membership, and what the committee decided about it.
--- club_memberships only remembers the latest receipt; this table keeps all of them, across renewals too.
+-- Membership receipt submissions and review decisions are retained.
+-- Historical receipt records are preserved across membership renewals.
 CREATE TABLE IF NOT EXISTS `membership_receipts` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `membership_id` INT NOT NULL,

@@ -1,4 +1,5 @@
-/* Shared registration action feedback; page styles own layout and spacing. */
+/* Shared registration feedback is styled, with page layout and spacing defined in page stylesheets. */
+/* Colours and surfaces and motion and transforms properties are defined for .btn-reserve, .journey-button.registration-cancel-button. */
 .btn-reserve,
 .journey-button.registration-cancel-button {
   background: var(--color-primary, #c8102e);
@@ -8,6 +9,7 @@
   transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease, transform 100ms ease-out;
 }
 
+/* Colours and surfaces properties are defined for .btn-reserve:hover, .journey-button.registration-cancel-button:hover. */
 .btn-reserve:hover,
 .journey-button.registration-cancel-button:hover {
   background: var(--color-primary-hover, #a60d26);
@@ -15,13 +17,16 @@
   box-shadow: 0 4px 14px rgba(200, 16, 46, 0.32);
 }
 
+/* Colours and surfaces and motion and transforms properties are defined for .btn-reserve:active, .journey-button.registration-cancel-button:active. */
 .btn-reserve:active,
 .journey-button.registration-cancel-button:active {
   background: var(--color-primary-active, #8e0b20);
   transform: scale(0.97);
 }
 
+/* The enclosed styles are applied for (prefers-reduced-motion: reduce). */
 @media (prefers-reduced-motion: reduce) {
+  /* Motion and transforms properties are defined for .btn-reserve:active, .journey-button.registration-cancel-button:active. */
   .btn-reserve:active,
   .journey-button.registration-cancel-button:active {
     transform: none !important;

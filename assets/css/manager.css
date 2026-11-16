@@ -1,14 +1,13 @@
-/* ==========================================================================
-   Club Manager Portal Styles (manager.css)
-   Taylor's SportsHub - Apple-calibrated Manager Workspace
-   ========================================================================== */
+/* Manager workspace cards, controls and responsive layouts are styled. */
 
+/* Dimensions and spacing properties are defined for .manager-container. */
 .manager-container {
   max-width: 1160px;
   margin: 0 auto;
   padding: 36px 24px 64px 24px;
 }
 
+/* Layout and spacing properties are defined for .manager-header-row. */
 .manager-header-row {
   display: flex;
   justify-content: space-between;
@@ -18,11 +17,13 @@
   gap: 16px;
 }
 
+/* Layout properties are defined for .manager-title-group. */
 .manager-title-group {
   display: flex;
   flex-direction: column;
 }
 
+/* Layout, spacing, typography and colours and surfaces properties are defined for .manager-eyebrow. */
 .manager-eyebrow {
   font-size: 11px;
   font-weight: 700;
@@ -33,6 +34,7 @@
   display: inline-block;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .manager-title. */
 .manager-title {
   font-size: 32px;
   font-weight: 800;
@@ -42,6 +44,7 @@
   line-height: 1.15;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .manager-desc. */
 .manager-desc {
   color: #6e6e73;
   font-size: 14.5px;
@@ -49,6 +52,7 @@
   line-height: 1.45;
 }
 
+/* Layout, spacing, typography, colours and surfaces and motion and transforms properties are defined for .manager-btn-create. */
 .manager-btn-create {
   display: inline-flex;
   align-items: center;
@@ -64,16 +68,19 @@
   transition: background 0.15s ease, transform var(--transition-press, 120ms ease);
 }
 
+/* Colours and surfaces properties are defined for .manager-btn-create:hover. */
 .manager-btn-create:hover {
   background: #a60d26;
   color: #ffffff;
 }
 
+/* Motion and transforms properties are defined for .manager-btn-create:active. */
 .manager-btn-create:active {
   transform: scale(0.97);
 }
 
-/* Metrics Grid */
+/* Session metrics are arranged in a grid. */
+/* Layout and spacing properties are defined for .manager-metrics-grid. */
 .manager-metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -81,6 +88,7 @@
   margin-bottom: 28px;
 }
 
+/* Spacing, colours and surfaces and motion and transforms properties are defined for .manager-metric-card. */
 .manager-metric-card {
   background: #ffffff;
   border-radius: 16px;
@@ -90,11 +98,13 @@
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
+/* Colours and surfaces and motion and transforms properties are defined for .manager-metric-card:hover. */
 .manager-metric-card:hover {
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
   transform: translateY(-1px);
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .manager-metric-val. */
 .manager-metric-val {
   font-size: 32px;
   font-weight: 800;
@@ -103,17 +113,20 @@
   color: #1d1d1f;
 }
 
+/* Colours and surfaces properties are defined for .manager-metric-val.alert. */
 .manager-metric-val.alert {
   color: var(--color-primary, #c8102e);
 }
 
+/* Typography and colours and surfaces properties are defined for .manager-metric-label. */
 .manager-metric-label {
   font-size: 13px;
   color: #6e6e73;
   font-weight: 500;
 }
 
-/* Filter Tabs */
+/* Manager status-filter tabs are styled. */
+/* Layout and spacing properties are defined for .manager-filter-tabs. */
 .manager-filter-tabs {
   display: flex;
   gap: 8px;
@@ -121,6 +134,7 @@
   flex-wrap: wrap;
 }
 
+/* Spacing, typography, colours and surfaces and motion and transforms properties are defined for .manager-tab. */
 .manager-tab {
   padding: 8px 16px;
   border-radius: var(--radius-full, 980px);
@@ -133,22 +147,26 @@
   border: 1px solid transparent;
 }
 
+/* Colours and surfaces properties are defined for .manager-tab:hover. */
 .manager-tab:hover {
   background: #e8e8ed;
 }
 
+/* Colours and surfaces properties are defined for .manager-tab.active. */
 .manager-tab.active {
   background: #1d1d1f;
   color: #ffffff;
 }
 
-/* Manager Card & List */
+/* Managed sessions are displayed as styled list cards. */
+/* Layout properties are defined for .manager-card-list. */
 .manager-card-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
+/* Layout, spacing, colours and surfaces and motion and transforms properties are defined for .manager-card. */
 .manager-card {
   background: #ffffff;
   border-radius: var(--radius-lg, 20px);
@@ -163,15 +181,18 @@
   transition: box-shadow 0.2s ease;
 }
 
+/* Colours and surfaces properties are defined for .manager-card:hover. */
 .manager-card:hover {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
+/* Layout and dimensions properties are defined for .manager-card-main. */
 .manager-card-main {
   flex: 1;
   min-width: 280px;
 }
 
+/* Layout and spacing properties are defined for .manager-card-badge-row. */
 .manager-card-badge-row {
   display: flex;
   align-items: center;
@@ -179,12 +200,14 @@
   margin-bottom: 8px;
 }
 
+/* Typography and colours and surfaces properties are defined for .manager-card-club-tag. */
 .manager-card-club-tag {
   font-size: 12.5px;
   font-weight: 600;
   color: #86868b;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .manager-card-title. */
 .manager-card-title {
   font-size: 19px;
   font-weight: 700;
@@ -193,7 +216,8 @@
   line-height: 1.3;
 }
 
-/* Session title with an Edit link beside it (same as on the club page) */
+/* Session titles and Edit links are aligned. */
+/* Layout and spacing properties are defined for .manager-card-title-row. */
 .manager-card-title-row {
   display: flex;
   align-items: baseline;
@@ -201,10 +225,14 @@
   gap: 4px 12px;
   margin-bottom: 10px;
 }
+/* Spacing properties are defined for .manager-card-title-row .manager-card-title. */
 .manager-card-title-row .manager-card-title { margin: 0; }
+/* Typography and colours and surfaces properties are defined for .manager-card-edit. */
 .manager-card-edit { font-size: 13px; font-weight: 600; color: #c8102e; text-decoration: none; }
+/* Presentation properties are defined for .manager-card-edit:hover. */
 .manager-card-edit:hover { text-decoration: underline; }
 
+/* Layout, typography and colours and surfaces properties are defined for .manager-meta-row. */
 .manager-meta-row {
   font-size: 13.5px;
   color: #424245;
@@ -213,6 +241,7 @@
   gap: 16px;
 }
 
+/* Layout and colours and surfaces properties are defined for .manager-meta-item. */
 .manager-meta-item {
   display: inline-flex;
   align-items: center;
@@ -220,11 +249,13 @@
   color: #555558;
 }
 
+/* Layout and colours and surfaces properties are defined for .manager-meta-item svg. */
 .manager-meta-item svg {
   color: #86868b;
   flex-shrink: 0;
 }
 
+/* Layout properties are defined for .manager-card-aside. */
 .manager-card-aside {
   display: flex;
   gap: 14px;
@@ -232,13 +263,15 @@
   flex-wrap: wrap;
 }
 
-/* The numbers sit on top of each other, left of the buttons */
+/* Session counts are stacked beside the action buttons. */
+/* Layout properties are defined for .manager-stat-stack. */
 .manager-stat-stack {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
+/* Dimensions, spacing, typography and colours and surfaces properties are defined for .manager-stat-badge. */
 .manager-stat-badge {
   text-align: center;
   padding: 8px 14px;
@@ -248,21 +281,25 @@
   min-width: 90px;
 }
 
+/* Colours and surfaces properties are defined for .manager-stat-badge.alert. */
 .manager-stat-badge.alert {
   background: #fff2f2;
   border-color: #fecdd3;
 }
 
+/* Typography and colours and surfaces properties are defined for .manager-stat-val. */
 .manager-stat-val {
   font-size: 17px;
   font-weight: 700;
   color: #1d1d1f;
 }
 
+/* Colours and surfaces properties are defined for .manager-stat-badge.alert .manager-stat-val. */
 .manager-stat-badge.alert .manager-stat-val {
   color: var(--color-primary, #c8102e);
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .manager-stat-label. */
 .manager-stat-label {
   font-size: 11px;
   color: #86868b;
@@ -272,11 +309,13 @@
   margin-top: 2px;
 }
 
+/* Colours and surfaces properties are defined for .manager-stat-label.alert-text. */
 .manager-stat-label.alert-text {
   color: var(--color-primary, #c8102e);
 }
 
-/* Empty State */
+/* Empty workspace content is styled. */
+/* Spacing, typography and colours and surfaces properties are defined for .manager-empty-state. */
 .manager-empty-state {
   background: #ffffff;
   border-radius: var(--radius-lg, 20px);
@@ -286,6 +325,7 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
 }
 
+/* Dimensions, spacing and colours and surfaces properties are defined for .manager-empty-icon. */
 .manager-empty-icon {
   width: 48px;
   height: 48px;
@@ -294,6 +334,7 @@
   stroke-width: 1.5;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .manager-empty-title. */
 .manager-empty-title {
   font-size: 20px;
   font-weight: 700;
@@ -302,6 +343,7 @@
   letter-spacing: -0.015em;
 }
 
+/* Dimensions, spacing, typography and colours and surfaces properties are defined for .manager-empty-desc. */
 .manager-empty-desc {
   color: #6e6e73;
   font-size: 14.5px;
@@ -310,6 +352,7 @@
   line-height: 1.5;
 }
 
+/* Layout properties are defined for .manager-empty-actions. */
 .manager-empty-actions {
   display: flex;
   gap: 12px;
@@ -318,6 +361,7 @@
   flex-wrap: wrap;
 }
 
+/* Layout, spacing, typography, colours and surfaces and motion and transforms properties are defined for .manager-empty-btn-all. */
 .manager-empty-btn-all {
   display: inline-block;
   padding: 10px 20px;
@@ -331,12 +375,14 @@
   transition: background 0.15s ease;
 }
 
+/* Colours and surfaces properties are defined for .manager-empty-btn-all:hover. */
 .manager-empty-btn-all:hover {
   background: #e8e8ed;
 }
 
-/* Action Buttons */
-/* Buttons sit on top of each other, all the same width */
+/* Manager action buttons are styled. */
+/* Action buttons are stacked at equal widths. */
+/* Layout properties are defined for .manager-btn-group. */
 .manager-btn-group {
   display: flex;
   flex-direction: column;
@@ -344,10 +390,12 @@
   align-items: stretch;
 }
 
+/* Layout properties are defined for .manager-btn-group .manager-btn. */
 .manager-btn-group .manager-btn {
   justify-content: center;
 }
 
+/* Layout, spacing, typography, colours and surfaces, interaction feedback and motion and transforms properties are defined for .manager-btn. */
 .manager-btn {
   display: inline-flex;
   align-items: center;
@@ -362,43 +410,51 @@
   border: 1px solid transparent;
 }
 
+/* Colours and surfaces properties are defined for .manager-btn-primary. */
 .manager-btn-primary {
   background: var(--color-primary, #c8102e);
   color: #ffffff;
 }
 
+/* Colours and surfaces properties are defined for .manager-btn-primary:hover. */
 .manager-btn-primary:hover {
   background: #9e141c;
   color: #ffffff;
 }
 
+/* Colours and surfaces properties are defined for .manager-btn-secondary. */
 .manager-btn-secondary {
   background: #f5f5f7;
   color: #1d1d1f;
   border-color: #d2d2d7;
 }
 
+/* Colours and surfaces properties are defined for .manager-btn-secondary:hover. */
 .manager-btn-secondary:hover {
   background: #e8e8ed;
 }
 
+/* Colours and surfaces properties are defined for .manager-btn-danger. */
 .manager-btn-danger {
   background: #fff2f2;
   color: #c8102e;
   border-color: #fecdd3;
 }
 
+/* Colours and surfaces properties are defined for .manager-btn-danger:hover. */
 .manager-btn-danger:hover {
   background: #fee2e2;
 }
 
-/* Modal / Confirmation Box */
+/* Confirmation content is styled within a bounded card. */
+/* Dimensions and spacing properties are defined for .manager-confirm-box. */
 .manager-confirm-box {
   max-width: 600px;
   margin: 0 auto;
   padding: 48px 20px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .manager-confirm-card. */
 .manager-confirm-card {
   background: #ffffff;
   border-radius: 20px;
@@ -408,11 +464,13 @@
   text-align: center;
 }
 
+/* Spacing and colours and surfaces properties are defined for .manager-confirm-icon. */
 .manager-confirm-icon {
   margin-bottom: 16px;
   color: #1d1d1f;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .manager-confirm-title. */
 .manager-confirm-title {
   font-size: 24px;
   font-weight: 800;
@@ -420,6 +478,7 @@
   margin: 0 0 10px 0;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .manager-confirm-desc. */
 .manager-confirm-desc {
   color: #6e6e73;
   font-size: 14.5px;
@@ -427,6 +486,7 @@
   margin: 0 0 28px 0;
 }
 
+/* Layout properties are defined for .manager-confirm-actions. */
 .manager-confirm-actions {
   display: flex;
   justify-content: center;
@@ -434,21 +494,26 @@
   flex-wrap: wrap;
 }
 
-/* Responsive */
+/* Manager layouts are adapted to narrower viewports. */
+/* The enclosed styles are applied for (max-width: 768px). */
 @media (max-width: 768px) {
+  /* Layout properties are defined for .manager-header-row. */
   .manager-header-row {
     flex-direction: column;
     align-items: flex-start;
   }
+  /* Spacing properties are defined for .manager-card. */
   .manager-card {
     padding: 20px;
   }
+  /* Layout and dimensions properties are defined for .manager-card-aside. */
   .manager-card-aside {
     width: 100%;
     justify-content: space-between;
   }
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .manager-alert-error. */
 .manager-alert-error {
   background: #fff2f2;
   border: 1px solid #fecdd3;
@@ -460,105 +525,185 @@
   text-align: left;
 }
 
-/* Session-editor rails keep native date/time controls inside narrow screens. */
+/* Native date and time fields are constrained within narrow session-editor layouts. */
+/* Dimensions and spacing properties are defined for .session-editor. */
 .session-editor { width: 100%; max-width: 800px; margin: 0 auto; padding: 24px var(--page-gutter, 24px) 64px; }
+/* Spacing and colours and surfaces properties are defined for .session-editor-form. */
 .session-editor-form { background: #fff; border-radius: 20px; border: 1px solid rgba(0,0,0,.06); box-shadow: 0 4px 20px rgba(0,0,0,.04); padding: 40px; }
+/* Layout and spacing properties are defined for .editor-fields. */
 .editor-fields { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; margin-bottom: 24px; }
+/* Layout properties are defined for .editor-fields-time. */
 .editor-fields-time { grid-template-columns: minmax(0,2fr) repeat(2,minmax(0,1fr)); }
+/* Dimensions properties are defined for .editor-fields > div, .session-editor :is(input,select,textarea). */
 .editor-fields > div, .session-editor :is(input,select,textarea) { min-width: 0; }
+/* Layout and spacing properties are defined for .editor-cover-header. */
 .editor-cover-header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; margin-bottom: 6px; }
+/* Layout properties are defined for .editor-actions. */
 .editor-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 16px; }
+/* Dimensions properties are defined for .editor-actions button. */
 .editor-actions button { min-height: 44px; }
+/* Typography properties are defined for .manager-cancellation-form. */
 .manager-cancellation-form { text-align: left; }
+/* Layout, spacing and typography properties are defined for .manager-cancellation-form label. */
 .manager-cancellation-form label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+/* Spacing properties are defined for .manager-cancellation-form .manager-confirm-actions. */
 .manager-cancellation-form .manager-confirm-actions { margin-top: 24px; }
 
+/* The enclosed styles are applied for (max-width: 600px). */
 @media (max-width: 600px) {
+  /* Spacing properties are defined for .session-editor-form. */
   .session-editor-form { padding: 24px; }
+  /* Layout properties are defined for .editor-fields, .editor-fields-time. */
   .editor-fields, .editor-fields-time { grid-template-columns: minmax(0,1fr); }
+  /* Layout properties are defined for .editor-actions. */
   .editor-actions { flex-direction: column; }
+  /* Dimensions properties are defined for .editor-actions button. */
   .editor-actions button { width: 100%; }
+  /* Dimensions properties are defined for .manager-cancellation-form .manager-confirm-actions > *. */
   .manager-cancellation-form .manager-confirm-actions > * { width: 100%; }
 }
 
-/* ---------- Club settings page ---------- */
+/* Club settings forms and cards are styled. */
+/* Typography and colours and surfaces properties are defined for .settings-back. */
 .settings-back { color: #6e6e73; text-decoration: none; font-size: 0.88rem; }
+/* Spacing, typography and colours and surfaces properties are defined for .settings-title. */
 .settings-title { font-size: 2rem; font-weight: 800; color: #1d1d1f; margin: 0.5rem 0 1.5rem; letter-spacing: -0.02em; }
+/* Spacing and colours and surfaces properties are defined for .settings-card. */
 .settings-card { background: #fff; border: 1px solid #e5e5ea; border-radius: 20px; padding: 1.75rem; margin-bottom: 1.5rem; }
+/* Spacing and typography properties are defined for .settings-card h2. */
 .settings-card h2 { font-size: 1.15rem; margin: 0 0 0.25rem; }
+/* Spacing, typography and colours and surfaces properties are defined for .settings-hint. */
 .settings-hint { color: #6e6e73; font-size: 0.88rem; margin: 0 0 1.25rem; }
+/* Spacing properties are defined for .settings-field. */
 .settings-field { margin-bottom: 1.1rem; }
+/* Layout, spacing, typography and colours and surfaces properties are defined for .settings-field label. */
 .settings-field label { display: block; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.4rem; color: #1d1d1f; }
+/* Dimensions, spacing, typography and colours and surfaces properties are defined for .settings-field input, .settings-field textarea, .settings-field select. */
 .settings-field input, .settings-field textarea, .settings-field select { width: 100%; padding: 0.8rem 1rem; border-radius: 12px; border: 1px solid #d2d2d7; font-size: 0.95rem; box-sizing: border-box; font-family: inherit; }
+/* Presentation properties are defined for .settings-field textarea. */
 .settings-field textarea { resize: none; }
+/* Colours and surfaces properties are defined for .settings-field input[readonly]. */
 .settings-field input[readonly] { background: #f5f5f7; color: #6e6e73; }
+/* Layout, spacing, typography and colours and surfaces properties are defined for .settings-field small. */
 .settings-field small { display: block; color: #6e6e73; font-size: 0.8rem; margin-top: 0.3rem; }
+/* Spacing and colours and surfaces properties are defined for .settings-alert-success. */
 .settings-alert-success { background: #ecf8ef; border: 1px solid #bbf7d0; color: #1f7a35; padding: 0.85rem 1rem; border-radius: 12px; margin-bottom: 1.5rem; }
 
-/* ---------- "Your clubs" cards on the Manager Workspace ---------- */
+/* Managed club cards are styled in the workspace. */
+/* Spacing, typography and colours and surfaces properties are defined for .manager-section-title. */
 .manager-section-title { font-size: 1.15rem; font-weight: 700; color: #1d1d1f; margin: 0 0 0.85rem; }
+/* Layout and spacing properties are defined for .manager-club-grid. */
 .manager-club-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+/* Layout, spacing, typography and colours and surfaces properties are defined for .manager-club-card. */
 .manager-club-card { background: #ffffff; border: 1px solid #e5e5ea; border-radius: 20px; padding: 1.25rem; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); }
+/* Layout, dimensions, spacing, colours and surfaces and overflow handling properties are defined for .manager-club-logo. */
 .manager-club-logo { width: 96px; height: 96px; border-radius: 26px; overflow: hidden; background: linear-gradient(135deg, #374151 0%, #111827 100%); display: flex; align-items: center; justify-content: center; margin-bottom: 0.85rem; }
+/* Dimensions and image fitting properties are defined for .manager-club-logo img. */
 .manager-club-logo img { width: 100%; height: 100%; object-fit: cover; }
+/* Typography and colours and surfaces properties are defined for .manager-club-logo span. */
 .manager-club-logo span { color: #ffffff; font-size: 1.9rem; font-weight: 800; letter-spacing: -0.02em; }
+/* Typography and colours and surfaces properties are defined for .manager-club-name. */
 .manager-club-name { font-weight: 700; color: #1d1d1f; line-height: 1.3; }
+/* Spacing, typography and colours and surfaces properties are defined for .manager-club-role. */
 .manager-club-role { font-size: 0.8rem; color: #6e6e73; margin: 0.25rem 0 1rem; }
+/* Layout, dimensions and spacing properties are defined for .manager-club-actions. */
 .manager-club-actions { display: flex; gap: 0.5rem; width: 100%; margin-top: auto; }
+/* Layout, spacing, typography, colours and surfaces and motion and transforms properties are defined for .manager-club-btn. */
 .manager-club-btn { flex: 1; padding: 0.5rem 0.6rem; border-radius: 10px; border: 1px solid #d2d2d7; background: #ffffff; color: #1d1d1f; font-size: 0.85rem; font-weight: 600; text-decoration: none; transition: background-color 0.15s, border-color 0.15s; }
+/* Colours and surfaces properties are defined for .manager-club-btn:hover. */
 .manager-club-btn:hover { background: #f5f5f7; border-color: #c7c7cc; }
 
-/* ---------- Club images on the settings page ---------- */
+/* Club image previews and upload controls are styled. */
+/* Layout and spacing properties are defined for .settings-images. */
 .settings-images { display: grid; grid-template-columns: 1fr 2fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+/* Layout properties are defined for .settings-image-field. */
 .settings-image-field { display: flex; flex-direction: column; gap: 0.5rem; }
+/* Typography and colours and surfaces properties are defined for .settings-image-label. */
 .settings-image-label { font-size: 0.88rem; font-weight: 600; color: #1d1d1f; }
+/* Typography and colours and surfaces properties are defined for .settings-image-field small. */
 .settings-image-field small { color: #6e6e73; font-size: 0.8rem; }
+/* Dimensions, colours and surfaces and image fitting properties are defined for .settings-logo-preview. */
 .settings-logo-preview { width: 96px; height: 96px; border-radius: 26px; object-fit: cover; }
+/* Layout, typography and colours and surfaces properties are defined for .club-logo-fallback. */
 .club-logo-fallback { background: linear-gradient(135deg, #374151 0%, #111827 100%); color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 1.9rem; font-weight: 800; }
+/* Dimensions, colours and surfaces and image fitting properties are defined for .settings-cover-preview. */
 .settings-cover-preview { width: 100%; aspect-ratio: 3 / 1; object-fit: cover; border-radius: 14px; }
-@media (max-width: 640px) { .settings-images { grid-template-columns: 1fr; } }
+/* The enclosed styles are applied for (max-width: 640px). */
+@media (max-width: 640px) { /* Layout properties are defined for .settings-images. */ .settings-images { grid-template-columns: 1fr; } }
 
-/* ---------- Committee page ---------- */
+/* Committee appointments and permission controls are styled. */
+/* Spacing and colours and surfaces properties are defined for .committee-row. */
 .committee-row { border-top: 1px solid #e5e5ea; padding: 1rem 0; }
+/* Spacing and colours and surfaces properties are defined for .committee-row:first-of-type. */
 .committee-row:first-of-type { border-top: none; padding-top: 0; }
+/* Spacing properties are defined for .committee-row > .settings-hint. */
 .committee-row > .settings-hint { margin-bottom: 0; }
+/* Layout and spacing properties are defined for .committee-row-person. */
 .committee-row-person { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.5rem 0.75rem; margin-bottom: 0.6rem; }
+/* Typography and colours and surfaces properties are defined for .committee-row-person span. */
 .committee-row-person span { color: #6e6e73; font-size: 0.88rem; }
+/* Spacing, typography and colours and surfaces properties are defined for .committee-row-role. */
 .committee-row-role { background: #f5f5f7; border-radius: 999px; padding: 0.15rem 0.6rem; font-size: 0.78rem !important; font-weight: 600; color: #424245 !important; }
+/* Layout, spacing, typography and interaction feedback properties are defined for .committee-check. */
 .committee-check { display: flex; align-items: center; gap: 0.5rem; font-size: 0.92rem; margin-bottom: 0.4rem; cursor: pointer; }
+/* Layout and spacing properties are defined for .committee-row-actions. */
 .committee-row-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+/* Spacing, typography and colours and surfaces properties are defined for .committee-perms. */
 .committee-perms { list-style: none; padding: 0; margin: 0; font-size: 0.92rem; color: #424245; }
 
-/* ---------- Membership settings ---------- */
+/* Membership configuration controls are styled. */
+/* Layout, spacing, typography, colours and surfaces and interaction feedback properties are defined for .settings-toggle. */
 .settings-toggle { display: flex; align-items: center; gap: 0.6rem; font-size: 0.92rem; font-weight: 600; color: #1d1d1f; margin-bottom: 1.1rem; cursor: pointer; }
+/* Dimensions and spacing properties are defined for .settings-toggle input. */
 .settings-toggle input { width: 18px; height: 18px; margin: 0; }
 
-/* ---------- Members page ---------- */
-/* Long member lists scroll inside their card instead of making the page very long */
+/* Club member directories are styled. */
+/* Long member lists are constrained and scrolled within the card. */
+/* Dimensions, spacing and overflow handling properties are defined for .member-list. */
 .member-list { list-style: none; padding: 0 0.5rem 0 0; margin: 0; max-height: 360px; overflow-y: auto; }
+/* Layout properties are defined for .member-list-row[hidden]. */
 .member-list-row[hidden] { display: none; }
+/* Layout, spacing and colours and surfaces properties are defined for .member-list-row. */
 .member-list-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 0; border-top: 1px solid #e5e5ea; }
+/* Spacing and colours and surfaces properties are defined for .member-list-row:first-child. */
 .member-list-row:first-child { border-top: none; padding-top: 0; }
+/* Layout and dimensions properties are defined for .member-list-person. */
 .member-list-person { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0.1rem; }
+/* Typography, colours and surfaces and overflow handling properties are defined for .member-list-person span. */
 .member-list-person span { color: #6e6e73; font-size: 0.85rem; overflow-wrap: anywhere; }
+/* Spacing, typography and colours and surfaces properties are defined for .member-tag. */
 .member-tag { font-size: 0.78rem; font-weight: 600; padding: 0.2rem 0.65rem; border-radius: 999px; background: #eaf6ee; color: #176633; white-space: nowrap; }
+/* Colours and surfaces properties are defined for .member-tag--committee. */
 .member-tag--committee { background: #eaf3ff; color: #064f92; }
+/* Colours and surfaces properties are defined for .member-tag--expired. */
 .member-tag--expired { background: #eeeef2; color: #555560; }
+/* Typography and colours and surfaces properties are defined for .member-list-link. */
 .member-list-link { font-size: 0.85rem; font-weight: 600; color: #c8102e; text-decoration: none; }
+/* Presentation properties are defined for .member-list-link:hover. */
 .member-list-link:hover { text-decoration: underline; }
 
-/* ---------- Session cover picker: small badge, and the "upload your own" tile ---------- */
+/* Session cover badges and custom-upload choices are styled. */
+/* Layout, spacing, typography and colours and surfaces properties are defined for .image-picker-badge. */
 .image-picker-badge { display: block; margin-bottom: 2px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; color: #c8102e; }
+/* Layout, dimensions, spacing, typography and colours and surfaces properties are defined for .image-picker-upload-box. */
 .image-picker-upload-box { display: flex; flex-direction: column; justify-content: center; gap: 4px; height: 120px; box-sizing: border-box; padding: 0 14px 0 40px; border-bottom: 1px dashed #d2d2d7; background: #fff; color: #1d1d1f; font-size: 0.92rem; }
+/* Typography and colours and surfaces properties are defined for .image-picker-upload-box small. */
 .image-picker-upload-box small { color: #6e6e73; font-size: 0.78rem; font-weight: 400; }
+/* Dimensions, spacing and typography properties are defined for .image-picker-upload input[type="file"]. */
 .image-picker-upload input[type="file"] { margin: 10px 12px 12px; max-width: calc(100% - 24px); font-size: 0.8rem; }
 
-/* ---------- Club settings: DuitNow QR ---------- */
+/* Club payment QR previews are styled. */
+/* Layout and spacing properties are defined for .settings-qr. */
 .settings-qr { display: flex; gap: 1.25rem; align-items: flex-start; margin-bottom: 1.1rem; }
+/* Layout and spacing properties are defined for .settings-qr .settings-field. */
 .settings-qr .settings-field { flex: 1; margin-bottom: 0; }
+/* Layout, dimensions, colours and surfaces and image fitting properties are defined for .settings-qr-preview. */
 .settings-qr-preview { width: 120px; height: 160px; object-fit: contain; border: 1px solid #e5e5ea; border-radius: 12px; background: #fff; flex-shrink: 0; }
+/* Layout, typography and colours and surfaces properties are defined for .settings-qr-missing. */
 .settings-qr-missing { display: flex; align-items: center; justify-content: center; text-align: center; color: #b20820; font-size: 0.85rem; font-weight: 600; background: #fff0f2; border-color: #f3bec7; }
-@media (max-width: 640px) { .settings-qr { flex-direction: column; } }
+/* The enclosed styles are applied for (max-width: 640px). */
+@media (max-width: 640px) { /* Layout properties are defined for .settings-qr. */ .settings-qr { flex-direction: column; } }
 
-/* Workbench club card: payment details still missing */
+/* Missing payment setup is highlighted on the workspace club card. */
+/* Spacing, typography and colours and surfaces properties are defined for .manager-club-warning. */
 .manager-club-warning { font-size: 0.78rem; font-weight: 600; line-height: 1.35; color: #b20820; background: #fff0f2; border-radius: 980px; padding: 0.25rem 0.75rem; margin: -0.5rem 0 0.85rem; white-space: nowrap; }

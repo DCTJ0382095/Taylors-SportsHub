@@ -1,4 +1,4 @@
-# Uploads and temporary files
+# Uploaded files and local temporary artifacts are excluded from Git, with directory guards and placeholders retained.
 assets/uploads/*
 !assets/uploads/.gitkeep
 *.log
@@ -6,12 +6,12 @@ Thumbs.db
 .DS_Store
 !assets/uploads/.htaccess
 
-# Logos and cover images uploaded by clubs
+# Uploaded club images are excluded, with the placeholder and directory guard retained.
 assets/images/clubs/*
 !assets/images/clubs/.gitkeep
 !assets/images/clubs/.htaccess
 
-# Demo receipt pictures used by database/seed.sql (made-up, not real payments)
+# Synthetic demonstration receipt images are retained in Git.
 !assets/uploads/receipts/
 assets/uploads/receipts/*
 !assets/uploads/receipts/demo-receipt.png

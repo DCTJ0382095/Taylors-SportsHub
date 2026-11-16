@@ -1,15 +1,14 @@
-/* ==========================================================================
-   Participants Page Styles (participants.css)
-   Taylor's SportsHub - Clean Apple-Calibrated Layout
-   ========================================================================== */
+/* Session participant metrics, tables and actions are styled. */
 
+/* Dimensions and spacing properties are defined for .participants-container. */
 .participants-container {
   max-width: 1160px;
   margin: 0 auto;
   padding: 36px 24px 64px 24px;
 }
 
-/* Breadcrumb & Header */
+/* Participant-page breadcrumbs and headings are styled. */
+/* Layout, spacing, typography, colours and surfaces and motion and transforms properties are defined for .participants-back-link. */
 .participants-back-link {
   display: inline-flex;
   align-items: center;
@@ -22,10 +21,12 @@
   transition: color 0.15s ease;
 }
 
+/* Colours and surfaces properties are defined for .participants-back-link:hover. */
 .participants-back-link:hover {
   color: #1d1d1f;
 }
 
+/* Layout and spacing properties are defined for .participants-header-row. */
 .participants-header-row {
   display: flex;
   justify-content: space-between;
@@ -35,6 +36,7 @@
   gap: 16px;
 }
 
+/* Layout, spacing, typography and colours and surfaces properties are defined for .participants-badge. */
 .participants-badge {
   font-size: 11.5px;
   font-weight: 700;
@@ -48,6 +50,7 @@
   letter-spacing: 0.05em;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .participants-title. */
 .participants-title {
   font-size: 30px;
   font-weight: 800;
@@ -57,11 +60,13 @@
   line-height: 1.2;
 }
 
+/* Typography and colours and surfaces properties are defined for .participants-meta. */
 .participants-meta {
   color: #6e6e73;
   font-size: 14.5px;
 }
 
+/* Layout properties are defined for .participants-actions. */
 .participants-actions {
   display: flex;
   gap: 10px;
@@ -69,6 +74,7 @@
   align-items: center;
 }
 
+/* Layout, spacing, typography, colours and surfaces and motion and transforms properties are defined for .btn-participants-control. */
 .btn-participants-control {
   padding: 8px 16px;
   border-radius: var(--radius-full, 980px);
@@ -81,31 +87,37 @@
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease, transform var(--transition-press, 120ms ease);
 }
 
+/* Motion and transforms properties are defined for .btn-participants-control:active. */
 .btn-participants-control:active {
   transform: scale(0.97);
 }
 
+/* Colours and surfaces properties are defined for .btn-participants-control.secondary. */
 .btn-participants-control.secondary {
   background: #f5f5f7;
   color: #1d1d1f;
   border: 1px solid #d2d2d7;
 }
 
+/* Colours and surfaces properties are defined for .btn-participants-control.secondary:hover. */
 .btn-participants-control.secondary:hover {
   background: #e8e8ed;
 }
 
+/* Colours and surfaces properties are defined for .btn-participants-control.danger. */
 .btn-participants-control.danger {
   background: #fff2f2;
   color: #c81e27;
   border: 1px solid #fecdd3;
 }
 
+/* Colours and surfaces properties are defined for .btn-participants-control.danger:hover. */
 .btn-participants-control.danger:hover {
   background: #fee2e2;
 }
 
-/* Metrics Grid */
+/* Participant metrics are arranged in a grid. */
+/* Layout and spacing properties are defined for .participants-metrics-grid. */
 .participants-metrics-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -113,6 +125,7 @@
   margin-bottom: 32px;
 }
 
+/* Spacing and colours and surfaces properties are defined for .participants-metric-card. */
 .participants-metric-card {
   background: #ffffff;
   padding: 18px 22px;
@@ -121,6 +134,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
+/* Layout, spacing, typography and colours and surfaces properties are defined for .metric-card-label. */
 .metric-card-label {
   font-size: 11.5px;
   text-transform: uppercase;
@@ -131,6 +145,7 @@
   letter-spacing: 0.04em;
 }
 
+/* Typography and colours and surfaces properties are defined for .metric-card-val. */
 .metric-card-val {
   font-size: 26px;
   font-weight: 800;
@@ -138,19 +153,23 @@
   line-height: 1.1;
 }
 
+/* Colours and surfaces properties are defined for .metric-card-val.color-green. */
 .metric-card-val.color-green {
   color: #248a3d;
 }
 
+/* Colours and surfaces properties are defined for .metric-card-val.color-red. */
 .metric-card-val.color-red {
   color: #d70015;
 }
 
+/* Colours and surfaces properties are defined for .metric-card-val.color-primary. */
 .metric-card-val.color-primary {
   color: #c8102e;
 }
 
-/* Table Card */
+/* The participant table is contained within a card. */
+/* Colours and surfaces and overflow handling properties are defined for .participants-card. */
 .participants-card {
   background: #ffffff;
   border-radius: var(--radius-xl, 20px);
@@ -159,6 +178,7 @@
   overflow: hidden;
 }
 
+/* Layout, spacing and colours and surfaces properties are defined for .participants-card-header. */
 .participants-card-header {
   padding: 18px 24px;
   border-bottom: 1px solid #f0f0f2;
@@ -167,6 +187,7 @@
   align-items: center;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .participants-card-title. */
 .participants-card-title {
   font-size: 17px;
   font-weight: 700;
@@ -174,11 +195,13 @@
   margin: 0;
 }
 
+/* Dimensions and overflow handling properties are defined for .participants-table-wrap. */
 .participants-table-wrap {
   width: 100%;
   overflow-x: auto;
 }
 
+/* Dimensions, typography and colours and surfaces properties are defined for .participants-table. */
 .participants-table {
   width: 100%;
   border-collapse: collapse;
@@ -186,6 +209,7 @@
   font-size: 14px;
 }
 
+/* Typography and colours and surfaces properties are defined for .participants-table thead tr. */
 .participants-table thead tr {
   background: #fafafa;
   border-bottom: 1px solid #e5e5ea;
@@ -195,21 +219,25 @@
   letter-spacing: 0.04em;
 }
 
+/* Spacing and typography properties are defined for .participants-table th. */
 .participants-table th {
   padding: 12px 20px;
   font-weight: 600;
 }
 
+/* Typography properties are defined for .participants-table th.col-action. */
 .participants-table th.col-action {
   text-align: right;
 }
 
+/* Spacing and colours and surfaces properties are defined for .participants-table td. */
 .participants-table td {
   padding: 16px 20px;
   border-bottom: 1px solid #f0f0f2;
   vertical-align: middle;
 }
 
+/* Layout, spacing, typography and colours and surfaces properties are defined for .student-name. */
 .student-name {
   display: block;
   font-weight: 600;
@@ -217,22 +245,26 @@
   margin-bottom: 2px;
 }
 
+/* Typography and colours and surfaces properties are defined for .student-email. */
 .student-email {
   font-size: 13px;
   color: #6e6e73;
 }
 
+/* Typography and colours and surfaces properties are defined for .student-phone. */
 .student-phone {
   font-size: 13px;
   color: #86868b;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .deadline-note. */
 .deadline-note {
   font-size: 12px;
   color: #86868b;
   margin-top: 4px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .cancellation-note. */
 .cancellation-note {
   font-size: 12px;
   color: #d70015;
@@ -240,21 +272,25 @@
   font-weight: 500;
 }
 
+/* Typography and colours and surfaces properties are defined for .price-text. */
 .price-text {
   font-weight: 600;
   color: #1d1d1f;
 }
 
+/* Typography and colours and surfaces properties are defined for .date-text. */
 .date-text {
   color: #6e6e73;
   font-size: 13px;
 }
 
+/* Typography properties are defined for .col-action-cell. */
 .col-action-cell {
   text-align: right;
 }
 
-/* Action Buttons */
+/* Participant review and refund actions are styled. */
+/* Layout, spacing, typography, colours and surfaces, interaction feedback and motion and transforms properties are defined for .btn-table-action. */
 .btn-table-action {
   display: inline-flex;
   align-items: center;
@@ -269,28 +305,34 @@
   transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease, transform var(--transition-press, 120ms ease);
 }
 
+/* Motion and transforms properties are defined for .btn-table-action:active. */
 .btn-table-action:active {
   transform: scale(0.97);
 }
 
+/* Colours and surfaces properties are defined for .btn-table-action.primary. */
 .btn-table-action.primary {
   background: var(--color-primary, #c8102e);
   color: #ffffff;
 }
 
+/* Colours and surfaces properties are defined for .btn-table-action.primary:hover. */
 .btn-table-action.primary:hover {
   background: #a60d26;
 }
 
+/* Colours and surfaces properties are defined for .btn-table-action.dark. */
 .btn-table-action.dark {
   background: #1d1d1f;
   color: #ffffff;
 }
 
+/* Colours and surfaces properties are defined for .btn-table-action.dark:hover. */
 .btn-table-action.dark:hover {
   background: #333336;
 }
 
+/* Typography and colours and surfaces properties are defined for .btn-table-action.secondary. */
 .btn-table-action.secondary {
   background: #f5f5f7;
   color: #1d1d1f;
@@ -298,10 +340,12 @@
   font-weight: 500;
 }
 
+/* Colours and surfaces properties are defined for .btn-table-action.secondary:hover. */
 .btn-table-action.secondary:hover {
   background: #e8e8ed;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .btn-table-action.link. */
 .btn-table-action.link {
   background: none;
   color: #0071e3;
@@ -309,17 +353,20 @@
   font-weight: 500;
 }
 
+/* Presentation properties are defined for .btn-table-action.link:hover. */
 .btn-table-action.link:hover {
   text-decoration: underline;
 }
 
-/* Empty State */
+/* Empty participant results are styled. */
+/* Spacing, typography and colours and surfaces properties are defined for .participants-empty. */
 .participants-empty {
   padding: 64px 24px;
   text-align: center;
   color: #6e6e73;
 }
 
+/* Dimensions, spacing and colours and surfaces properties are defined for .participants-empty-icon. */
 .participants-empty-icon {
   width: 48px;
   height: 48px;
@@ -327,6 +374,7 @@
   margin-bottom: 12px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .participants-empty-title. */
 .participants-empty-title {
   font-size: 20px;
   font-weight: 700;
@@ -335,6 +383,7 @@
   letter-spacing: -0.015em;
 }
 
+/* Dimensions, spacing, typography and colours and surfaces properties are defined for .participants-empty-desc. */
 .participants-empty-desc {
   font-size: 14.5px;
   color: #6e6e73;
@@ -343,6 +392,7 @@
   line-height: 1.5;
 }
 
+/* Layout properties are defined for .participants-empty-actions. */
 .participants-empty-actions {
   display: flex;
   gap: 10px;
@@ -351,10 +401,13 @@
   flex-wrap: wrap;
 }
 
+/* The enclosed styles are applied for (max-width: 768px). */
 @media (max-width: 768px) {
+  /* Spacing properties are defined for .participants-container. */
   .participants-container {
     padding: 24px 16px 48px 16px;
   }
+  /* Typography properties are defined for .participants-title. */
   .participants-title {
     font-size: 24px;
   }

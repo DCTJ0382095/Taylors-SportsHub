@@ -1,4 +1,7 @@
--- Additive upgrade; safe to rerun after interrupted setup. Legacy reviewers remain unknown.
+-- Session receipt history is added through an idempotent migration.
+-- Legacy reviewer identities are left unassigned when no review record exists.
+
+-- Every submitted session receipt is retained in history.
 CREATE TABLE IF NOT EXISTS payment_receipts (
   id INT AUTO_INCREMENT PRIMARY KEY,
   registration_id INT NOT NULL,
@@ -13,6 +16,8 @@ CREATE TABLE IF NOT EXISTS payment_receipts (
   CONSTRAINT fk_receipt_reviewer FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Previously uncopied registration receipts are added to history.
+-- Decisions are inferred from registration state and uncertain evidence is labelled legacy.
 INSERT IGNORE INTO payment_receipts (registration_id, receipt_path, submitted_at, decision, rejection_reason)
 SELECT r.id, r.receipt_path, r.receipt_uploaded_at,
   CASE WHEN r.status = 'awaiting_approval' THEN 'awaiting_review'

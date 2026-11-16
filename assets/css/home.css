@@ -1,12 +1,12 @@
-/* ==========================================================================
-   Home Page Styles (home.css)
-   ========================================================================== */
+/* Home-page discovery, session and club sections are styled. */
 
-/* Hero Section */
+/* Home-page hero content is styled. */
+/* Spacing properties are defined for .hero-section. */
 .hero-section {
   padding: 56px 0 36px 0;
 }
 
+/* Layout properties are defined for .hero-grid. */
 .hero-grid {
   display: grid;
   grid-template-columns: 1.15fr 0.85fr;
@@ -14,6 +14,7 @@
   align-items: center;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .section-label. */
 .section-label {
   font-size: 11.5px;
   font-weight: 700;
@@ -23,6 +24,7 @@
   margin-bottom: 16px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .hero-heading. */
 .hero-heading {
   font-size: 54px;
   font-weight: 800;
@@ -33,6 +35,7 @@
   font-optical-sizing: auto;
 }
 
+/* Dimensions, spacing, typography and colours and surfaces properties are defined for .hero-lead. */
 .hero-lead {
   font-size: 18px;
   color: var(--text-secondary);
@@ -42,6 +45,7 @@
   max-width: 520px;
 }
 
+/* Layout, dimensions, spacing, colours and surfaces and motion and transforms properties are defined for .hero-search-bar. */
 .hero-search-bar {
   display: flex;
   align-items: center;
@@ -57,18 +61,21 @@
   transition: background-color var(--transition-fast), color var(--transition-fast), opacity var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
+/* Colours and surfaces properties are defined for .hero-search-bar:focus-within. */
 .hero-search-bar:focus-within {
   background: #ffffff;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 4px var(--color-primary-glow), 0 8px 24px -4px rgba(200, 30, 39, 0.12);
 }
 
+/* Layout, spacing and colours and surfaces properties are defined for .hero-search-icon. */
 .hero-search-icon {
   color: var(--text-muted);
   margin-right: 8px;
   flex-shrink: 0;
 }
 
+/* Dimensions, typography and colours and surfaces properties are defined for .hero-search-input. */
 .hero-search-input {
   border: none;
   outline: none;
@@ -79,19 +86,23 @@
   background: transparent;
 }
 
+/* Colours and surfaces properties are defined for .hero-search-input:focus-visible. */
 .hero-search-input:focus-visible {
   outline: none !important;
 }
 
+/* Colours and surfaces properties are defined for .hero-search-input::placeholder. */
 .hero-search-input::placeholder {
   color: var(--text-light);
 }
 
+/* Dimensions properties are defined for .hero-search-btn. */
 .hero-search-btn {
   min-height: 40px;
 }
 
-/* Quick tag filters under search */
+/* Quick search filters are styled below the search field. */
+/* Layout and spacing properties are defined for .hero-quick-tags. */
 .hero-quick-tags {
   display: flex;
   align-items: center;
@@ -101,6 +112,7 @@
   padding-left: 4px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .quick-tags-label. */
 .quick-tags-label {
   font-size: 11.5px;
   font-weight: 700;
@@ -110,6 +122,7 @@
   margin-right: 2px;
 }
 
+/* Layout, dimensions, spacing, typography, colours and surfaces and motion and transforms properties are defined for .quick-tag-chip. */
 .quick-tag-chip {
   display: inline-flex;
   align-items: center;
@@ -130,6 +143,7 @@
   min-height: 32px;
 }
 
+/* Colours and surfaces properties are defined for .quick-tag-chip:hover. */
 .quick-tag-chip:hover {
   color: var(--color-primary);
   border-color: rgba(200, 30, 39, 0.3);
@@ -137,10 +151,12 @@
   box-shadow: var(--shadow-sm);
 }
 
+/* Motion and transforms properties are defined for .quick-tag-chip:active. */
 .quick-tag-chip:active {
   transform: scale(0.96);
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .hero-search-sub. */
 .hero-search-sub {
   font-size: 12.5px;
   color: var(--text-muted);
@@ -148,7 +164,8 @@
   padding-left: 6px;
 }
 
-/* Spotlight Card in Hero */
+/* The featured session card is styled within the hero. */
+/* Colours and surfaces, overflow handling and motion and transforms properties are defined for .spotlight-card. */
 .spotlight-card {
   background: #ffffff;
   border-radius: var(--radius-xl);
@@ -158,12 +175,14 @@
   transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
 }
 
+/* Colours and surfaces and motion and transforms properties are defined for .spotlight-card:hover. */
 .spotlight-card:hover {
   transform: translateY(-4px) scale(1.005);
   box-shadow: var(--shadow-card-hover);
   border-color: rgba(200, 30, 39, 0.25);
 }
 
+/* Layout, spacing and colours and surfaces properties are defined for .spotlight-info-bar. */
 .spotlight-info-bar {
   background: #ffffff;
   color: var(--text-main);
@@ -174,6 +193,7 @@
   gap: 16px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .spotlight-label. */
 .spotlight-label {
   font-size: 11px;
   font-weight: 700;
@@ -183,6 +203,7 @@
   margin-bottom: 2px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .spotlight-title. */
 .spotlight-title {
   font-size: 17px;
   font-weight: 700;
@@ -190,12 +211,14 @@
   margin-bottom: 3px;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .spotlight-meta. */
 .spotlight-meta {
   font-size: 12.5px;
   color: var(--text-secondary);
   margin-top: 3px;
 }
 
+/* Layout, dimensions, spacing, typography, colours and surfaces and motion and transforms properties are defined for .spotlight-cta-btn. */
 .spotlight-cta-btn {
   display: inline-flex;
   align-items: center;
@@ -215,25 +238,31 @@
   transition: background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast), transform var(--transition-press);
 }
 
+/* Colours and surfaces properties are defined for .spotlight-cta-btn:hover. */
 .spotlight-cta-btn:hover {
   background: #d3232d;
   box-shadow: 0 4px 14px rgba(200, 30, 39, 0.5);
 }
 
+/* Motion and transforms properties are defined for .spotlight-cta-btn:active. */
 .spotlight-cta-btn:active {
   transform: scale(0.96);
 }
 
+/* Motion and transforms properties are defined for .spotlight-cta-btn svg. */
 .spotlight-cta-btn svg {
   transition: transform var(--transition-fast);
 }
 
+/* Motion and transforms properties are defined for .spotlight-cta-btn:hover svg. */
 .spotlight-cta-btn:hover svg {
   transform: translate(2px, -2px);
 }
 
-/* Responsive */
+/* Home-page layouts are adapted to narrower viewports. */
+/* The enclosed styles are applied for (max-width: 992px). */
 @media (max-width: 992px) {
+  /* Layout properties are defined for .hero-grid. */
   .hero-grid {
     grid-template-columns: 1fr;
     gap: 40px;
@@ -242,16 +271,21 @@
 
 
 
+/* The enclosed styles are applied for (max-width: 640px). */
 @media (max-width: 640px) {
+  /* Typography properties are defined for .hero-heading. */
   .hero-heading {
     font-size: 38px;
   }
+  /* Typography properties are defined for .hero-lead. */
   .hero-lead {
     font-size: 15.5px;
   }
 }
 
+/* The enclosed styles are applied for (max-width: 480px). */
 @media (max-width: 480px) {
+  /* Layout, spacing and colours and surfaces properties are defined for .hero-search-bar. */
   .hero-search-bar {
     flex-direction: column;
     align-items: stretch;
@@ -259,33 +293,37 @@
     padding: 8px;
     gap: 8px;
   }
+  /* Layout properties are defined for .hero-search-icon. */
   .hero-search-icon {
     display: none;
   }
+  /* Spacing properties are defined for .hero-search-input. */
   .hero-search-input {
     padding: 8px 12px;
   }
+  /* Layout, dimensions and spacing properties are defined for .hero-search-btn. */
   .hero-search-btn {
     width: 100%;
     justify-content: center;
     padding: 12px 18px;
   }
+  /* Layout properties are defined for .spotlight-info-bar. */
   .spotlight-info-bar {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
+  /* Layout and dimensions properties are defined for .spotlight-cta-btn. */
   .spotlight-cta-btn {
     width: 100%;
     justify-content: center;
   }
 }
 
-/* ==========================================================================
-   SportsHub Refinements & UIUX Designs Additions
-   ========================================================================== */
+/* Additional discovery sections and cards are styled. */
 
-/* Wayfinding Tiles */
+/* Navigation tiles are styled for common discovery actions. */
+/* Layout and spacing properties are defined for .wayfinding-grid. */
 .wayfinding-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -293,6 +331,7 @@
   margin: 36px 0 56px 0;
 }
 
+/* Layout, spacing, colours and surfaces and motion and transforms properties are defined for .wayfinding-tile. */
 .wayfinding-tile {
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.08);
@@ -303,12 +342,14 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
+/* Colours and surfaces and motion and transforms properties are defined for .wayfinding-tile:hover. */
 .wayfinding-tile:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.08);
   border-color: rgba(200, 30, 39, 0.3);
 }
 
+/* Layout, spacing, typography and colours and surfaces properties are defined for .wayfinding-tile-title. */
 .wayfinding-tile-title {
   font-size: 16.5px;
   font-weight: 700;
@@ -319,13 +360,15 @@
   justify-content: space-between;
 }
 
+/* Typography and colours and surfaces properties are defined for .wayfinding-tile-desc. */
 .wayfinding-tile-desc {
   font-size: 13.5px;
   color: var(--text-muted, #6e6e73);
   line-height: 1.45;
 }
 
-/* Sports Sessions Grid Cards */
+/* Upcoming session grid cards are styled. */
+/* Layout and spacing properties are defined for .session-cards-grid. */
 .session-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -333,6 +376,7 @@
   margin-bottom: 56px;
 }
 
+/* Layout, colours and surfaces, overflow handling, interaction feedback and motion and transforms properties are defined for .session-card. */
 .session-card {
   background: #ffffff;
   border-radius: var(--radius-lg, 20px);
@@ -347,12 +391,14 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
+/* Colours and surfaces and motion and transforms properties are defined for .session-card:hover. */
 .session-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 30px -4px rgba(0, 0, 0, 0.08);
   border-color: rgba(200, 30, 39, 0.3);
 }
 
+/* Positioning, dimensions, colours and surfaces and overflow handling properties are defined for .session-card-media. */
 .session-card-media {
   position: relative;
   width: 100%;
@@ -361,6 +407,7 @@
   background: #141824;
 }
 
+/* Layout, dimensions, image fitting and motion and transforms properties are defined for .session-card-media img. */
 .session-card-media img {
   width: 100%;
   height: 100%;
@@ -369,10 +416,12 @@
   transition: transform 0.3s ease;
 }
 
+/* Motion and transforms properties are defined for .session-card:hover .session-card-media img. */
 .session-card:hover .session-card-media img {
   transform: scale(1.03);
 }
 
+/* Layout and positioning properties are defined for .session-card-badge-row. */
 .session-card-badge-row {
   position: absolute;
   top: 14px;
@@ -384,6 +433,7 @@
   z-index: 2;
 }
 
+/* Layout and spacing properties are defined for .session-card-content. */
 .session-card-content {
   padding: 20px;
   display: flex;
@@ -391,6 +441,7 @@
   flex: 1;
 }
 
+/* Spacing, typography and colours and surfaces properties are defined for .session-card-title. */
 .session-card-title {
   font-size: 18px;
   font-weight: 700;
@@ -399,6 +450,7 @@
   line-height: 1.3;
 }
 
+/* Layout, spacing, typography and colours and surfaces properties are defined for .session-card-meta. */
 .session-card-meta {
   font-size: 13.5px;
   color: var(--text-secondary, #424245);
@@ -408,6 +460,7 @@
   gap: 6px;
 }
 
+/* Spacing, typography, colours and surfaces and overflow handling properties are defined for .session-card-venue. */
 .session-card-venue {
   font-size: 13px;
   color: var(--text-muted, #6e6e73);
@@ -417,6 +470,7 @@
   text-overflow: ellipsis;
 }
 
+/* Layout, spacing and colours and surfaces properties are defined for .session-card-footer. */
 .session-card-footer {
   margin-top: auto;
   padding-top: 14px;
@@ -426,7 +480,8 @@
   justify-content: space-between;
 }
 
-/* Sports Clubs Cards */
+/* Club discovery cards are styled. */
+/* Layout and spacing properties are defined for .club-cards-grid. */
 .club-cards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
@@ -434,6 +489,7 @@
   margin-bottom: 64px;
 }
 
+/* Layout, colours and surfaces, overflow handling, interaction feedback and motion and transforms properties are defined for .club-card. */
 .club-card {
   background: #ffffff;
   border-radius: var(--radius-lg, 20px);
@@ -448,11 +504,13 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* Colours and surfaces and motion and transforms properties are defined for .club-card:hover. */
 .club-card:hover {
   transform: translateY(-3px);
   box-shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.08);
 }
 
+/* Positioning, dimensions, colours and surfaces and overflow handling properties are defined for .club-card-banner. */
 .club-card-banner {
   width: 100%;
   height: 140px;
@@ -461,12 +519,14 @@
   overflow: hidden;
 }
 
+/* Dimensions and image fitting properties are defined for .club-card-banner img. */
 .club-card-banner img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
+/* Layout and spacing properties are defined for .club-card-body. */
 .club-card-body {
   padding: 22px;
   flex: 1;
@@ -474,7 +534,8 @@
   flex-direction: column;
 }
 
-/* More Than A Session Banner */
+/* The community banner is styled. */
+/* Layout, spacing and colours and surfaces properties are defined for .community-invite-banner. */
 .community-invite-banner {
   background: #fdf2f4;
   border: 1px solid #f2d1d5;
@@ -487,12 +548,14 @@
   align-items: center;
 }
 
+/* Layout properties are defined for .community-invite-left. */
 .community-invite-left {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
+/* Typography and colours and surfaces properties are defined for .community-invite-eyebrow. */
 .community-invite-eyebrow {
   font-size: 11px;
   font-weight: 700;
@@ -501,6 +564,7 @@
   text-transform: uppercase;
 }
 
+/* Typography and colours and surfaces properties are defined for .community-invite-title. */
 .community-invite-title {
   font-size: 34px;
   font-weight: 800;
@@ -509,6 +573,7 @@
   letter-spacing: -0.025em;
 }
 
+/* Dimensions, spacing, typography and colours and surfaces properties are defined for .community-invite-lead. */
 .community-invite-lead {
   font-size: 15.5px;
   color: #424245;
@@ -517,6 +582,7 @@
   margin-bottom: 8px;
 }
 
+/* Layout, spacing and colours and surfaces properties are defined for .community-invite-right. */
 .community-invite-right {
   display: flex;
   flex-direction: column;
@@ -525,6 +591,7 @@
   padding-left: 36px;
 }
 
+/* Typography and colours and surfaces properties are defined for .community-invite-stat-title. */
 .community-invite-stat-title {
   font-size: 30px;
   font-weight: 800;
@@ -533,13 +600,15 @@
   letter-spacing: -0.02em;
 }
 
+/* Typography and colours and surfaces properties are defined for .community-invite-stat-desc. */
 .community-invite-stat-desc {
   font-size: 14.5px;
   color: #6e6e73;
   line-height: 1.45;
 }
 
-/* 3-Step Journey */
+/* The three-step participation guide is styled. */
+/* Layout and spacing properties are defined for .journey-steps-grid. */
 .journey-steps-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -547,6 +616,7 @@
   margin-bottom: 64px;
 }
 
+/* Layout and spacing properties are defined for .journey-step-item. */
 .journey-step-item {
   padding: 8px 4px;
   display: flex;
@@ -554,6 +624,7 @@
   gap: 8px;
 }
 
+/* Typography and colours and surfaces properties are defined for .journey-step-num. */
 .journey-step-num {
   font-size: 11.5px;
   font-weight: 700;
@@ -561,33 +632,40 @@
   letter-spacing: 0.1em;
 }
 
+/* Typography and colours and surfaces properties are defined for .journey-step-title. */
 .journey-step-title {
   font-size: 18px;
   font-weight: 700;
   color: #1d1d1f;
 }
 
+/* Typography and colours and surfaces properties are defined for .journey-step-desc. */
 .journey-step-desc {
   font-size: 14px;
   color: #6e6e73;
   line-height: 1.5;
 }
 
+/* The enclosed styles are applied for (max-width: 900px). */
 @media (max-width: 900px) {
+  /* Layout properties are defined for .wayfinding-grid. */
   .wayfinding-grid {
     grid-template-columns: 1fr;
   }
+  /* Layout and spacing properties are defined for .community-invite-banner. */
   .community-invite-banner {
     grid-template-columns: 1fr;
     padding: 28px;
     gap: 24px;
   }
+  /* Spacing and colours and surfaces properties are defined for .community-invite-right. */
   .community-invite-right {
     border-left: none;
     border-top: 1px solid #f2d1d5;
     padding-left: 0;
     padding-top: 20px;
   }
+  /* Layout properties are defined for .journey-steps-grid. */
   .journey-steps-grid {
     grid-template-columns: 1fr;
   }

@@ -1,6 +1,5 @@
-/* Shared editable-field feedback, matching the sessions filter controls.
-   Color overrides also cover legacy forms with inline border/background styles.
-   Native option menus, file pickers, toggles and validation states are preserved. */
+/* Editable-field feedback is aligned with session filters, and legacy inline colours are overridden. Native picker and validation behavior is retained. */
+/* Colours and surfaces properties are defined for .site-form-controls :is(input, select, textarea):not( [type="hidden"], [type="checkbox"], [type="radio"], [type="file"], [type="submit"], [type="button"], [type="reset"], [type="range"], [type="color"] ):not(:disabled, [readonly], .input-error, .hero-search-input, [aria-invalid="true"]):hover:not(:focus). */
 .site-form-controls :is(input, select, textarea):not(
   [type="hidden"], [type="checkbox"], [type="radio"], [type="file"],
   [type="submit"], [type="button"], [type="reset"], [type="range"], [type="color"]
@@ -10,6 +9,7 @@
   box-shadow: none;
 }
 
+/* Colours and surfaces properties are defined for .site-form-controls :is(input, select, textarea):not( [type="hidden"], [type="checkbox"], [type="radio"], [type="file"], [type="submit"], [type="button"], [type="reset"], [type="range"], [type="color"] ):not(:disabled, [readonly], .input-error, .hero-search-input, [aria-invalid="true"]):focus. */
 .site-form-controls :is(input, select, textarea):not(
   [type="hidden"], [type="checkbox"], [type="radio"], [type="file"],
   [type="submit"], [type="button"], [type="reset"], [type="range"], [type="color"]
