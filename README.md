@@ -28,7 +28,7 @@ The application is configured for Taylor's University student email addresses. I
 - Record partial or full refunds made outside the application.
 - Access protected evidence and retained receipt history.
 
-Manager permissions come from club appointments, not from an email address or club membership. Seeded administrators have cross-club authority. Users cannot assign themselves these roles through signup.
+Manager permissions come from club appointments, not from an email address or club membership. The seeded administrator has cross-club authority. Users cannot assign themselves these roles through signup.
 
 ## Registration and payments
 
@@ -69,20 +69,20 @@ No separate PHP/database installation, Composer, npm, or frontend build step is 
 
 ### 2. Place the project in the document root
 
-Clone or download this repository into a folder named `sportshub` inside your package's document root (`htdocs`). Common examples are:
+Clone or download this repository into your package's document root (`htdocs`). Common examples are:
 
 | Installation | Example project folder |
 | --- | --- |
-| XAMPP on Windows | `C:/xampp/htdocs/sportshub/` |
-| MAMP on macOS | `/Applications/MAMP/htdocs/sportshub/` |
-| Other XAMPP/MAMP installations | `<configured-document-root>/sportshub/` |
+| XAMPP on Windows | `C:/xampp/htdocs/Taylors-SportsHub/` |
+| MAMP on macOS | `/Applications/MAMP/htdocs/Taylors-SportsHub/` |
+| Other XAMPP/MAMP installations | `<configured-document-root>/Taylors-SportsHub/` |
 
 If you changed the installation location or document root, use the folder configured in your package instead. Avoid placing the project inside a second nested copy of the downloaded repository.
 
 | Package settings | Example application URL |
 | --- | --- |
-| XAMPP with Apache on port 80 | [http://localhost/sportshub/](http://localhost/sportshub/) |
-| MAMP with Apache on its default port 8888 | [http://localhost:8888/sportshub/](http://localhost:8888/sportshub/) |
+| XAMPP with Apache on port 80 | [http://localhost/Taylors-SportsHub/](http://localhost/Taylors-SportsHub/) |
+| MAMP with Apache on its default port 8888 | [http://localhost:8888/Taylors-SportsHub/](http://localhost:8888/Taylors-SportsHub/) |
 
 Use the ports actually configured in your installation. See the [XAMPP Windows guide](https://www.apachefriends.org/faq_windows) and [MAMP port settings](https://documentation.mamp.info/en/MAMP-Mac/Reference/Settings/Ports/) for package-specific instructions.
 
@@ -92,25 +92,9 @@ Open [config/db.php](config/db.php) and set `DB_HOST`, `DB_NAME`, `DB_USER`, `DB
 
 XAMPP commonly uses MySQL port `3306`; MAMP's default MySQL port is `8889`. Confirm the actual port in your package settings. The web-server port in the browser URL is separate from this database port.
 
-The current connection does not read `DB_PORT`. To use the configured port, including MAMP's default, replace the `$dsn` assignment inside `get_db_connection()` with:
-
-```php
-$dsn = 'mysql:host=' . DB_HOST . ';port=' . DB_PORT . ';charset=utf8mb4';
-```
-
 Initial setup needs permission to create the database and tables and load demonstration records. Existing installations also need the permissions required by the receipt-history migration. No manual database creation or SQL import is needed when these permissions are available.
 
-### 4. Set the error-page paths
-
-Normal application links detect the installation prefix automatically. For a project folder named `sportshub`, update [.htaccess](.htaccess) to use:
-
-```apache
-ErrorDocument 403 /sportshub/403.php
-ErrorDocument 404 /sportshub/404.php
-ErrorDocument 500 /sportshub/500.php
-```
-
-If you choose a different folder name, change `/sportshub/` in these three paths to match it. Do not include the hostname or port in an `ErrorDocument` path.
+### 4. Keep the upload protection
 
 Keep [assets/uploads/.htaccess](assets/uploads/.htaccess) in place and ensure Apache honours it. It blocks direct access to financial uploads; authorised access is provided through [evidence.php](evidence.php).
 
@@ -260,7 +244,7 @@ PowerShell example for XAMPP on port 80:
 
 ```powershell
 $env:NODE_PATH = (Resolve-Path ../sportshub-test-tools/node_modules).Path
-$env:SPORTSHUB_URL = 'http://localhost/sportshub'
+$env:SPORTSHUB_URL = 'http://localhost/Taylors-SportsHub'
 node tests/regressions.cjs
 node tests/ux-journey.cjs
 ```
@@ -269,7 +253,7 @@ macOS shell example for MAMP on port 8888:
 
 ```sh
 export NODE_PATH="$PWD/../sportshub-test-tools/node_modules"
-export SPORTSHUB_URL='http://localhost:8888/sportshub'
+export SPORTSHUB_URL='http://localhost:8888/Taylors-SportsHub'
 node tests/regressions.cjs
 node tests/ux-journey.cjs
 ```
